@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏁 BMW Sales Championship - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --card: #1a1a1a;
+            --card-hover: #222;
+            --border: #2a2a2a;
+            --bmw-blue: #0066B1;
+            --bmw-light: #1E93E1;
+            --bmw-red: #E30613;
+            --bmw-dark: #003D6B;
+            --text: #e0e0e0;
+            --text-dim: #999;
+            --text-bright: #fff;
+            --gold: #f0c040;
+            --silver: #b0b0b0;
+            --bronze: #cd7f32;
+            --green: #00c853;
+            --accent-glow: 0 0 25px rgba(0, 102, 177, 0.4);
+            --radius: 14px;
+            --radius-sm: 8px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            background-image:
+                radial-gradient(ellipse at 20% 0%, rgba(0, 102, 177, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(227, 6, 19, 0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(30, 147, 225, 0.03) 0%, transparent 70%);
+        }
+
+        /* ============ LOGIN OVERLAY ============ */
+        #loginOverlay {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #loginOverlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 420px;
+            max-width: 95vw;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--bmw-blue), var(--bmw-light), var(--bmw-red));
+        }
+        .login-logo {
+            font-size: 52px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .login-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+        .login-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .login-box .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .login-box .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        .login-box input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-bright);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            outline: none;
+        }
+        .login-box input:focus {
+            border-color: var(--bmw-blue);
+            box-shadow: 0 0 0 3px rgba(0, 102, 177, 0.15);
+        }
+        .login-box input:focus+i,
+        .login-box input:focus~i {
+            color: var(--bmw-light);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--bmw-blue), var(--bmw-dark));
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: var(--transition);
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--bmw-light), var(--bmw-blue));
+            box-shadow: var(--accent-glow);
+            transform: translateY(-1px);
+        }
+        .login-error {
+            color: var(--bmw-red);
+            font-size: 0.85rem;
+            margin-top: 12px;
+            min-height: 20px;
+            transition: var(--transition);
+        }
+        .login-footer {
+            margin-top: 20px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+        .bmw-stripes {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .bmw-stripe {
+            width: 32px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        .bmw-stripe:nth-child(1) {
+            background: var(--bmw-blue);
+        }
+        .bmw-stripe:nth-child(2) {
+            background: #8B6CAD;
+        }
+        .bmw-stripe:nth-child(3) {
+            background: var(--bmw-red);
+        }
+
+        /* ============ MAIN DASHBOARD ============ */
+        #dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        #dashboard.active {
+            display: block;
+            animation: fadeSlideIn 0.5s ease;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 28px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--bmw-blue), var(--bmw-light), var(--bmw-red));
+        }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+        }
+        .header-brand .icon {
+            font-size: 1.6rem;
+        }
+        .header-brand span {
+            background: linear-gradient(135deg, var(--bmw-light), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-badge {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .user-badge .role {
+            font-size: 0.7rem;
+            background: var(--bmw-blue);
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .logout-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .logout-btn:hover {
+            border-color: var(--bmw-red);
+            color: var(--bmw-red);
+        }
+
+        /* Tab Nav */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            padding: 16px 28px 0;
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            transition: var(--transition);
+            white-space: nowrap;
+            position: relative;
+            letter-spacing: 0.3px;
+        }
+        .tab-btn:hover {
+            color: var(--text-bright);
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .tab-btn.active {
+            color: var(--bmw-light);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-bottom-color: var(--surface);
+            margin-bottom: -1px;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--bmw-blue);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 24px 28px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .tab-panel {
+            display: none;
+            animation: fadeSlideIn 0.35s ease;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .kpi-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card:hover {
+            border-color: #3a3a3a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        .kpi-card .kpi-icon {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: var(--bmw-light);
+        }
+        .kpi-card .kpi-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+        .kpi-card .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            letter-spacing: -0.5px;
+        }
+        .kpi-card .kpi-sub {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+        .kpi-card.accent-blue {
+            border-left: 3px solid var(--bmw-blue);
+        }
+        .kpi-card.accent-red {
+            border-left: 3px solid var(--bmw-red);
+        }
+        .kpi-card.accent-gold {
+            border-left: 3px solid var(--gold);
+        }
+        .kpi-card.accent-green {
+            border-left: 3px solid var(--green);
+        }
+
+        /* Speedometer Gauge */
+        .gauge-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .gauge {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        .gauge svg {
+            transform: rotate(-90deg);
+            width: 150px;
+            height: 150px;
+        }
+        .gauge .bg-circle {
+            fill: none;
+            stroke: #1f1f1f;
+            stroke-width: 10;
+        }
+        .gauge .progress-circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .gauge .gauge-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .gauge .gauge-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .gauge .gauge-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .table-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-bright);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        table thead th {
+            background: #111;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+        table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #1f1f1f;
+            white-space: nowrap;
+        }
+        table tbody tr {
+            transition: var(--transition);
+        }
+        table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        table tbody tr.rank-1 {
+            background: rgba(240, 192, 64, 0.06);
+        }
+        table tbody tr.rank-1 td:first-child {
+            color: var(--gold);
+            font-weight: 800;
+        }
+        table tbody tr.rank-2 td:first-child {
+            color: var(--silver);
+            font-weight: 700;
+        }
+        table tbody tr.rank-3 td:first-child {
+            color: var(--bronze);
+            font-weight: 700;
+        }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.8rem;
+        }
+        .rank-badge.r1 {
+            background: var(--gold);
+            color: #000;
+        }
+        .rank-badge.r2 {
+            background: var(--silver);
+            color: #000;
+        }
+        .rank-badge.r3 {
+            background: var(--bronze);
+            color: #000;
+        }
+        .rank-badge.rn {
+            background: #2a2a2a;
+            color: #888;
+        }
+
+        /* XP tag */
+        .xp-tag {
+            font-weight: 700;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            letter-spacing: -0.5px;
+        }
+        .xp-highlight {
+            color: var(--bmw-light);
+            font-size: 1.05rem;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title i {
+            color: var(--bmw-light);
+        }
+
+        /* Admin Panel */
+        .admin-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .admin-controls input {
+            flex: 1;
+            min-width: 300px;
+            padding: 10px 16px;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-bright);
+            font-size: 0.85rem;
+            outline: none;
+            transition: var(--transition);
+        }
+        .admin-controls input:focus {
+            border-color: var(--bmw-blue);
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            border: none;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: var(--bmw-blue);
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: var(--bmw-light);
+            box-shadow: var(--accent-glow);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        .btn-outline:hover {
+            border-color: var(--bmw-blue);
+            color: var(--bmw-light);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            z-index: 999;
+            font-size: 0.85rem;
+            animation: slideUp 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        .toast.success {
+            border-left: 3px solid var(--green);
+        }
+        .toast.error {
+            border-left: 3px solid var(--bmw-red);
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 16px;
+                height: 56px;
+            }
+            .header-brand {
+                font-size: 1rem;
+            }
+            .main-content {
+                padding: 16px 12px;
+            }
+            .tab-nav {
+                padding: 12px 12px 0;
+                gap: 2px;
+            }
+            .tab-btn {
+                padding: 8px 14px;
+                font-size: 0.78rem;
+            }
+            .kpi-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 10px;
+            }
+            .kpi-card {
+                padding: 14px 16px;
+            }
+            .kpi-card .kpi-value {
+                font-size: 1.3rem;
+            }
+            .login-box {
+                padding: 32px 20px;
+            }
+            .gauge {
+                width: 110px;
+                height: 110px;
+            }
+            .gauge svg {
+                width: 110px;
+                height: 110px;
+            }
+            table {
+                font-size: 0.75rem;
+            }
+            table thead th,
+            table tbody td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== LOGIN OVERLAY ==================== -->
+    <div id="loginOverlay">
+        <div class="login-box">
+            <div class="bmw-stripes">
+                <div class="bmw-stripe"></div>
+                <div class="bmw-stripe"></div>
+                <div class="bmw-stripe"></div>
+            </div>
+            <div class="login-logo">🏁</div>
+            <div class="login-title">SALES CHAMPIONSHIP</div>
+            <div class="login-subtitle">BMW Motorsport Division</div>
+            <div class="input-group">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="loginUser" placeholder="Usuário" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="loginPass" placeholder="Senha">
+            </div>
+            <button class="login-btn" onclick="doLogin()">
+                <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            </button>
+            <div class="login-error" id="loginError"></div>
+            <div class="login-footer">Campos do Jordão • Temporada 2026</div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN DASHBOARD ==================== -->
+    <div id="dashboard">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-brand">
+                <span class="icon">🏁</span>
+                <span>BMW Sales Champ</span>
+            </div>
+            <div class="header-user">
+                <div class="user-badge">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <span id="headerUserName">Admin</span>
+                    <span class="role" id="headerUserRole">ADMIN</span>
+                </div>
+                <button class="logout-btn" onclick="doLogout()">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                </button>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="meus-numeros">
+                <i class="fa-solid fa-gauge-high"></i> Meus Números
+            </button>
+            <button class="tab-btn" data-tab="ranking">
+                <i class="fa-solid fa-trophy"></i> Ranking Geral
+            </button>
+            <button class="tab-btn admin-only" data-tab="admin" style="display:none;">
+                <i class="fa-solid fa-gear"></i> Admin
+            </button>
+            <button class="tab-btn" data-tab="regras">
+                <i class="fa-solid fa-book"></i> Regras
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- MEUS NÚMEROS -->
+            <div class="tab-panel active" id="panel-meus-numeros">
+                <div id="meusNumerosContent"></div>
+            </div>
+
+            <!-- RANKING GERAL -->
+            <div class="tab-panel" id="panel-ranking">
+                <div id="rankingContent"></div>
+            </div>
+
+            <!-- ADMIN -->
+            <div class="tab-panel" id="panel-admin">
+                <div class="section-title"><i class="fa-solid fa-gear"></i> Painel do Administrador</div>
+                <div class="admin-controls">
+                    <input type="text" id="csvUrlInput"
+                    value="https://raw.githubusercontent.com/USER/REPO/main/dados.csv"
+                    placeholder="URL do arquivo dados.csv no GitHub">
+                    <button class="btn btn-primary" onclick="reloadCSV()">
+                        <i class="fa-solid fa-rotate"></i> Recarregar Dados
+                    </button>
+                    <button class="btn btn-outline" onclick="downloadSampleCSV()">
+                        <i class="fa-solid fa-download"></i> Baixar Modelo CSV
+                    </button>
+                </div>
+                <div id="adminDataTable"></div>
+                <div id="csvStatus" style="margin-top:12px; font-size:0.85rem; color:var(--text-dim);"></div>
+            </div>
+
+            <!-- REGRAS -->
+            <div class="tab-panel" id="panel-regras">
+                <div id="regrasContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const DEFAULT_CSV_URL = 'https://raw.githubusercontent.com/USER/REPO/main/dados.csv';
+        const CAMPAIGN_START = '2026-07-01';
+        const CAMPAIGN_END = '2026-07-31';
+
+        // Admin credentials
+        const ADMIN_USER = 'admin';
+        const ADMIN_PASS = 'admin123';
+
+        // ==================== STATE ====================
+        let currentUser = null;
+        let rawCSVData = [];
+        let processedSellers = [];
+        let csvUrl = localStorage.getItem('bmw_dash_csv_url') || DEFAULT_CSV_URL;
+
+        // ==================== DOM REFS ====================
+        const $loginOverlay = document.getElementById('loginOverlay');
+        const $dashboard = document.getElementById('dashboard');
+        const $loginError = document.getElementById('loginError');
+        const $headerUserName = document.getElementById('headerUserName');
+        const $headerUserRole = document.getElementById('headerUserRole');
+        const $tabNav = document.getElementById('tabNav');
+        const $csvUrlInput = document.getElementById('csvUrlInput');
+        const $csvStatus = document.getElementById('csvStatus');
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            $csvUrlInput.value = csvUrl;
+            // Tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+            // Enter key on login
+            document.getElementById('loginPass').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') doLogin();
+            });
+            document.getElementById('loginUser').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') document.getElementById('loginPass').focus();
+            });
+            // Load CSV on start
+            loadCSVData();
+        });
+
+        // ==================== LOGIN ====================
+        function doLogin() {
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            $loginError.textContent = '';
+
+            if (!user || !pass) {
+                $loginError.textContent = 'Preencha usuário e senha.';
+                return;
+            }
+
+            // Admin check
+            if (user.toLowerCase() === ADMIN_USER && pass === ADMIN_PASS) {
+                currentUser = { name: 'Administrador', role: 'admin', team: null };
+                enterDashboard();
+                return;
+            }
+
+            // Seller check - from CSV data
+            const seller = processedSellers.find(
+                s => s.vendedor.toLowerCase() === user.toLowerCase() && s.senha === pass
+            );
+
+            if (seller) {
+                currentUser = { name: seller.vendedor, role: 'vendedor', team: seller.equipe, sellerData: seller };
+                enterDashboard();
+                return;
+            }
+
+            $loginError.textContent = 'Usuário ou senha inválidos.';
+        }
+
+        function enterDashboard() {
+            $loginOverlay.classList.add('hidden');
+            $dashboard.classList.add('active');
+            $headerUserName.textContent = currentUser.name;
+            $headerUserRole.textContent = currentUser.role === 'admin' ? 'ADMIN' : currentUser.team || 'VENDEDOR';
+
+            // Show/hide admin tab
+            const adminBtns = document.querySelectorAll('.admin-only');
+            adminBtns.forEach(b => b.style.display = currentUser.role === 'admin' ? '' : 'none');
+
+            // Default tab
+            if (currentUser.role === 'admin') {
+                switchTab('admin');
+            } else {
+                switchTab('meus-numeros');
+            }
+
+            renderAll();
+        }
+
+        function doLogout() {
+            currentUser = null;
+            $loginOverlay.classList.remove('hidden');
+            $dashboard.classList.remove('active');
+            document.getElementById('loginUser').value = '';
+            document.getElementById('loginPass').value = '';
+            $loginError.textContent = '';
+            // Reset tabs
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.tab-btn[data-tab="meus-numeros"]')?.classList.add('active');
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById('panel-meus-numeros')?.classList.add('active');
+        }
+
+        // ==================== TAB SWITCHING ====================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+            const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+            const panel = document.getElementById(`panel-${tabId}`);
+
+            if (btn) btn.classList.add('active');
+            if (panel) panel.classList.add('active');
+
+            if (tabId === 'meus-numeros') renderMeusNumeros();
+            if (tabId === 'ranking') renderRanking();
+            if (tabId === 'admin') renderAdmin();
+            if (tabId === 'regras') renderRegras();
+        }
+
+        // ==================== CSV LOADING ====================
+        async function loadCSVData() {
+            try {
+                const resp = await fetch(csvUrl);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const text = await resp.text();
+                rawCSVData = parseCSV(text);
+                processedSellers = processAllSellers(rawCSVData);
+                if ($csvStatus) $csvStatus.textContent =
+                    `✅ Dados carregados: ${processedSellers.length} vendedores em ${countTeams()} equipe(s).`;
+                if (currentUser) renderAll();
+            } catch (err) {
+                console.warn('CSV não carregado:', err.message);
+                if ($csvStatus) $csvStatus.textContent =
+                    `⚠️ Não foi possível carregar o CSV. Usando dados de demonstração. (${err.message})`;
+                // Load demo data
+                rawCSVData = getDemoData();
+                processedSellers = processAllSellers(rawCSVData);
+                if (currentUser) renderAll();
+            }
+        }
+
+        async function reloadCSV() {
+            csvUrl = $csvUrlInput.value.trim();
+            localStorage.setItem('bmw_dash_csv_url', csvUrl);
+            showToast('Recarregando dados...', 'success');
+            await loadCSVData();
+            if (currentUser) {
+                // Refresh current user data if seller
+                if (currentUser.role === 'vendedor') {
+                    const refreshed = processedSellers.find(
+                        s => s.vendedor.toLowerCase() === currentUser.name.toLowerCase()
+                    );
+                    if (refreshed) currentUser.sellerData = refreshed;
+                }
+                renderAll();
+                const activeTab = document.querySelector('.tab-btn.active')?.dataset?.tab;
+                if (activeTab) switchTab(activeTab);
+            }
+            showToast('Dados atualizados com sucesso!', 'success');
+        }
+
+        function parseCSV(text) {
+            const lines = text.trim().split('\n');
+            if (lines.length < 2) return [];
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_'));
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length < headers.length) continue;
+                const row = {};
+                headers.forEach((h, idx) => {
+                    row[h] = values[idx] || '';
+                });
+                data.push(row);
+            }
+            return data;
+        }
+
+        function getDemoData() {
+            return [
+                { vendedor: 'João Silva', equipe: 'CAPTACAO', vgv: '5200000', num_vendas: '18', dias_presente: '22',
+                    dias_pontual: '20', meetings: '5', eficiencia: '', entrada_efetiva: '', casais: '38',
+                    data_inicio: '', senha: 'joao123' },
+                { vendedor: 'Maria Santos', equipe: 'CONSULTORIA', vgv: '4100000', num_vendas: '14', dias_presente: '21',
+                    dias_pontual: '19', meetings: '4', eficiencia: '35', entrada_efetiva: '', casais: '',
+                    data_inicio: '', senha: 'maria123' },
+                { vendedor: 'Pedro Costa', equipe: 'CLOSER', vgv: '3800000', num_vendas: '12', dias_presente: '20',
+                    dias_pontual: '18', meetings: '3', eficiencia: '', entrada_efetiva: '5', casais: '',
+                    data_inicio: '2026-07-05', senha: 'pedro123' },
+                { vendedor: 'Ana Oliveira', equipe: 'CAPTACAO', vgv: '6100000', num_vendas: '22', dias_presente: '22',
+                    dias_pontual: '21', meetings: '6', eficiencia: '', entrada_efetiva: '', casais: '45',
+                    data_inicio: '', senha: 'ana123' },
+                { vendedor: 'Lucas Mendes', equipe: 'CONSULTORIA', vgv: '3500000', num_vendas: '11', dias_presente: '20',
+                    dias_pontual: '17', meetings: '2', eficiencia: '28', entrada_efetiva: '', casais: '',
+                    data_inicio: '', senha: 'lucas123' },
+                { vendedor: 'Carla Rocha', equipe: 'CLOSER', vgv: '4500000', num_vendas: '15', dias_presente: '22',
+                    dias_pontual: '22', meetings: '4', eficiencia: '', entrada_efetiva: '7', casais: '',
+                    data_inicio: '', senha: 'carla123' },
+            ];
+        }
+
+        function countTeams() {
+            return [...new Set(processedSellers.map(s => s.equipe))].length;
+        }
+
+        // ==================== DATA PROCESSING ====================
+        function processAllSellers(rawData) {
+            const sellers = rawData.map(row => {
+                const seller = {
+                    vendedor: row.vendedor || 'Desconhecido',
+                    equipe: (row.equipe || '').toUpperCase().trim(),
+                    vgv: parseFloat(row.vgv) || 0,
+                    num_vendas: parseInt(row.num_vendas) || 0,
+                    dias_presente: parseInt(row.dias_presente) || 0,
+                    dias_pontual: parseInt(row.dias_pontual) || 0,
+                    meetings: parseInt(row.meetings) || 0,
+                    eficiencia: parseFloat(row.eficiencia) || 0,
+                    entrada_efetiva: parseFloat(row.entrada_efetiva) || 0,
+                    casais: parseInt(row.casais) || 0,
+                    data_inicio: row.data_inicio || '',
+                    senha: row.senha || '123456',
+                    ticket_medio: 0,
+                    xp_breakdown: {},
+                    xp_total: 0,
+                    is_novato: false,
+                };
+
+                // Ticket médio
+                if (seller.num_vendas > 0) {
+                    seller.ticket_medio = seller.vgv / seller.num_vendas;
+                }
+
+                // Novato check
+                if (seller.data_inicio && seller.data_inicio >= CAMPAIGN_START) {
+                    seller.is_novato = true;
+                }
+
+                return seller;
+            });
+
+            // Calculate base XP for each seller
+            sellers.forEach(s => calculateXP(s, sellers));
+
+            // Calculate rankings within each team
+            const teams = ['CAPTACAO', 'CONSULTORIA', 'CLOSER'];
+            teams.forEach(team => {
+                const teamSellers = sellers.filter(s => s.equipe === team);
+                // Sort by total XP for TOP ranking
+                const sortedByXP = [...teamSellers].sort((a, b) => b.xp_total - a.xp_total);
+                sortedByXP.forEach((s, idx) => {
+                    if (idx === 0) s.xp_breakdown.top = 600000;
+                    else if (idx === 1) s.xp_breakdown.top = 400000;
+                    else if (idx === 2) s.xp_breakdown.top = 200000;
+                    else s.xp_breakdown.top = 0;
+                });
+
+                // Sort by ticket médio
+                const sortedByTicket = [...teamSellers].sort((a, b) => b.ticket_medio - a.ticket_medio);
+                sortedByTicket.forEach((s, idx) => {
+                    if (idx === 0) s.xp_breakdown.ticket_medio_bonus = 300000;
+                    else if (idx === 1) s.xp_breakdown.ticket_medio_bonus = 200000;
+                    else if (idx === 2) s.xp_breakdown.ticket_medio_bonus = 100000;
+                    else s.xp_breakdown.ticket_medio_bonus = 0;
+                });
+
+                // Recalculate total XP with rankings
+                teamSellers.forEach(s => {
+                    s.xp_total = Object.values(s.xp_breakdown).reduce((sum, v) => sum + v, 0);
+                });
+            });
+
+            // Sort all by total XP
+            sellers.sort((a, b) => b.xp_total - a.xp_total);
+
+            return sellers;
+        }
+
+        function calculateXP(seller, allSellers) {
+            const bp = {}; // breakdown
+
+            // === CONVERSÃO BASE (team-specific) ===
+            const vgvMil = seller.vgv / 1000;
+            if (seller.equipe === 'CONSULTORIA') bp.conversao = vgvMil * 1100;
+            else if (seller.equipe === 'CLOSER') bp.conversao = vgvMil * 1000;
+            else if (seller.equipe === 'CAPTACAO') bp.conversao = vgvMil * 1200;
+            else bp.conversao = vgvMil * 1000;
+
+            // === ASSIDUIDADE ===
+            if (seller.is_novato && seller.equipe === 'CONSULTORIA') {
+                // CONSULTORIA novato: same as last-place non-novato
+                const nonNovatos = allSellers.filter(s => s.equipe === 'CONSULTORIA' && !s.is_novato);
+                if (nonNovatos.length > 0) {
+                    const minPresenca = Math.min(...nonNovatos.map(s => s.dias_presente));
+                    const minPontual = Math.min(...nonNovatos.map(s => s.dias_pontual));
+                    bp.assiduidade_presenca = minPresenca * 50000;
+                    bp.assiduidade_pontual = minPontual * 50000;
+                } else {
+                    bp.assiduidade_presenca = seller.dias_presente * 50000;
+                    bp.assiduidade_pontual = seller.dias_pontual * 50000;
+                }
+            } else if (seller.is_novato && (seller.equipe === 'CLOSER' || seller.equipe === 'CAPTACAO')) {
+                // CLOSER/CAPTAÇÃO novato: proportional bonus
+                const startDate = new Date(seller.data_inicio + 'T00:00:00-03:00');
+                const campaignStart = new Date(CAMPAIGN_START + 'T00:00:00-03:00');
+                const campaignEnd = new Date(CAMPAIGN_END + 'T00:00:00-03:00');
+                const totalDays = Math.max(1, Math.ceil((campaignEnd - campaignStart) / (1000 * 60 * 60 * 24)));
+                const daysBefore = Math.max(0, Math.ceil((startDate - campaignStart) / (1000 * 60 * 60 * 24)));
+                const propBonus = Math.round(daysBefore);
+                bp.assiduidade_presenca = (seller.dias_presente + propBonus) * 50000;
+                bp.assiduidade_pontual = (seller.dias_pontual + propBonus) * 50000;
+            } else {
+                bp.assiduidade_presenca = seller.dias_presente * 50000;
+                bp.assiduidade_pontual = seller.dias_pontual * 50000;
+            }
+
+            // === MEETINGS ===
+            bp.meetings = seller.meetings * 50000;
+
+            // === TOP (calculated later after ranking) ===
+            bp.top = 0;
+
+            // === TICKET MÉDIO (calculated later) ===
+            bp.ticket_medio_bonus = 0;
+
+            // === EFICIÊNCIA (CONSULTORIA) ===
+            if (seller.equipe === 'CONSULTORIA' && seller.vgv >= 3000000) {
+                const eff = seller.eficiencia;
+                if (eff >= 60) bp.eficiencia = 2400000;
+                else if (eff >= 55) bp.eficiencia = 2200000;
+                else if (eff >= 50) bp.eficiencia = 2000000;
+                else if (eff >= 45) bp.eficiencia = 1800000;
+                else if (eff >= 40) bp.eficiencia = 1600000;
+                else if (eff >= 35) bp.eficiencia = 1400000;
+                else if (eff >= 30) bp.eficiencia = 1200000;
+                else if (eff >= 25) bp.eficiencia = 1000000;
+                else if (eff >= 20) bp.eficiencia = 600000;
+                else bp.eficiencia = 0;
+            } else {
+                bp.eficiencia = 0;
+            }
+
+            // === ENTRADA EFETIVA (CLOSER) ===
+            if (seller.equipe === 'CLOSER' && seller.vgv >= 3000000) {
+                const ee = seller.entrada_efetiva;
+                if (ee >= 10) bp.entrada_efetiva = 2400000;
+                else if (ee >= 9) bp.entrada_efetiva = 2200000;
+                else if (ee >= 8) bp.entrada_efetiva = 2000000;
+                else if (ee >= 7) bp.entrada_efetiva = 1800000;
+                else if (ee >= 6) bp.entrada_efetiva = 1600000;
+                else if (ee >= 5) bp.entrada_efetiva = 1400000;
+                else if (ee >= 4) bp.entrada_efetiva = 1200000;
+                else if (ee >= 3) bp.entrada_efetiva = 1000000;
+                else bp.entrada_efetiva = 0;
+            } else {
+                bp.entrada_efetiva = 0;
+            }
+
+            // === QUALIFICAÇÃO DE CASAIS (CAPTAÇÃO) ===
+            if (seller.equipe === 'CAPTACAO') {
+                const c = seller.casais;
+                if (c > 65) bp.casais = 400000;
+                else if (c > 60) bp.casais = 370000;
+                else if (c > 55) bp.casais = 340000;
+                else if (c > 50) bp.casais = 300000;
+                else if (c > 45) bp.casais = 270000;
+                else if (c > 40) bp.casais = 240000;
+                else if (c > 35) bp.casais = 200000;
+                else if (c > 30) bp.casais = 170000;
+                else if (c > 25) bp.casais = 140000;
+                else if (c > 20) bp.casais = 100000;
+                else bp.casais = 0;
+            } else {
+                bp.casais = 0;
+            }
+
+            seller.xp_breakdown = bp;
+            seller.xp_total = Object.values(bp).reduce((sum, v) => sum + v, 0);
+        }
+
+        // ==================== RENDER FUNCTIONS ====================
+        function renderAll() {
+            renderMeusNumeros();
+            renderRanking();
+            renderAdmin();
+            renderRegras();
+        }
+
+        function renderMeusNumeros() {
+            const container = document.getElementById('meusNumerosContent');
+            if (!currentUser || !container) return;
+
+            if (currentUser.role === 'admin') {
+                container.innerHTML = `
+                    <div class="section-title"><i class="fa-solid fa-gauge-high"></i> Visão Geral - Todas as Equipes</div>
+                    <div class="kpi-grid">
+                        ${buildSummaryKPIs()}
+                    </div>
+                    <p style="color:var(--text-dim); font-size:0.85rem;">
+                        <i class="fa-solid fa-info-circle"></i> Como administrador, você vê o resumo de todas as equipes.
+                        Use a aba <strong>Admin</strong> para gerenciar os dados e a aba <strong>Ranking Geral</strong> para ver a classificação completa.
+                    </p>
+                `;
+                return;
+            }
+
+            const seller = currentUser.sellerData;
+            if (!seller) {
+                container.innerHTML =
+                    '<p style="color:var(--bmw-red);">Erro: dados do vendedor não encontrados. Verifique o CSV.</p>';
+                return;
+            }
+
+            const bp = seller.xp_breakdown;
+            const rankGeral = processedSellers.findIndex(s => s.vendedor === seller.vendedor) + 1;
+            const teamSellers = processedSellers.filter(s => s.equipe === seller.equipe);
+            const rankEquipe = teamSellers.findIndex(s => s.vendedor === seller.vendedor) + 1;
+            const totalGeral = processedSellers.length;
+            const totalEquipe = teamSellers.length;
+            const vgvFormatted = formatCurrency(seller.vgv);
+            const xpFormatted = formatXP(seller.xp_total);
+            const ticketFormatted = formatCurrency(seller.ticket_medio);
+
+            // Determine efficiency/entry/couples display
+            let metricaExtraLabel = '';
+            let metricaExtraValue = '';
+            if (seller.equipe === 'CONSULTORIA') {
+                metricaExtraLabel = 'Eficiência';
+                metricaExtraValue = seller.eficiencia + '%';
+            } else if (seller.equipe === 'CLOSER') {
+                metricaExtraLabel = 'Entrada Efetiva';
+                metricaExtraValue = seller.entrada_efetiva + '%';
+            } else if (seller.equipe === 'CAPTACAO') {
+                metricaExtraLabel = 'Casais';
+                metricaExtraValue = seller.casais;
+            }
+
+            container.innerHTML = `
+                <div class="section-title">
+                    <i class="fa-solid fa-gauge-high"></i> Meus Números — ${seller.vendedor}
+                    <span style="font-size:0.75rem;color:var(--text-dim);margin-left:8px;">${seller.equipe}</span>
+                </div>
+
+                <!-- Gauges -->
+                <div class="gauge-container">
+                    ${buildGauge('XP Total', seller.xp_total, getMaxXP(), '#1E93E1')}
+                    ${buildGauge('VGV', seller.vgv, getMaxVGV(), '#00c853')}
+                    ${buildGauge('Ticket Médio', seller.ticket_medio, getMaxTicketMedio(), '#f0c040')}
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card accent-blue">
+                        <div class="kpi-icon"><i class="fa-solid fa-star"></i></div>
+                        <div class="kpi-label">XP Total</div>
+                        <div class="kpi-value">${xpFormatted}</div>
+                        <div class="kpi-sub">Ranking Geral: #${rankGeral} de ${totalGeral}</div>
+                    </div>
+                    <div class="kpi-card accent-gold">
+                        <div class="kpi-icon"><i class="fa-solid fa-trophy"></i></div>
+                        <div class="kpi-label">Ranking da Equipe</div>
+                        <div class="kpi-value">#${rankEquipe} de ${totalEquipe}</div>
+                        <div class="kpi-sub">Equipe: ${seller.equipe}</div>
+                    </div>
+                    <div class="kpi-card accent-green">
+                        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="kpi-label">VGV Total</div>
+                        <div class="kpi-value">${vgvFormatted}</div>
+                        <div class="kpi-sub">${seller.num_vendas} vendas • Ticket ${ticketFormatted}</div>
+                    </div>
+                    <div class="kpi-card accent-red">
+                        <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div class="kpi-label">Assiduidade</div>
+                        <div class="kpi-value">${seller.dias_presente} dias</div>
+                        <div class="kpi-sub">${seller.dias_pontual} pontuais • ${seller.meetings} meetings</div>
+                    </div>
+                    ${metricaExtraLabel ? `
+                    <div class="kpi-card" style="border-left:3px solid #8B6CAD;">
+                        <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <div class="kpi-label">${metricaExtraLabel}</div>
+                        <div class="kpi-value">${metricaExtraValue}</div>
+                        <div class="kpi-sub">Meta: ${seller.equipe === 'CONSULTORIA' ? '≥20% (mín 3M VGV)' : seller.equipe === 'CLOSER' ? '≥3% (mín 3M VGV)' : '>20 casais'}</div>
+                    </div>` : ''}
+                    ${seller.is_novato ? `
+                    <div class="kpi-card" style="border-left:3px solid #ff9800;">
+                        <div class="kpi-icon"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="kpi-label">Novato</div>
+                        <div class="kpi-value">Desde ${formatDateBR(seller.data_inicio)}</div>
+                        <div class="kpi-sub">XP de assiduidade ajustado proporcionalmente</div>
+                    </div>` : ''}
+                </div>
+
+                <!-- XP Breakdown -->
+                <div class="table-container">
+                    <div class="table-header"><i class="fa-solid fa-coins"></i> Detalhamento de XP</div>
+                    <table>
+                        <thead>
+                            <tr><th>Categoria</th><th>Descrição</th><th>XP</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Conversão Base</strong></td>
+                                <td>R$ ${vgvFormatted} em VGV × ${seller.equipe === 'CONSULTORIA' ? '1.100' : seller.equipe === 'CAPTACAO' ? '1.200' : '1.000'} XP/mil</td>
+                                <td class="xp-tag">${formatXP(bp.conversao)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Presença</strong></td>
+                                <td>${seller.dias_presente} dias × 50.000 XP${seller.is_novato ? ' (ajustado)' : ''}</td>
+                                <td class="xp-tag">${formatXP(bp.assiduidade_presenca)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pontualidade</strong></td>
+                                <td>${seller.dias_pontual} dias × 50.000 XP${seller.is_novato ? ' (ajustado)' : ''}</td>
+                                <td class="xp-tag">${formatXP(bp.assiduidade_pontual)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Meetings</strong></td>
+                                <td>${seller.meetings} meetings × 50.000 XP</td>
+                                <td class="xp-tag">${formatXP(bp.meetings)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>TOP</strong></td>
+                                <td>Posição #${rankEquipe} na equipe ${seller.equipe}</td>
+                                <td class="xp-tag" style="color:${bp.top > 0 ? 'var(--gold)' : 'var(--text-dim)'};">${formatXP(bp.top)}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ticket Médio</strong></td>
+                                <td>Ticket médio: ${ticketFormatted}</td>
+                                <td class="xp-tag" style="color:${bp.ticket_medio_bonus > 0 ? 'var(--gold)' : 'var(--text-dim)'};">${formatXP(bp.ticket_medio_bonus)}</td>
+                            </tr>
+                            ${seller.equipe === 'CONSULTORIA' ? `
+                            <tr>
+                                <td><strong>Eficiência</strong></td>
+                                <td>${seller.eficiencia}% ${seller.vgv >= 3000000 ? '✅' : '❌ (mín 3M VGV)'}</td>
+                                <td class="xp-tag" style="color:${bp.eficiencia > 0 ? 'var(--bmw-light)' : 'var(--text-dim)'};">${formatXP(bp.eficiencia)}</td>
+                            </tr>` : ''}
+                            ${seller.equipe === 'CLOSER' ? `
+                            <tr>
+                                <td><strong>Entrada Efetiva</strong></td>
+                                <td>${seller.entrada_efetiva}% ${seller.vgv >= 3000000 ? '✅' : '❌ (mín 3M VGV)'}</td>
+                                <td class="xp-tag" style="color:${bp.entrada_efetiva > 0 ? 'var(--bmw-light)' : 'var(--text-dim)'};">${formatXP(bp.entrada_efetiva)}</td>
+                            </tr>` : ''}
+                            ${seller.equipe === 'CAPTACAO' ? `
+                            <tr>
+                                <td><strong>Casais</strong></td>
+                                <td>${seller.casais} casais qualificados</td>
+                                <td class="xp-tag" style="color:${bp.casais > 0 ? 'var(--bmw-light)' : 'var(--text-dim)'};">${formatXP(bp.casais)}</td>
+                            </tr>` : ''}
+                            <tr style="background:#111; font-weight:800;">
+                                <td colspan="2"><strong>TOTAL XP</strong></td>
+                                <td class="xp-tag xp-highlight">${xpFormatted}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function buildSummaryKPIs() {
+            const totalXP = processedSellers.reduce((sum, s) => sum + s.xp_total, 0);
+            const totalVGV = processedSellers.reduce((sum, s) => sum + s.vgv, 0);
+            const avgTicket = processedSellers.length > 0 ?
+                processedSellers.reduce((sum, s) => sum + s.ticket_medio, 0) / processedSellers.length :
+                0;
+            const totalVendas = processedSellers.reduce((sum, s) => sum + s.num_vendas, 0);
+
+            return `
+                <div class="kpi-card accent-blue">
+                    <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="kpi-label">Total Vendedores</div>
+                    <div class="kpi-value">${processedSellers.length}</div>
+                    <div class="kpi-sub">${countTeams()} equipes</div>
+                </div>
+                <div class="kpi-card accent-green">
+                    <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div class="kpi-label">VGV Total</div>
+                    <div class="kpi-value">${formatCurrency(totalVGV)}</div>
+                    <div class="kpi-sub">${totalVendas} vendas</div>
+                </div>
+                <div class="kpi-card accent-gold">
+                    <div class="kpi-icon"><i class="fa-solid fa-star"></i></div>
+                    <div class="kpi-label">XP Total Distribuído</div>
+                    <div class="kpi-value">${formatXP(totalXP)}</div>
+                    <div class="kpi-sub">Média: ${formatXP(Math.round(totalXP / Math.max(1, processedSellers.length)))}</div>
+                </div>
+                <div class="kpi-card" style="border-left:3px solid #8B6CAD;">
+                    <div class="kpi-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                    <div class="kpi-label">Ticket Médio Geral</div>
+                    <div class="kpi-value">${formatCurrency(avgTicket)}</div>
+                    <div class="kpi-sub">por venda</div>
+                </div>
+            `;
+        }
+
+        function renderRanking() {
+            const container = document.getElementById('rankingContent');
+            if (!container) return;
+
+            if (processedSellers.length === 0) {
+                container.innerHTML =
+                    '<p style="color:var(--text-dim);">Nenhum dado disponível. Carregue o arquivo dados.csv.</p>';
+                return;
+            }
+
+            let html = '';
+
+            // === RANKING GERAL ===
+            html += `
+                <div class="section-title"><i class="fa-solid fa-trophy"></i> Ranking Geral — Todos os Vendedores</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th><th>Vendedor</th><th>Equipe</th><th>VGV</th>
+                                <th>Vendas</th><th>Ticket Médio</th><th>Presença</th>
+                                <th>Pontual</th><th>Meetings</th><th>XP Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            processedSellers.forEach((s, idx) => {
+                const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
+                const rankBadge = idx === 0 ? '<span class="rank-badge r1">1</span>' :
+                    idx === 1 ? '<span class="rank-badge r2">2</span>' :
+                    idx === 2 ? '<span class="rank-badge r3">3</span>' :
+                    `<span class="rank-badge rn">${idx+1}</span>`;
+
+                const isCurrentUser = currentUser && currentUser.name === s.vendedor;
+                const rowStyle = isCurrentUser ? 'background:rgba(0,102,177,0.12); font-weight:600;' : '';
+
+                html += `
+                    <tr class="${rankClass}" style="${rowStyle}">
+                        <td>${rankBadge}</td>
+                        <td>${s.vendedor}${s.is_novato ? ' 🌱' : ''}${isCurrentUser ? ' ⭐' : ''}</td>
+                        <td><span style="font-size:0.75rem;background:#1a1a1a;padding:2px 10px;border-radius:50px;">${s.equipe}</span></td>
+                        <td>${formatCurrency(s.vgv)}</td>
+                        <td>${s.num_vendas}</td>
+                        <td>${formatCurrency(s.ticket_medio)}</td>
+                        <td>${s.dias_presente}d</td>
+                        <td>${s.dias_pontual}d</td>
+                        <td>${s.meetings}</td>
+                        <td class="xp-tag xp-highlight">${formatXP(s.xp_total)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table></div>`;
+
+            // === RANKING POR EQUIPE ===
+            const teams = ['CAPTACAO', 'CONSULTORIA', 'CLOSER'];
+            const teamNames = { 'CAPTACAO': 'Captação', 'CONSULTORIA': 'Consultoria', 'CLOSER': 'Closer' };
+            const teamIcons = { 'CAPTACAO': 'fa-phone-volume', 'CONSULTORIA': 'fa-handshake', 'CLOSER': 'fa-check-double' };
+
+            teams.forEach(team => {
+                const teamSellers = processedSellers.filter(s => s.equipe === team);
+                if (teamSellers.length === 0) return;
+
+                html += `
+                    <div class="section-title" style="margin-top:28px;">
+                        <i class="fa-solid ${teamIcons[team] || 'fa-users'}"></i>
+                        Ranking — ${teamNames[team] || team}
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr><th>#</th><th>Vendedor</th><th>VGV</th><th>Ticket Médio</th>
+                                <th>${team === 'CONSULTORIA' ? 'Eficiência' : team === 'CLOSER' ? 'Entrada Ef.' : 'Casais'}</th>
+                                <th>XP Total</th></tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                teamSellers.forEach((s, idx) => {
+                    const rankBadge = idx === 0 ? '<span class="rank-badge r1">1</span>' :
+                        idx === 1 ? '<span class="rank-badge r2">2</span>' :
+                        idx === 2 ? '<span class="rank-badge r3">3</span>' :
+                        `<span class="rank-badge rn">${idx+1}</span>`;
+                    const isCurrentUser = currentUser && currentUser.name === s.vendedor;
+                    const rowStyle = isCurrentUser ? 'background:rgba(0,102,177,0.12); font-weight:600;' : '';
+
+                    let extraVal = '';
+                    if (team === 'CONSULTORIA') extraVal = s.eficiencia + '%';
+                    else if (team === 'CLOSER') extraVal = s.entrada_efetiva + '%';
+                    else extraVal = s.casais;
+
+                    html += `
+                        <tr style="${rowStyle}">
+                            <td>${rankBadge}</td>
+                            <td>${s.vendedor}${isCurrentUser ? ' ⭐' : ''}</td>
+                            <td>${formatCurrency(s.vgv)}</td>
+                            <td>${formatCurrency(s.ticket_medio)}</td>
+                            <td>${extraVal}</td>
+                            <td class="xp-tag xp-highlight">${formatXP(s.xp_total)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table></div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderAdmin() {
+            const container = document.getElementById('adminDataTable');
+            if (!container || currentUser?.role !== 'admin') return;
+
+            if (processedSellers.length === 0) {
+                container.innerHTML =
+                    '<p style="color:var(--text-dim);">Nenhum dado carregado. Configure a URL do CSV e clique em Recarregar.</p>';
+                return;
+            }
+
+            let html = `
+                <div class="table-container" style="margin-top:20px;">
+                    <div class="table-header"><i class="fa-solid fa-table"></i> Todos os Dados Carregados</div>
+                    <div style="overflow-x:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th><th>Equipe</th><th>VGV</th><th>Vendas</th>
+                                <th>Presença</th><th>Pontual</th><th>Meetings</th>
+                                <th>Eficiência</th><th>Entr. Ef.</th><th>Casais</th>
+                                <th>Início</th><th>Novato</th><th>XP Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            processedSellers.forEach(s => {
+                html += `
+                    <tr>
+                        <td><strong>${s.vendedor}</strong></td>
+                        <td>${s.equipe}</td>
+                        <td>${formatCurrency(s.vgv)}</td>
+                        <td>${s.num_vendas}</td>
+                        <td>${s.dias_presente}</td>
+                        <td>${s.dias_pontual}</td>
+                        <td>${s.meetings}</td>
+                        <td>${s.eficiencia > 0 ? s.eficiencia + '%' : '-'}</td>
+                        <td>${s.entrada_efetiva > 0 ? s.entrada_efetiva + '%' : '-'}</td>
+                        <td>${s.casais > 0 ? s.casais : '-'}</td>
+                        <td>${s.data_inicio ? formatDateBR(s.data_inicio) : '01/07/26'}</td>
+                        <td>${s.is_novato ? '🌱 Sim' : 'Não'}</td>
+                        <td class="xp-tag">${formatXP(s.xp_total)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table></div></div>`;
+
+            // CSV preview
+            html += `
+                <div class="section-title" style="margin-top:24px;"><i class="fa-solid fa-file-csv"></i> Preview do CSV</div>
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;overflow-x:auto;max-height:300px;overflow-y:auto;">
+                    <pre style="font-size:0.78rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">${generateCSVPreview()}</pre>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function renderRegras() {
+            const container = document.getElementById('regrasContent');
+            if (!container) return;
+
+            container.innerHTML = `
+                <div class="section-title"><i class="fa-solid fa-book"></i> Regras da Competição</div>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px;">
+                    ${buildRegrasCard('CONSULTORIA', 'fa-handshake', '#1E93E1', [
+                        'Conversão base: <strong>R$ 1.000 em VGV = 1.100 XP</strong>',
+                        'Cada dia presente: <strong>50.000 XP</strong>',
+                        'Cada dia pontual no meeting: <strong>50.000 XP</strong>',
+                        'Cada meeting ministrado: <strong>50.000 XP</strong>',
+                        'TOP 1: <strong>600.000 XP</strong> | TOP 2: <strong>400.000 XP</strong> | TOP 3: <strong>200.000 XP</strong>',
+                        '1º Ticket Médio: <strong>300.000 XP</strong> | 2º: <strong>200.000 XP</strong> | 3º: <strong>100.000 XP</strong>',
+                        'Eficiência 20%: <strong>600.000 XP</strong> (mín 3M VGV)',
+                        'Eficiência 25%: <strong>1.000.000 XP</strong> | 30%: <strong>1.200.000 XP</strong>',
+                        'Eficiência 35%: <strong>1.400.000 XP</strong> | 40%: <strong>1.600.000 XP</strong>',
+                        'Eficiência 45%: <strong>1.800.000 XP</strong> | 50%: <strong>2.000.000 XP</strong>',
+                        'Eficiência 55%: <strong>2.200.000 XP</strong> | +60%: <strong>2.400.000 XP</strong>',
+                        '<em>Novatos: mesma pontuação de dias do último colocado</em>',
+                    ])}
+                    ${buildRegrasCard('CLOSER', 'fa-check-double', '#E30613', [
+                        'Conversão base: <strong>R$ 1.000 em VGV = 1.000 XP</strong>',
+                        'Cada dia presente: <strong>50.000 XP</strong>',
+                        'Cada dia pontual no meeting: <strong>50.000 XP</strong>',
+                        'Cada meeting ministrado: <strong>50.000 XP</strong>',
+                        'TOP 1: <strong>600.000 XP</strong> | TOP 2: <strong>400.000 XP</strong> | TOP 3: <strong>200.000 XP</strong>',
+                        '1º Ticket Médio: <strong>300.000 XP</strong> | 2º: <strong>200.000 XP</strong> | 3º: <strong>100.000 XP</strong>',
+                        'Entrada Efetiva 3%: <strong>1.000.000 XP</strong> (mín 3M VGV)',
+                        'Entrada 4%: <strong>1.200.000 XP</strong> | 5%: <strong>1.400.000 XP</strong>',
+                        'Entrada 6%: <strong>1.600.000 XP</strong> | 7%: <strong>1.800.000 XP</strong>',
+                        'Entrada 8%: <strong>2.000.000 XP</strong> | 9%: <strong>2.200.000 XP</strong> | 10%: <strong>2.400.000 XP</strong>',
+                        '<em>Novatos: XP proporcional do dia inicial até início de atividade</em>',
+                    ])}
+                    ${buildRegrasCard('CAPTAÇÃO', 'fa-phone-volume', '#8B6CAD', [
+                        'Conversão base: <strong>R$ 1.000 em VGV = 1.200 XP</strong>',
+                        'Cada dia presente: <strong>50.000 XP</strong>',
+                        'Cada dia pontual no meeting: <strong>50.000 XP</strong>',
+                        'Cada meeting ministrado: <strong>50.000 XP</strong>',
+                        'TOP 1: <strong>600.000 XP</strong> | TOP 2: <strong>400.000 XP</strong> | TOP 3: <strong>200.000 XP</strong>',
+                        '1º Ticket Médio de Renda: <strong>300.000 XP</strong> | 2º: <strong>200.000 XP</strong> | 3º: <strong>100.000 XP</strong>',
+                        '>20 casais: <strong>100.000 XP</strong> | >25: <strong>140.000 XP</strong>',
+                        '>30 casais: <strong>170.000 XP</strong> | >35: <strong>200.000 XP</strong>',
+                        '>40 casais: <strong>240.000 XP</strong> | >45: <strong>270.000 XP</strong>',
+                        '>50 casais: <strong>300.000 XP</strong> | >55: <strong>340.000 XP</strong>',
+                        '>60 casais: <strong>370.000 XP</strong> | >65: <strong>400.000 XP</strong>',
+                        '<em>Novatos: XP proporcional do dia inicial até início de atividade</em>',
+                    ])}
+                </div>
+            `;
+        }
+
+        function buildRegrasCard(team, icon, color, rules) {
+            const teamNames = { 'CONSULTORIA': 'Consultoria', 'CLOSER': 'Closer', 'CAPTACAO': 'Captação' };
+            return `
+                <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;border-top:3px solid ${color};">
+                    <h3 style="color:${color};margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                        <i class="fa-solid ${icon}"></i> ${teamNames[team]}
+                    </h3>
+                    <ul style="list-style:none;padding:0;font-size:0.85rem;line-height:1.9;">
+                        ${rules.map(r => `<li style="padding:3px 0;border-bottom:1px solid #1f1f1f;">• ${r}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        // ==================== GAUGE BUILDER ====================
+        function buildGauge(label, value, max, color) {
+            const pct = max > 0 ? Math.min(100, (value / max) * 100) : 0;
+            const circumference = 2 * Math.PI * 54;
+            const offset = circumference - (pct / 100) * circumference;
+            const displayValue = value >= 1000000 ? (value / 1000000).toFixed(1) + 'M' :
+                value >= 1000 ? (value / 1000).toFixed(0) + 'K' :
+                value.toFixed(0);
+
+            return `
+                <div class="gauge">
+                    <svg viewBox="0 0 120 120">
+                        <circle class="bg-circle" cx="60" cy="60" r="54"/>
+                        <circle class="progress-circle" cx="60" cy="60" r="54"
+                            stroke="${color}"
+                            stroke-dasharray="${circumference}"
+                            stroke-dashoffset="${offset}"
+                            style="transition: stroke-dashoffset 1.2s ease;"/>
+                    </svg>
+                    <div class="gauge-center">
+                        <div class="gauge-value">${displayValue}</div>
+                        <div class="gauge-label">${label}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getMaxXP() {
+            if (processedSellers.length === 0) return 10000000;
+            return Math.max(...processedSellers.map(s => s.xp_total)) * 1.2;
+        }
+
+        function getMaxVGV() {
+            if (processedSellers.length === 0) return 10000000;
+            return Math.max(...processedSellers.map(s => s.vgv)) * 1.2;
+        }
+
+        function getMaxTicketMedio() {
+            if (processedSellers.length === 0) return 500000;
+            return Math.max(...processedSellers.map(s => s.ticket_medio)) * 1.2;
+        }
+
+        // ==================== UTILITIES ====================
+        function formatCurrency(value) {
+            if (!value || isNaN(value)) return 'R$ 0';
+            if (value >= 1000000) return 'R$ ' + (value / 1000000).toFixed(2) + 'M';
+            if (value >= 1000) return 'R$ ' + (value / 1000).toFixed(0) + 'K';
+            return 'R$ ' + value.toFixed(0);
+        }
+
+        function formatXP(value) {
+            if (!value || isNaN(value)) return '0 XP';
+            if (value >= 1000000) return (value / 1000000).toFixed(2) + 'M XP';
+            if (value >= 1000) return (value / 1000).toFixed(0) + 'K XP';
+            return value.toFixed(0) + ' XP';
+        }
+
+        function formatDateBR(dateStr) {
+            if (!dateStr) return '';
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function generateCSVPreview() {
+            if (rawCSVData.length === 0) return 'vendedor,equipe,vgv,num_vendas,dias_presente,dias_pontual,meetings,eficiencia,entrada_efetiva,casais,data_inicio,senha\n';
+            const headers = Object.keys(rawCSVData[0]).join(',');
+            const rows = rawCSVData.map(r => Object.values(r).join(',')).join('\n');
+            return headers + '\n' + rows;
+        }
+
+        function downloadSampleCSV() {
+            const sample = `vendedor,equipe,vgv,num_vendas,dias_presente,dias_pontual,meetings,eficiencia,entrada_efetiva,casais,data_inicio,senha
+        João Silva,CAPTACAO,5200000,18,22,20,5,,,38,,joao123
+        Maria Santos,CONSULTORIA,4100000,14,21,19,4,35,,,,maria123
+        Pedro Costa,CLOSER,3800000,12,20,18,3,,5,,2026-07-05,pedro123
+        Ana Oliveira,CAPTACAO,6100000,22,22,21,6,,,45,,ana123
+        Lucas Mendes,CONSULTORIA,3500000,11,20,17,2,28,,,,lucas123
+        Carla Rocha,CLOSER,4500000,15,22,22,4,,7,,,carla123`;
+            const blob = new Blob([sample], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dados.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Modelo CSV baixado!', 'success');
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
