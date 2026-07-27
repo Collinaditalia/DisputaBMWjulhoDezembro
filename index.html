@@ -10,22 +10,19 @@
   --bg: #0a0a0a; --surface: #141414; --card: #1a1a1a;
   --border: #2a2a2a; --bmw-blue: #0066B1; --bmw-light: #1E93E1;
   --bmw-red: #E30613; --text: #e0e0e0; --text-dim: #999;
-  --text-bright: #fff; --gold: #f0c040; --silver: #b0b0b0;
-  --bronze: #cd7f32; --green: #00c853; --radius: 14px;
-  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+  --text-bright: #fff; --gold: #f0c040; --green: #00c853;
+  --radius: 12px; --transition: 0.25s;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
   font-family:'Segoe UI','Inter',system-ui,sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;position:relative;
+  background:var(--bg);color:var(--text);min-height:100vh;
 }
 body::before{
   content:'';position:fixed;inset:0;
-  background-image:url('https://images.unsplash.com/photo-1617531653332-bad972bddd65?w=1400&q=80');
-  background-size:cover;background-position:center 30%;
+  background:url('https://images.unsplash.com/photo-1617531653332-bad972bddd65?w=1400&q=80') center 30%/cover;
   opacity:0.04;z-index:0;pointer-events:none;
 }
-/* LOGIN */
 #loginOverlay{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   background:var(--bg);z-index:10000;
@@ -33,213 +30,140 @@ body::before{
 .login-box{
   background:var(--surface);border:1px solid var(--border);border-radius:20px;
   padding:40px;width:90%;max-width:420px;text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
 }
 .bmw-stripes{display:flex;justify-content:center;gap:4px;margin-bottom:20px;}
 .bmw-stripe{width:40px;height:6px;border-radius:3px;}
-.bmw-stripe:nth-child(1){background:var(--bmw-blue);}
-.bmw-stripe:nth-child(2){background:var(--bmw-light);}
-.bmw-stripe:nth-child(3){background:var(--bmw-red);}
-.login-logo{font-size:3rem;margin-bottom:8px;}
-.login-title{font-size:1.4rem;font-weight:800;color:var(--text-bright);letter-spacing:1px;}
-.login-subtitle{font-size:0.85rem;color:var(--text-dim);margin-bottom:24px;}
-.input-group{
-  display:flex;align-items:center;background:#222;border:1px solid #333;
-  border-radius:10px;padding:10px 14px;margin-bottom:10px;gap:10px;
-}
-.input-group i{color:var(--text-dim);font-size:0.9rem;}
-.input-group input{
-  background:transparent;border:none;outline:none;color:var(--text);
-  font-size:0.95rem;width:100%;
-}
-.login-btn{
-  width:100%;padding:12px;margin-top:8px;
-  background:var(--bmw-blue);color:#fff;border:none;border-radius:10px;
-  font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition);
-}
-.login-btn:hover{background:var(--bmw-light);}
-.login-error{color:var(--bmw-red);font-size:0.8rem;margin-top:8px;min-height:20px;}
+.bmw-stripe:nth-child(1){background:var(--bmw-blue)}
+.bmw-stripe:nth-child(2){background:var(--bmw-light)}
+.bmw-stripe:nth-child(3){background:var(--bmw-red)}
+.login-logo{font-size:3rem;margin-bottom:8px}
+.login-title{font-size:1.4rem;font-weight:800;color:var(--text-bright)}
+.login-subtitle{font-size:0.85rem;color:var(--text-dim);margin-bottom:24px}
+.input-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:10px;padding:10px 14px;margin-bottom:10px;gap:10px}
+.input-group i{color:var(--text-dim);font-size:0.9rem}
+.input-group input{background:transparent;border:none;outline:none;color:var(--text);font-size:0.95rem;width:100%}
+.login-btn{width:100%;padding:12px;margin-top:8px;background:var(--bmw-blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition)}
+.login-btn:hover{background:var(--bmw-light)}
+.login-error{color:var(--bmw-red);font-size:0.8rem;margin-top:8px;min-height:20px}
 
-/* HEADER */
 .header{
   display:flex;justify-content:space-between;align-items:center;
   padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);
   position:sticky;top:0;z-index:100;
 }
-.header-brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem;}
-.header-brand .icon{font-size:1.5rem;}
-.header-brand .title-text{color:var(--bmw-light);}
-.header-brand .champions{color:var(--text-dim);font-size:0.75rem;letter-spacing:2px;}
-.header-user{display:flex;align-items:center;gap:12px;}
-.user-badge{display:flex;align-items:center;gap:6px;font-size:0.85rem;}
-.user-badge i{color:var(--bmw-light);}
-.role{font-size:0.65rem;background:var(--bmw-blue);color:#fff;padding:2px 8px;border-radius:50px;}
-.logout-btn{
-  background:transparent;border:1px solid #444;color:var(--text-dim);
-  padding:6px 14px;border-radius:50px;cursor:pointer;font-size:0.75rem;transition:var(--transition);
-}
-.logout-btn:hover{color:#fff;border-color:#888;}
+.header-brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem}
+.header-brand .icon{font-size:1.5rem}
+.header-brand .title-text{color:var(--bmw-light)}
+.header-brand .champions{color:var(--text-dim);font-size:0.75rem;letter-spacing:2px}
+.header-user{display:flex;align-items:center;gap:12px}
+.user-badge{display:flex;align-items:center;gap:6px;font-size:0.85rem}
+.user-badge i{color:var(--bmw-light)}
+.role{font-size:0.65rem;background:var(--bmw-blue);color:#fff;padding:2px 8px;border-radius:50px}
+.logout-btn{background:transparent;border:1px solid #444;color:var(--text-dim);padding:6px 14px;border-radius:50px;cursor:pointer;font-size:0.75rem;transition:var(--transition)}
+.logout-btn:hover{color:#fff;border-color:#888}
 
-/* TABS */
 .tab-nav{
   display:flex;gap:2px;padding:8px 16px;background:var(--surface);
   border-bottom:1px solid var(--border);overflow-x:auto;flex-wrap:wrap;
   position:sticky;top:58px;z-index:99;
 }
-.tab-btn{
-  padding:8px 16px;border:none;background:transparent;color:var(--text-dim);
-  font-size:0.78rem;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0;
-  transition:var(--transition);white-space:nowrap;
-}
-.tab-btn:hover{color:#fff;background:rgba(255,255,255,0.03);}
-.tab-btn.active{color:#fff;background:var(--card);border-bottom:2px solid var(--bmw-blue);}
+.tab-btn{padding:8px 16px;border:none;background:transparent;color:var(--text-dim);font-size:0.78rem;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0;transition:var(--transition);white-space:nowrap}
+.tab-btn:hover{color:#fff}
+.tab-btn.active{color:#fff;background:var(--card);border-bottom:2px solid var(--bmw-blue)}
 
-/* CONTENT */
-.main-content{padding:20px 24px;position:relative;z-index:1;}
-.tab-panel{display:none;}
-.tab-panel.active{display:block;}
-.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--text-bright);}
+.main-content{padding:20px 24px;position:relative;z-index:1}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--text-bright)}
 
-/* CALENDAR */
-.calendar-grid{
-  display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px;
-}
-.calendar-day-header{
-  text-align:center;font-size:0.7rem;font-weight:700;color:var(--text-dim);
-  padding:6px 0;text-transform:uppercase;
-}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px}
+.calendar-day-header{text-align:center;font-size:0.7rem;font-weight:700;color:var(--text-dim);padding:6px 0;text-transform:uppercase}
 .calendar-day{
   aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
   justify-content:center;border-radius:8px;cursor:pointer;transition:0.2s;
   font-weight:700;font-size:0.85rem;user-select:none;
   background:rgba(255,255,255,0.03);position:relative;
 }
-.calendar-day:hover{transform:scale(1.08);border:1px solid #ccc;z-index:2;}
-.day-presente{background:#00c853;color:#fff;}
-.day-falta{background:#e53935;color:#fff;}
-.day-misto{background:#ff9800;color:#fff;}
-.day-undefined{background:#2a2a2a;color:#666;}
-.day-future{background:#1a1a1a;color:#444;cursor:default;}
-.day-future:hover{transform:none;border:none;}
-.day-meeting-dot{
-  position:absolute;top:3px;right:4px;width:7px;height:7px;
-  background:#ff0;border-radius:50%;
-}
+.calendar-day:hover:not(.day-future){transform:scale(1.08);z-index:2;box-shadow:0 4px 15px rgba(0,102,177,0.3)}
+.day-presente{background:#00c853;color:#fff}
+.day-falta{background:#e53935;color:#fff}
+.day-misto{background:#ff9800;color:#fff}
+.day-todos-presentes{background:rgba(0,200,83,0.25);border:2px solid #00c853;color:#00c853}
+.day-todos-falta{background:rgba(229,57,53,0.25);border:2px solid #e53935;color:#e53935}
+.day-parcial{background:rgba(255,152,0,0.25);border:2px solid #ff9800;color:#ff9800}
+.day-undefined{background:rgba(255,255,255,0.03);border:2px solid #333;color:#666}
+.day-future{background:#1a1a1a;color:#444;cursor:default}
+.day-meeting-dot{position:absolute;top:3px;right:4px;width:7px;height:7px;background:#ff0;border-radius:50%}
 
-/* MONTH SELECTOR */
-.month-selector{
-  display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;
-}
-.month-selector select{
-  background:#222;color:#fff;border:1px solid #444;padding:8px 14px;
-  border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;
-}
-.month-selector label{color:var(--text-dim);font-size:0.85rem;}
+.month-selector{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.month-selector select{background:#222;color:#fff;border:1px solid #444;padding:8px 14px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer}
 
-/* MODAL */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,0.88);
   display:flex;align-items:center;justify-content:center;
   opacity:0;visibility:hidden;transition:opacity 0.3s;z-index:9998;
 }
-.modal-overlay.active{opacity:1;visibility:visible;}
+.modal-overlay.active{opacity:1;visibility:visible}
 .modal-box{
   background:#1e1e1e;border-radius:20px;max-height:92vh;overflow-y:auto;
   width:95vw;max-width:960px;box-shadow:0 25px 80px rgba(0,0,0,0.9);
   transform:translateY(20px);transition:transform 0.3s;
 }
-.modal-overlay.active .modal-box{transform:translateY(0);}
-.modal-header{
-  padding:20px 24px;border-bottom:1px solid #333;
-  position:sticky;top:0;background:#1e1e1e;z-index:10;
-  display:flex;justify-content:space-between;align-items:center;
-}
-.modal-title{font-size:1.15rem;font-weight:700;color:#eee;}
-.modal-subtitle{font-size:0.8rem;color:#999;margin-top:2px;}
-.modal-close{
-  background:none;border:none;font-size:1.3rem;color:#999;cursor:pointer;transition:0.2s;
-}
-.modal-close:hover{color:#fff;}
-.modal-body{padding:20px 24px;}
-.modal-footer{
-  padding:16px 24px;border-top:1px solid #333;display:flex;gap:8px;
-  flex-wrap:wrap;position:sticky;bottom:0;background:#1e1e1e;
-}
+.modal-overlay.active .modal-box{transform:translateY(0)}
+.modal-header{padding:20px 24px;border-bottom:1px solid #333;position:sticky;top:0;background:#1e1e1e;z-index:10;display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:1.15rem;font-weight:700;color:#eee}
+.modal-subtitle{font-size:0.8rem;color:#999;margin-top:2px}
+.modal-close{background:none;border:none;font-size:1.3rem;color:#999;cursor:pointer;transition:0.2s}
+.modal-close:hover{color:#fff}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid #333;display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:0;background:#1e1e1e}
 
-/* TEAM SECTIONS */
-.team-section{margin-bottom:20px;}
-.team-header{
-  display:flex;align-items:center;gap:8px;padding:10px 16px;
-  border-radius:8px;margin-bottom:6px;font-weight:700;font-size:0.9rem;
-}
-.captacao{background:rgba(139,108,173,0.18);border-left:3px solid #8B6CAD;color:#b39ddb;}
-.consultoria{background:rgba(30,147,225,0.18);border-left:3px solid #1E93E1;color:#64b5f6;}
-.closer{background:rgba(227,6,19,0.18);border-left:3px solid #E30613;color:#ef9a9a;}
+.team-section{margin-bottom:20px}
+.team-header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;margin-bottom:6px;font-weight:700;font-size:0.9rem}
+.captacao{background:rgba(139,108,173,0.18);border-left:3px solid #8B6CAD;color:#b39ddb}
+.consultoria{background:rgba(30,147,225,0.18);border-left:3px solid #1E93E1;color:#64b5f6}
+.closer{background:rgba(227,6,19,0.18);border-left:3px solid #E30613;color:#ef9a9a}
 
-.seller-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;background:#252525;border-radius:6px;margin-bottom:4px;
-  transition:0.2s;flex-wrap:wrap;gap:8px;
-}
-.seller-row:hover{background:#303030;}
-.seller-name{font-weight:600;font-size:0.88rem;min-width:130px;}
-.seller-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.meeting-group{display:flex;align-items:center;gap:4px;}
-.meeting-group input[type="text"]{
-  background:#1a1a1a;border:1px solid #444;color:#fff;padding:4px 8px;
-  border-radius:6px;font-size:0.75rem;width:140px;
-}
-.meeting-group input[type="text"]:focus{outline:none;border-color:var(--bmw-light);}
+.seller-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#252525;border-radius:6px;margin-bottom:4px;transition:0.2s;flex-wrap:wrap;gap:8px}
+.seller-row:hover{background:#303030}
+.seller-name{font-weight:600;font-size:0.88rem;min-width:130px}
+.seller-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.meeting-group{display:flex;align-items:center;gap:4px}
+.meeting-group input[type="text"]{background:#1a1a1a;border:1px solid #444;color:#fff;padding:4px 8px;border-radius:6px;font-size:0.75rem;width:140px}
+.meeting-group input[type="text"]:focus{outline:none;border-color:var(--bmw-light)}
 
-/* BUTTONS */
-.btn{
-  padding:8px 16px;border-radius:50px;font-weight:700;font-size:0.78rem;
-  cursor:pointer;border:none;transition:0.2s;display:inline-flex;align-items:center;gap:6px;
-}
-.btn-primary{background:var(--bmw-blue);color:#fff;}
-.btn-primary:hover{background:var(--bmw-light);}
-.btn-secondary{background:#444;color:#fff;}
-.btn-secondary:hover{background:#555;}
-.btn-success{background:var(--green);color:#fff;}
-.btn-danger{background:#e53935;color:#fff;}
-.toggle-btn{
-  padding:5px 12px;border-radius:50px;border:none;cursor:pointer;
-  font-weight:700;font-size:0.75rem;transition:0.2s;
-}
-.toggle-presente{background:#00c853;color:#fff;}
-.toggle-falta{background:#e53935;color:#fff;}
+.btn{padding:8px 16px;border-radius:50px;font-weight:700;font-size:0.78rem;cursor:pointer;border:none;transition:0.2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--bmw-blue);color:#fff}
+.btn-primary:hover{background:var(--bmw-light)}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:#e53935;color:#fff}
+.btn-warning{background:#ff9800;color:#fff}
+.btn-secondary{background:#444;color:#fff}
+.toggle-btn{padding:5px 12px;border-radius:50px;border:none;cursor:pointer;font-weight:700;font-size:0.75rem;transition:0.2s}
+.toggle-presente{background:#00c853;color:#fff}
+.toggle-falta{background:#e53935;color:#fff}
 
-/* TABLES */
-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
-th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #222;}
-th{background:#1a1a1a;color:var(--text-dim);font-weight:700;font-size:0.75rem;text-transform:uppercase;}
-tr:hover{background:rgba(255,255,255,0.02);}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #222}
+th{background:#1a1a1a;color:var(--text-dim);font-weight:700;font-size:0.75rem;text-transform:uppercase}
+tr:hover{background:rgba(255,255,255,0.02)}
 
-/* TOAST */
-#toastContainer{position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:6px;}
-.toast{
-  padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;
-  color:#fff;opacity:1;transition:opacity 0.3s;min-width:250px;
-}
-.toast.success{background:#00c853;}
-.toast.error{background:#e53935;}
+#toastContainer{position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:6px}
+.toast{padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;color:#fff;opacity:1;transition:opacity 0.3s}
+.toast.success{background:#00c853}
+.toast.error{background:#e53935}
 
-/* ADMIN */
-.admin-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
-.admin-controls input{
-  background:#1a1a1a;border:1px solid #444;color:#fff;
-  padding:8px 14px;border-radius:8px;font-size:0.85rem;flex:1;min-width:300px;
-}
+.admin-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.admin-controls input{background:#1a1a1a;border:1px solid #444;color:#fff;padding:8px 14px;border-radius:8px;font-size:0.85rem;flex:1;min-width:300px}
 
-/* RESPONSIVE */
+.debug-box{background:#111;border:1px solid #333;border-radius:8px;padding:14px;margin:10px 0;font-size:0.8rem;color:#0f0;font-family:monospace;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+
 @media(max-width:768px){
-  .header{padding:10px 14px;font-size:0.85rem;}
-  .tab-btn{padding:6px 10px;font-size:0.7rem;}
-  .main-content{padding:14px;}
-  .seller-row{flex-direction:column;align-items:flex-start;}
-  .modal-box{width:96vw;max-height:85vh;}
-  .calendar-day{font-size:0.7rem;}
-  .meeting-group input[type="text"]{width:100px;}
+  .header{padding:10px 14px;font-size:0.85rem}
+  .tab-btn{padding:6px 10px;font-size:0.7rem}
+  .main-content{padding:14px}
+  .seller-row{flex-direction:column;align-items:flex-start}
+  .modal-box{width:96vw;max-height:85vh}
 }
 </style>
 </head>
@@ -271,21 +195,19 @@ tr:hover{background:rgba(255,255,255,0.02);}
 <div id="dashboard" style="display:none;">
   <header class="header">
     <div class="header-brand">
-      <span class="icon">🏁</span>
-      <span class="title-text">BMW</span>
+      <span class="icon">🏁</span><span class="title-text">BMW</span>
       <span class="champions">Champions League</span>
     </div>
     <div class="header-user">
       <div class="user-badge">
-        <i class="fa-solid fa-circle-user"></i>
-        <span id="headerUserName">Admin</span>
+        <i class="fa-solid fa-circle-user"></i> <span id="headerUserName">Admin</span>
         <span class="role" id="headerUserRole">ADMIN</span>
       </div>
       <button class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
     </div>
   </header>
 
-  <nav class="tab-nav" id="tabNav">
+  <nav class="tab-nav">
     <button class="tab-btn active" data-tab="meus-numeros"><i class="fa-solid fa-gauge-high"></i> Meus Números</button>
     <button class="tab-btn" data-tab="ranking"><i class="fa-solid fa-trophy"></i> Ranking Geral</button>
     <button class="tab-btn" data-tab="presenca"><i class="fa-solid fa-calendar-check"></i> Lista de Presença</button>
@@ -302,10 +224,11 @@ tr:hover{background:rgba(255,255,255,0.02);}
     <div class="tab-panel" id="panel-admin">
       <div class="section-title"><i class="fa-solid fa-gear"></i> Painel do Administrador</div>
       <div class="admin-controls">
-        <input type="text" id="csvUrlInput" placeholder="URL do dados.csv no GitHub"/>
-        <button class="btn btn-primary" onclick="reloadCSV()"><i class="fa-solid fa-rotate"></i> Recarregar Dados</button>
+        <input type="text" id="csvUrlInput" placeholder="URL raw do dados.csv no GitHub"/>
+        <button class="btn btn-primary" onclick="reloadCSV()"><i class="fa-solid fa-rotate"></i> Recarregar</button>
       </div>
-      <div id="adminDataTable" style="margin-top:16px;"></div>
+      <div id="adminDebug" class="debug-box" style="display:none;"></div>
+      <div id="adminDataTable" style="margin-top:14px;"></div>
     </div>
     <div class="tab-panel" id="panel-regras"><div id="regrasContent"></div></div>
   </div>
@@ -316,16 +239,17 @@ tr:hover{background:rgba(255,255,255,0.02);}
   <div class="modal-box">
     <div class="modal-header">
       <div>
-        <div class="modal-title"><i class="fa-solid fa-calendar-day"></i> Dia <span id="modalDiaLabel">1</span></div>
-        <div class="modal-subtitle" id="modalSubtitle">Julho 2026</div>
+        <div class="modal-title"><i class="fa-solid fa-calendar-day"></i> Presença — <span id="modalDiaLabel">Dia 1</span></div>
+        <div class="modal-subtitle" id="modalSubtitle">Julho 2026 — Marque quem faltou e quem deu meeting</div>
       </div>
       <button class="modal-close" onclick="closePresencaModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer" id="modalFooter">
+    <div class="modal-footer">
       <button class="btn btn-success" onclick="marcarTodosModal(1)"><i class="fa-solid fa-check"></i> Todos Presentes</button>
       <button class="btn btn-danger" onclick="marcarTodosModal(0)"><i class="fa-solid fa-xmark"></i> Todos Faltaram</button>
-      <button class="btn btn-primary" onclick="salvarPresenca()"><i class="fa-solid fa-floppy-disk"></i> Salvar</button>
+      <button class="btn btn-warning" onclick="limparMeetingsModal()"><i class="fa-solid fa-eraser"></i> Limpar Meetings</button>
+      <button class="btn btn-primary" onclick="salvarPresenca()"><i class="fa-solid fa-floppy-disk"></i> Salvar e Fechar</button>
     </div>
   </div>
 </div>
@@ -333,71 +257,68 @@ tr:hover{background:rgba(255,255,255,0.02);}
 <div id="toastContainer"></div>
 
 <script>
-// ==================== CONFIGURAÇÃO ====================
-const DEFAULT_CSV_URL = '';
-const TOTAL_DIAS_MES = [31,31,30,31,30,31]; // Jul, Ago, Set, Out, Nov, Dez 2026
+// ==================== CONFIG ====================
+const DEFAULT_CSV_URL = localStorage.getItem('csvUrl2026_v2')||'';
 const MESES = ['Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MESES_KEY = ['07','08','09','10','11','12'];
-const PESO_XP = {'CAPTACAO':1200,'CONSULTORIA':1100,'CLOSER':1000};
-const XP_PRESENCA_DIA = 50000;
+const DIAS_POR_MES = [31,31,30,31,30,31];
+const XP_PRESENCA = 50000;
 const XP_MEETING = 200000;
 
-// ==================== ESTADO GLOBAL ====================
+// ==================== ESTADO ====================
 let csvUrl = DEFAULT_CSV_URL;
 let currentUser = null;
 let rawCSV = [];
-let professionals = [];  // Array de {nome, equipe, vgv, vendas, vendas_total, ativo}
-let mesSelecionado = 0; // 0=Julho
+let professionals = [];
+let mesAtual = 0;
+let modalDia = 1;
+let modalPresenca = {};
+let modalMeeting = {};
 
-// ==================== INICIALIZAÇÃO ====================
+// ==================== INIT ====================
 document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.tab-btn').forEach(b=>{
-    b.onclick=()=>switchTab(b.dataset.tab);
-  });
-  const savedUrl = localStorage.getItem('csvUrl2026');
-  if(savedUrl){ csvUrl=savedUrl; document.getElementById('csvUrlInput').value=savedUrl; }
-  if(csvUrl) loadCSV();
+  document.getElementById('csvUrlInput').value = csvUrl;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
 });
 
 // ==================== LOGIN ====================
 function doLogin(){
   const u = document.getElementById('loginUser').value.trim().toLowerCase();
   const p = document.getElementById('loginPass').value.trim();
-  document.getElementById('loginError').textContent='';
+  const err = document.getElementById('loginError');
+  err.textContent = '';
 
   if(u==='admin' && p==='admin123'){
     currentUser = {name:'Administrador',role:'admin'};
-    showDashboard();
-    return;
+    showDashboard(); return;
   }
 
-  const prof = professionals.find(s=>s.nome.toLowerCase()===u && s.senha===p);
+  const prof = professionals.find(x=>x.nome.toLowerCase()===u && x.senha===p);
   if(prof){
-    currentUser = {name:prof.nome,role:'vendedor',team:prof.equipe,prof:prof};
+    currentUser = {name:prof.nome,role:'vendedor',team:prof.equipe};
     showDashboard();
   } else {
-    document.getElementById('loginError').textContent='Usuário ou senha inválidos';
+    err.textContent = 'Usuário ou senha inválidos';
   }
 }
 
 function showDashboard(){
   document.getElementById('loginOverlay').style.display='none';
   document.getElementById('dashboard').style.display='block';
-  updateHeader();
+  updateUI();
   switchTab('meus-numeros');
 }
 
 function doLogout(){
-  currentUser=null;
+  currentUser = null;
   document.getElementById('loginOverlay').style.display='flex';
   document.getElementById('dashboard').style.display='none';
 }
 
-function updateHeader(){
-  document.getElementById('headerUserName').textContent=currentUser?.name||'';
-  document.getElementById('headerUserRole').textContent=currentUser?.role==='admin'?'ADMIN':'VENDEDOR';
-  const adminEls = document.querySelectorAll('.admin-only');
-  adminEls.forEach(el=>el.style.display=currentUser?.role==='admin'?'':'none');
+function updateUI(){
+  document.getElementById('headerUserName').textContent = currentUser?.name||'';
+  document.getElementById('headerUserRole').textContent = currentUser?.role==='admin'?'ADMIN':(currentUser?.team||'VENDEDOR');
+  document.querySelectorAll('.admin-only').forEach(e=>e.style.display=currentUser?.role==='admin'?'':'none');
 }
 
 // ==================== TABS ====================
@@ -409,614 +330,539 @@ function switchTab(tab){
   if(panel) panel.classList.add('active');
   if(btn) btn.classList.add('active');
 
-  if(tab==='meus-numeros') renderMeusNumeros();
-  if(tab==='ranking') renderRanking();
-  if(tab==='presenca') renderPresenca();
-  if(tab==='status') renderStatus();
-  if(tab==='admin') renderAdmin();
-  if(tab==='regras') renderRegras();
+  const renders = {
+    'meus-numeros': renderMeusNumeros,
+    'ranking': renderRanking,
+    'presenca': renderPresenca,
+    'status': renderStatus,
+    'admin': renderAdmin,
+    'regras': renderRegras
+  };
+  if(renders[tab]) renders[tab]();
 }
 
-// ==================== CSV: CARREGAR & PROCESSAR ====================
+// ==================== CSV: PARSE ROBUSTO ====================
 async function loadCSV(){
+  const debug = document.getElementById('adminDebug');
+  debug.style.display = 'block';
+  debug.textContent = 'Carregando CSV...\n';
+
   try{
-    if(!csvUrl){ showToast('Configure a URL do CSV no painel Admin','error'); return; }
+    if(!csvUrl){ throw new Error('URL do CSV não configurada'); }
+
     const resp = await fetch(csvUrl);
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
     const txt = await resp.text();
-    rawCSV = parseCSV(txt);
-    professionals = extractProfessionals(rawCSV);
-    localStorage.setItem('csvUrl2026',csvUrl);
-    document.getElementById('csvUrlInput').value=csvUrl;
-    showToast(`${professionals.length} profissionais carregados!`,'success');
+    debug.textContent += `✓ Arquivo carregado: ${txt.length} caracteres\n`;
+
+    // Detecta delimitador
+    const firstLine = txt.split('\n')[0].trim();
+    let delim = ',';
+    if(firstLine.includes(';') && firstLine.split(';').length > firstLine.split(',').length) delim = ';';
+    debug.textContent += `✓ Delimitador detectado: "${delim}"\n`;
+
+    // Parse
+    rawCSV = parseCSV(txt, delim);
+    if(rawCSV.length === 0) throw new Error('CSV vazio ou mal formatado');
+
+    debug.textContent += `✓ ${rawCSV.length} linhas de dados\n`;
+
+    // Mostra cabeçalhos detectados
+    const headers = Object.keys(rawCSV[0]);
+    debug.textContent += `✓ ${headers.length} colunas detectadas:\n`;
+    headers.forEach((h,i) => {
+      const amostra = rawCSV[0][h]||'';
+      debug.textContent += `  [${i}] "${h}" → "${amostra}"\n`;
+    });
+
+    // Detecta colunas
+    const cols = detectarColunas(headers, rawCSV.slice(0,3));
+    debug.textContent += `\n🔍 Colunas de dados:\n`;
+    debug.textContent += `  Captador: [${cols.captador}] "${headers[cols.captador]||'--'}"\n`;
+    debug.textContent += `  Consultor: [${cols.consultor}] "${headers[cols.consultor]||'--'}"\n`;
+    debug.textContent += `  Closer: [${cols.closer}] "${headers[cols.closer]||'--'}"\n`;
+    debug.textContent += `  VGV: [${cols.vgv}] "${headers[cols.vgv]||'--'}"\n`;
+    debug.textContent += `  Status: [${cols.status}] "${headers[cols.status]||'--'}"\n`;
+
+    if(cols.captador<0||cols.consultor<0||cols.closer<0){
+      throw new Error('Não foi possível detectar colunas de captador/consultor/closer. Verifique os nomes no CSV.');
+    }
+
+    // Extrai profissionais
+    professionals = extrairProfissionais(rawCSV, cols, headers);
+    debug.textContent += `\n✅ ${professionals.length} profissionais extraídos!\n`;
+
+    professionals.forEach(p => {
+      debug.textContent += `  - ${p.nome} (${p.equipe}): VGV=${formatCurrency(p.vgv)}, Vendas=${p.vendas}\n`;
+    });
+
+    localStorage.setItem('csvUrl2026_v2', csvUrl);
+    showToast(`${professionals.length} profissionais carregados com sucesso!`,'success');
     renderAll();
-  }catch(e){
-    showToast(`Erro ao carregar CSV: ${e.message}`,'error');
+
+  } catch(e){
+    debug.textContent += `\n❌ ERRO: ${e.message}`;
+    showToast('Erro: '+e.message,'error');
   }
 }
 
 function reloadCSV(){
   csvUrl = document.getElementById('csvUrlInput').value.trim();
   if(!csvUrl){ showToast('Informe a URL do CSV','error'); return; }
-  localStorage.setItem('csvUrl2026',csvUrl);
+  localStorage.setItem('csvUrl2026_v2', csvUrl);
   loadCSV();
 }
 
-function parseCSV(txt){
+function parseCSV(txt, delim){
   const lines = txt.trim().split('\n');
-  if(lines.length<2) return [];
-  const headers = parseCSVLine(lines[0]).map(h=>h.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''));
+  if(lines.length < 2) return [];
+
+  const headers = splitCSV(lines[0], delim).map(h=>h.trim());
+
   const data = [];
-  for(let i=1;i<lines.length;i++){
-    const vals = parseCSVLine(lines[i]);
+  for(let i=1; i<lines.length; i++){
+    const vals = splitCSV(lines[i], delim);
     const obj = {};
-    headers.forEach((h,j)=>obj[h]=vals[j]||'');
+    headers.forEach((h,j) => { obj[h] = (vals[j]||'').trim(); });
     data.push(obj);
   }
   return data;
 }
 
-function parseCSVLine(line){
+function splitCSV(line, delim){
   const result = [];
-  let current = '';
-  let inQuotes = false;
-  for(let char of line){
-    if(char==='"'){ inQuotes=!inQuotes; }
-    else if(char===',' && !inQuotes){ result.push(current.trim()); current=''; }
-    else { current+=char; }
+  let current = '', inQuotes = false;
+  for(let i=0; i<line.length; i++){
+    const ch = line[i];
+    if(ch === '"'){ inQuotes = !inQuotes; }
+    else if(ch === delim && !inQuotes){ result.push(current); current = ''; }
+    else { current += ch; }
   }
-  result.push(current.trim());
+  result.push(current);
   return result;
 }
 
-function findColumn(headers, keywords){
-  for(let kw of keywords){
-    for(let h of Object.keys(headers)){
-      if(h.includes(kw)) return h;
-    }
-  }
-  return null;
-}
+function detectarColunas(headers, amostras){
+  // Cria versão normalizada para busca
+  const hNorm = headers.map(h => h.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9\s]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim()
+  );
 
-function extractProfessionals(raw){
-  if(raw.length===0) return [];
-
-  const firstRow = raw[0];
-  // Detecta colunas
-  const colCaptador = findColumn(firstRow, ['captador','captacao','promotor','capta']);
-  const colConsultor = findColumn(firstRow, ['consultor','consultoria','consult']);
-  const colCloser = findColumn(firstRow, ['closer','fechador','close']);
-  const colVGV = findColumn(firstRow, ['vgv','valor']);
-  const colStatus = findColumn(firstRow, ['status','contrato']);
-  const colSenha = findColumn(firstRow, ['senha','password']);
-
-  console.log('Colunas detectadas:',{colCaptador,colConsultor,colCloser,colVGV,colStatus,colSenha});
-
-  // Mapa: nome -> {equipe, vgv, vendas, vendas_total}
-  const map = {};
-
-  for(let row of raw){
-    const statusRaw = (row[colStatus]||'').trim();
-    const {active,total} = parseStatus(statusRaw);
-    if(active===0 && total===0) continue; // sem venda
-
-    const vgvRaw = parseFloat((row[colVGV]||'0').replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
-    const vgvEff = total>0 ? vgvRaw*(active/total) : 0;
-
-    const nomes = [];
-    if(colCaptador && row[colCaptador]?.trim()) nomes.push({nome:row[colCaptador].trim(),equipe:'CAPTACAO'});
-    if(colConsultor && row[colConsultor]?.trim()) nomes.push({nome:row[colConsultor].trim(),equipe:'CONSULTORIA'});
-    if(colCloser && row[colCloser]?.trim()) nomes.push({nome:row[colCloser].trim(),equipe:'CLOSER'});
-
-    for(let {nome,equipe} of nomes){
-      if(!map[nome]){
-        map[nome] = {equipe,vgv:0,vendas:0,vendas_total:0};
+  const find = (palavrasChave) => {
+    for(const kw of palavrasChave){
+      // Busca exata primeiro
+      for(let i=0; i<headers.length; i++){
+        if(hNorm[i] === kw || hNorm[i].includes(kw)) return i;
       }
-      map[nome].vgv += vgvEff;
-      map[nome].vendas += active;
-      map[nome].vendas_total += total;
-    }
-  }
-
-  // Converte para array
-  const list = [];
-  for(let nome in map){
-    const d = map[nome];
-    // Senha: padrão = nome em minúsculo sem espaços, ou do CSV se existir
-    let senha = nome.toLowerCase().replace(/\s/g,'').substring(0,10);
-    // Tenta achar senha no CSV
-    if(colSenha){
-      for(let row of raw){
-        if((row[colCaptador]||'').trim()===nome || (row[colConsultor]||'').trim()===nome || (row[colCloser]||'').trim()===nome){
-          if(row[colSenha]?.trim()){ senha=row[colSenha].trim(); break; }
-        }
+      // Busca parcial
+      for(let i=0; i<headers.length; i++){
+        if(hNorm[i].includes(kw)) return i;
       }
     }
-    list.push({
-      nome,
-      equipe: d.equipe,
-      vgv: d.vgv,
-      vendas: d.vendas,
-      vendas_total: d.vendas_total,
-      senha,
-      ativo: getAtivoStatus(nome)
-    });
+    return -1;
+  };
+
+  const captador = find([
+    'promotor de marketing','promotor marketing','promotor','captador','captacao',
+    'captador de marketing','capta','marketing'
+  ]);
+  const consultor = find([
+    'consultor','consultoria','consultor de vendas','consult'
+  ]);
+  const closer = find([
+    'closer','fechador','closer de vendas','close','finalizador'
+  ]);
+  const vgv = find([
+    'vgv','valor total','valor venda','valor','valor bruto','total','receita'
+  ]);
+  const status = find([
+    'status do contrato','status contrato','status','situacao','contrato','situacao contrato'
+  ]);
+
+  return { captador, consultor, closer, vgv, status };
+}
+
+function parseStatus(raw){
+  if(!raw||raw.trim()==='') return {ativos:0, total:0};
+  const partes = raw.toUpperCase().split('#').map(s=>s.trim()).filter(s=>s.length>0);
+  let ativos = 0;
+  for(const p of partes){
+    if(p==='ATIVO'||p.includes('ATIVO')) ativos++;
   }
-
-  return list;
+  return {ativos, total: partes.length};
 }
 
-function parseStatus(statusRaw){
-  if(!statusRaw) return {active:0,total:0};
-  const partes = statusRaw.split('#').map(s=>s.trim().toUpperCase());
-  let active=0, total=partes.length;
-  for(let p of partes){
-    if(p==='ATIVO') active++;
-  }
-  return {active,total};
-}
+function extrairProfissionais(raw, cols, headers){
+  const colCaptador = headers[cols.captador];
+  const colConsultor = headers[cols.consultor];
+  const colCloser = headers[cols.closer];
+  const colVGV = cols.vgv>=0 ? headers[cols.vgv] : null;
+  const colStatus = cols.status>=0 ? headers[cols.status] : null;
 
-// ==================== ATIVO/INATIVO ====================
-function getAtivoStatus(nome){
-  const data = JSON.parse(localStorage.getItem('ativo_2026')||'{}');
-  return data[nome]!==false;
-}
-function setAtivoStatus(nome,val){
-  const data = JSON.parse(localStorage.getItem('ativo_2026')||'{}');
-  data[nome]=val;
-  localStorage.setItem('ativo_2026',JSON.stringify(data));
-}
+  // Mapa: chave "nome|equipe" -> dados
+  const mapa = {};
 
-// ==================== PRESENÇA & MEETING STORAGE ====================
-function getPresencaKey(mesIdx){ return `presenca_2026_${MESES_KEY[mesIdx]}`; }
-function getMeetingKey(mesIdx){ return `meeting_2026_${MESES_KEY[mesIdx]}`; }
+  for(const row of raw){
+    const captador = (row[colCaptador]||'').trim();
+    const consultor = (row[colConsultor]||'').trim();
+    const closer = (row[colCloser]||'').trim();
 
-function getDayData(mesIdx,dia){
-  const key = getPresencaKey(mesIdx);
-  const data = JSON.parse(localStorage.getItem(key)||'{}');
-  const dk = String(dia).padStart(2,'0');
-  return data[dk] || {};
-}
+    // Status
+    const statusRaw = colStatus ? (row[colStatus]||'') : '';
+    const {ativos, total} = parseStatus(statusRaw);
 
-function setDayData(mesIdx,dia,val){
-  const key = getPresencaKey(mesIdx);
-  const data = JSON.parse(localStorage.getItem(key)||'{}');
-  const dk = String(dia).padStart(2,'0');
-  data[dk] = val;
-  localStorage.setItem(key,JSON.stringify(data));
-}
+    // Se não tem venda ativa, pula
+    if(ativos === 0) continue;
 
-function getMeetingData(mesIdx,dia){
-  const key = getMeetingKey(mesIdx);
-  const data = JSON.parse(localStorage.getItem(key)||'{}');
-  const dk = String(dia).padStart(2,'0');
-  return data[dk] || {};
-}
+    // VGV
+    let vgvVal = 0;
+    if(colVGV){
+      const rawV = (row[colVGV]||'').replace(/[R\$\s\.]/g,'').replace(',','.');
+      vgvVal = parseFloat(rawV) || 0;
+    }
 
-function setMeetingData(mesIdx,dia,val){
-  const key = getMeetingKey(mesIdx);
-  const data = JSON.parse(localStorage.getItem(key)||'{}');
-  const dk = String(dia).padStart(2,'0');
-  data[dk] = val;
-  localStorage.setItem(key,JSON.stringify(data));
-}
+    const envolvidos = [
+      {nome: captador, equipe: 'CAPTACAO'},
+      {nome: consultor, equipe: 'CONSULTORIA'},
+      {nome: closer, equipe: 'CLOSER'}
+    ];
 
-// ==================== XP CALC ====================
-function calcTotalXP(prof){
-  let xp = 0;
-  // XP de VGV
-  const peso = PESO_XP[prof.equipe]||1000;
-  xp += (prof.vgv/1000)*peso;
-  // XP de presença (todos os meses)
-  for(let m=0;m<6;m++){
-    const diasNoMes = TOTAL_DIAS_MES[m];
-    for(let d=1;d<=diasNoMes;d++){
-      const dayData = getDayData(m,d);
-      if(dayData[prof.nome]===1) xp += XP_PRESENCA_DIA;
+    for(const {nome, equipe} of envolvidos){
+      if(!nome || nome==='') continue;
+      const key = nome+'|'+equipe;
+      if(!mapa[key]){
+        mapa[key] = {nome, equipe, vgv:0, vendas:0, vendas_total:0};
+      }
+      mapa[key].vgv += vgvVal;
+      mapa[key].vendas += ativos;
+      mapa[key].vendas_total += total;
     }
   }
-  // XP de meeting (todos os meses)
+
+  const lista = Object.values(mapa).map(p => ({
+    ...p,
+    senha: (p.nome||'').toLowerCase().replace(/\s/g,'').substring(0,10),
+    ativo: getAtivo(p.nome)
+  }));
+
+  return lista;
+}
+
+// ==================== STORAGE ====================
+function getAtivo(nome){
+  const d = JSON.parse(localStorage.getItem('bmw_ativo_2026')||'{}');
+  return d[nome] !== false;
+}
+function setAtivo(nome,val){
+  const d = JSON.parse(localStorage.getItem('bmw_ativo_2026')||'{}');
+  d[nome] = val;
+  localStorage.setItem('bmw_ativo_2026', JSON.stringify(d));
+}
+
+function presencaKey(mes){ return `bmw_presenca_2026_${MESES_KEY[mes]}`; }
+function meetingKey(mes){ return `bmw_meeting_2026_${MESES_KEY[mes]}`; }
+
+function getDayPresenca(mes, dia){
+  const d = JSON.parse(localStorage.getItem(presencaKey(mes))||'{}');
+  return d[String(dia).padStart(2,'0')] || {};
+}
+function setDayPresenca(mes, dia, val){
+  const k = presencaKey(mes);
+  const d = JSON.parse(localStorage.getItem(k)||'{}');
+  d[String(dia).padStart(2,'0')] = val;
+  localStorage.setItem(k, JSON.stringify(d));
+}
+function getDayMeeting(mes, dia){
+  const d = JSON.parse(localStorage.getItem(meetingKey(mes))||'{}');
+  return d[String(dia).padStart(2,'0')] || {};
+}
+function setDayMeeting(mes, dia, val){
+  const k = meetingKey(mes);
+  const d = JSON.parse(localStorage.getItem(k)||'{}');
+  d[String(dia).padStart(2,'0')] = val;
+  localStorage.setItem(k, JSON.stringify(d));
+}
+
+// ==================== CÁLCULOS ====================
+function countPresencasTotal(nome){
+  let c=0;
   for(let m=0;m<6;m++){
-    const diasNoMes = TOTAL_DIAS_MES[m];
-    for(let d=1;d<=diasNoMes;d++){
-      const mtData = getMeetingData(m,d);
-      if(mtData[prof.nome]) xp += XP_MEETING;
+    for(let d=1;d<=DIAS_POR_MES[m];d++){
+      const day = getDayPresenca(m,d);
+      if(day[nome]===1) c++;
     }
   }
+  return c;
+}
+function countMeetingsTotal(nome){
+  let c=0;
+  for(let m=0;m<6;m++){
+    for(let d=1;d<=DIAS_POR_MES[m];d++){
+      const day = getDayMeeting(m,d);
+      if(day[nome]) c++;
+    }
+  }
+  return c;
+}
+function calcXP(p){
+  const peso = p.equipe==='CAPTACAO'?1200:p.equipe==='CONSULTORIA'?1100:1000;
+  let xp = (p.vgv/1000)*peso;
+  xp += countPresencasTotal(p.nome)*XP_PRESENCA;
+  xp += countMeetingsTotal(p.nome)*XP_MEETING;
   return Math.round(xp);
 }
 
-function countPresencasTotal(prof){
-  let count=0;
-  for(let m=0;m<6;m++){
-    const diasNoMes = TOTAL_DIAS_MES[m];
-    for(let d=1;d<=diasNoMes;d++){
-      const dayData = getDayData(m,d);
-      if(dayData[prof.nome]===1) count++;
-    }
-  }
-  return count;
+// ==================== HELPERS ====================
+function formatCurrency(v){
+  if(!v||isNaN(v)) return 'R$ 0';
+  return 'R$ '+Math.round(v).toLocaleString('pt-BR');
 }
-
-function countMeetingsTotal(prof){
-  let count=0;
-  for(let m=0;m<6;m++){
-    const diasNoMes = TOTAL_DIAS_MES[m];
-    for(let d=1;d<=diasNoMes;d++){
-      const mtData = getMeetingData(m,d);
-      if(mtData[prof.nome]) count++;
-    }
-  }
-  return count;
+function formatXP(v){
+  if(!v||isNaN(v)) return '0 XP';
+  return Math.round(v).toLocaleString('pt-BR')+' XP';
 }
+function escJS(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function escHTML(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ==================== RENDER: MEUS NÚMEROS ====================
+// ==================== RENDER ====================
 function renderMeusNumeros(){
   const el = document.getElementById('meusNumerosContent');
   if(!el) return;
 
   if(currentUser?.role==='admin'){
-    const ativos = professionals.filter(p=>p.ativo);
-    const totalVGV = ativos.reduce((a,p)=>a+p.vgv,0);
-    const totalVendas = ativos.reduce((a,p)=>a+p.vendas,0);
-    const totalPresencas = ativos.reduce((a,p)=>a+countPresencasTotal(p),0);
-    const totalMeetings = ativos.reduce((a,p)=>a+countMeetingsTotal(p),0);
-    el.innerHTML=`
-      <div class="section-title"><i class="fa-solid fa-gauge-high"></i> Visão Geral do Evento</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
-        <div style="background:var(--card);padding:16px;border-radius:12px;text-align:center;">
-          <div style="font-size:2rem;font-weight:800;color:var(--bmw-light);">${ativos.length}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);">Profissionais Ativos</div>
+    const ativos = getAtivos();
+    const tv = ativos.reduce((a,p)=>a+p.vgv,0);
+    const tn = ativos.reduce((a,p)=>a+p.vendas,0);
+    const tp = ativos.reduce((a,p)=>a+countPresencasTotal(p.nome),0);
+    const tm = ativos.reduce((a,p)=>a+countMeetingsTotal(p.nome),0);
+    el.innerHTML = `
+      <div class="section-title"><i class="fa-solid fa-gauge-high"></i> Visão Geral</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--bmw-light)">${ativos.length}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim)">Profissionais Ativos</div>
         </div>
-        <div style="background:var(--card);padding:16px;border-radius:12px;text-align:center;">
-          <div style="font-size:2rem;font-weight:800;color:var(--gold);">${formatCurrency(totalVGV)}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);">VGV Total</div>
+        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--gold)">${formatCurrency(tv)}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim)">VGV Total</div>
         </div>
-        <div style="background:var(--card);padding:16px;border-radius:12px;text-align:center;">
-          <div style="font-size:2rem;font-weight:800;color:var(--green);">${totalVendas}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);">Vendas Líquidas</div>
+        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--green)">${tp}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim)">Presenças Totais</div>
         </div>
-        <div style="background:var(--card);padding:16px;border-radius:12px;text-align:center;">
-          <div style="font-size:2rem;font-weight:800;color:#fff;">${totalPresencas}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);">Presenças Totais</div>
-        </div>
-        <div style="background:var(--card);padding:16px;border-radius:12px;text-align:center;">
-          <div style="font-size:2rem;font-weight:800;color:#ff9800;">${totalMeetings}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim);">Meetings Realizados</div>
+        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:#ff9800">${tm}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim)">Meetings Totais</div>
         </div>
       </div>
     `;
     return;
   }
 
-  const p = currentUser?.prof;
+  const p = professionals.find(x=>x.nome.toLowerCase()===currentUser?.name?.toLowerCase());
   if(!p){ el.innerHTML='<p>Nenhum dado.</p>'; return; }
 
-  const xp = calcTotalXP(p);
-  const ativos = professionals.filter(x=>x.ativo);
-  // Ranking geral
-  const ranked = [...ativos].map(x=>({...x,xp:calcTotalXP(x)})).sort((a,b)=>b.xp-a.xp);
-  const rankGeral = ranked.findIndex(x=>x.nome===p.nome)+1;
-  // Ranking equipe
-  const rankEq = ranked.filter(x=>x.equipe===p.equipe);
-  const posEq = rankEq.findIndex(x=>x.nome===p.nome)+1;
+  const xp = calcXP(p);
+  const ativos = getAtivos();
+  const ranked = [...ativos].map(x=>({...x,xp:calcXP(x)})).sort((a,b)=>b.xp-a.xp);
+  const rg = ranked.findIndex(x=>x.nome===p.nome)+1;
+  const req = ranked.filter(x=>x.equipe===p.equipe);
+  const re = req.findIndex(x=>x.nome===p.nome)+1;
+  const pres = countPresencasTotal(p.nome);
+  const meet = countMeetingsTotal(p.nome);
 
-  const presencas = countPresencasTotal(p);
-  const meetings = countMeetingsTotal(p);
-
-  el.innerHTML=`
+  el.innerHTML = `
     <div class="section-title"><i class="fa-solid fa-user"></i> ${p.nome}</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:var(--gold);">#${rankGeral}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">Rank Geral (${ativos.length} ativos)</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--gold)">#${rg}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">Rank Geral (${ativos.length})</div>
       </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:var(--bmw-light);">#${posEq}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">Rank ${p.equipe} (${rankEq.length})</div>
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--bmw-light)">#${re}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">Rank ${p.equipe} (${req.length})</div>
       </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:var(--text-bright);">${formatCurrency(p.vgv)}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">VGV Líquido</div>
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;">${formatCurrency(p.vgv)}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">VGV (${p.vendas} vendas)</div>
       </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:var(--green);">${p.vendas}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">Vendas Líquidas</div>
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#fff">${formatXP(xp)}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">XP Total</div>
       </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:#fff;">${formatXP(xp)}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">XP Total</div>
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:var(--green)">${pres}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">Presenças (${formatXP(pres*XP_PRESENCA)})</div>
       </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:#64b5f6;">${presencas}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">Presenças (${formatXP(presencas*XP_PRESENCA_DIA)})</div>
-      </div>
-      <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center;">
-        <div style="font-size:1.5rem;font-weight:800;color:#ff9800;">${meetings}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim);">Meetings (${formatXP(meetings*XP_MEETING)})</div>
+      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
+        <div style="font-size:1.4rem;font-weight:800;color:#ff9800">${meet}</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">Meetings (${formatXP(meet*XP_MEETING)})</div>
       </div>
     </div>
-    <p style="margin-top:10px;font-size:0.8rem;color:var(--text-dim);">Ticket Médio: ${formatCurrency(p.vendas>0?p.vgv/p.vendas:0)} | Vendas Total (incl. canceladas): ${p.vendas_total}</p>
   `;
 }
 
-// ==================== RENDER: RANKING ====================
 function renderRanking(){
   const el = document.getElementById('rankingContent');
-  if(!el||!professionals.length){ el.innerHTML='<p>Nenhum dado.</p>';return; }
+  if(!el) return;
 
-  const ativos = professionals.filter(p=>p.ativo);
-  const ranked = [...ativos].map(p=>({...p,xp:calcTotalXP(p)})).sort((a,b)=>b.xp-a.xp);
+  const ativos = getAtivos();
+  if(!ativos.length){ el.innerHTML='<p>Nenhum dado.</p>'; return; }
 
-  let html = `<div class="section-title"><i class="fa-solid fa-trophy"></i> Ranking Geral</div>`;
-  html += `<table><thead><tr>
-    <th>#</th><th>Profissional</th><th>Equipe</th><th>VGV</th><th>Vendas</th><th>Presenças</th><th>Meetings</th><th>XP Total</th>
-  </tr></thead><tbody>`;
+  const ranked = [...ativos].map(p=>({...p,xp:calcXP(p)})).sort((a,b)=>b.xp-a.xp);
 
+  let h = `<div class="section-title"><i class="fa-solid fa-trophy"></i> Ranking Geral</div>`;
+  h += `<table><thead><tr><th>#</th><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
-    const presencas = countPresencasTotal(p);
-    const meetings = countMeetingsTotal(p);
     const isMe = currentUser?.name===p.nome;
-    html += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
+    h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
       <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
       <td>${p.nome}${isMe?' ⭐':''}</td>
-      <td><span style="color:${p.equipe==='CAPTACAO'?'#b39ddb':p.equipe==='CONSULTORIA'?'#64b5f6':'#ef9a9a'}">${p.equipe}</span></td>
-      <td>${formatCurrency(p.vgv)}</td>
-      <td>${p.vendas}</td>
-      <td>${presencas}</td>
-      <td>${meetings}</td>
-      <td style="color:var(--gold);">${formatXP(p.xp)}</td>
+      <td>${p.equipe}</td>
+      <td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td>
+      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
+      <td style="color:var(--gold)">${formatXP(p.xp)}</td>
     </tr>`;
   });
-  html += `</tbody></table>`;
+  h += `</tbody></table>`;
 
-  // Ranking por equipe
+  // Por equipe
   ['CAPTACAO','CONSULTORIA','CLOSER'].forEach(eq=>{
     const eqList = ranked.filter(p=>p.equipe===eq);
     if(!eqList.length) return;
-    html += `<h4 style="margin-top:24px;color:${eq==='CAPTACAO'?'#b39ddb':eq==='CONSULTORIA'?'#64b5f6':'#ef9a9a'}">🏆 ${eq} (${eqList.length})</h4>`;
-    html += `<table><thead><tr><th>#</th><th>Profissional</th><th>VGV</th><th>Vendas</th><th>Presenças</th><th>Meetings</th><th>XP</th></tr></thead><tbody>`;
+    h += `<h4 style="margin-top:20px;color:${eq==='CAPTACAO'?'#b39ddb':eq==='CONSULTORIA'?'#64b5f6':'#ef9a9a'}">🏆 ${eq} (${eqList.length})</h4>`;
+    h += `<table><thead><tr><th>#</th><th>Nome</th><th>VGV</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
     eqList.forEach((p,i)=>{
-      const presencas = countPresencasTotal(p);
-      const meetings = countMeetingsTotal(p);
-      html += `<tr>
+      const isMe = currentUser?.name===p.nome;
+      h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
         <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
-        <td>${p.nome}${currentUser?.name===p.nome?' ⭐':''}</td>
-        <td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td>
-        <td>${presencas}</td><td>${meetings}</td>
+        <td>${p.nome}${isMe?' ⭐':''}</td>
+        <td>${formatCurrency(p.vgv)}</td>
+        <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
         <td>${formatXP(p.xp)}</td>
       </tr>`;
     });
-    html += `</tbody></table>`;
+    h += `</tbody></table>`;
   });
 
-  el.innerHTML = html;
+  el.innerHTML = h;
 }
 
-// ==================== RENDER: LISTA DE PRESENÇA ====================
+// ==================== PRESENÇA ====================
 function renderPresenca(){
   const el = document.getElementById('presencaContent');
-  if(!el||!professionals.length){ el.innerHTML='<p>Carregue os dados primeiro.</p>';return; }
+  if(!el) return;
 
-  const ativos = professionals.filter(p=>p.ativo);
-  const diasNoMes = TOTAL_DIAS_MES[mesSelecionado];
+  const ativos = getAtivos();
+  const diasMes = DIAS_POR_MES[mesAtual];
 
-  // Estatísticas do mês
-  let pres=0, falt=0, meet=0;
-  for(let d=1;d<=diasNoMes;d++){
-    const dayData = getDayData(mesSelecionado,d);
-    const mtData = getMeetingData(mesSelecionado,d);
+  // Estatísticas
+  let pres=0,falt=0,meet=0;
+  for(let d=1;d<=diasMes;d++){
+    const pd = getDayPresenca(mesAtual,d);
+    const md = getDayMeeting(mesAtual,d);
     ativos.forEach(p=>{
-      if(dayData[p.nome]===1) pres++;
-      if(dayData[p.nome]===0) falt++;
-      if(mtData[p.nome]) meet++;
+      if(pd[p.nome]===1) pres++;
+      if(pd[p.nome]===0) falt++;
+      if(md[p.nome]) meet++;
     });
   }
 
-  let html = `
+  // XP acumulado total
+  let totalPresXP=0,totalMeetXP=0;
+  ativos.forEach(p=>{
+    totalPresXP += countPresencasTotal(p.nome)*XP_PRESENCA;
+    totalMeetXP += countMeetingsTotal(p.nome)*XP_MEETING;
+  });
+
+  let h = `
     <div class="section-title"><i class="fa-solid fa-calendar-check"></i> Lista de Presença</div>
     <div class="month-selector">
       <label><i class="fa-solid fa-calendar"></i> Mês:</label>
       <select id="mesSelector" onchange="changeMes(this.value)">
-        ${MESES.map((m,i)=>`<option value="${i}" ${i===mesSelecionado?'selected':''}>${m} 2026</option>`).join('')}
+        ${MESES.map((m,i)=>`<option value="${i}" ${i===mesAtual?'selected':''}>${m} 2026</option>`).join('')}
       </select>
-      <span style="font-size:0.8rem;color:var(--text-dim);margin-left:8px;">
-        ${ativos.length} ativos | ✅ ${pres} presenças | ❌ ${falt} faltas | 🎤 ${meet} meetings
+      <span style="font-size:0.8rem;color:var(--text-dim);">
+        ${ativos.length} ativos |
+        <span style="color:#00c853;">✅ ${pres} presenças</span> |
+        <span style="color:#e53935;">❌ ${falt} faltas</span> |
+        <span style="color:#ff9800;">🎤 ${meet} meetings</span> |
+        XP acumulado: <span style="color:var(--gold)">${formatXP(totalPresXP+totalMeetXP)}</span>
       </span>
     </div>
   `;
 
-  // Calendário
-  const semana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
-  // 1/jul/2026 = quarta-feira (dia 3 da semana: 0=dom)
-  const offsets = [3,5,1,3,0,2]; // primeiro dia do mês na semana
-  const inicioSemana = offsets[mesSelecionado];
+  // Calendário - primeiro dia de cada mês em 2026
+  const offsetDias = [3,5,1,3,0,2]; // Jul=Qua(3), Ago=Sáb(5), Set=Ter(1), Out=Qui(3), Nov=Dom(0), Dez=Ter(2)
+  const inicio = offsetDias[mesAtual];
 
-  html += `<div class="calendar-grid">`;
-  semana.forEach(d=>html+=`<div class="calendar-day-header">${d}</div>`);
-  for(let i=0;i<inicioSemana;i++) html+=`<div></div>`;
+  h += `<div class="calendar-grid">`;
+  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d=>h+=`<div class="calendar-day-header">${d}</div>`);
+  for(let i=0;i<inicio;i++) h+=`<div></div>`;
 
   const hoje = new Date();
-  const hojeDia = hoje.getDate();
-  const hojeMes = hoje.getMonth()+1;
+  for(let d=1;d<=diasMes;d++){
+    const pd = getDayPresenca(mesAtual,d);
+    const md = getDayMeeting(mesAtual,d);
+    const mesNum = parseInt(MESES_KEY[mesAtual]);
+    const isFuture = mesNum > hoje.getMonth()+1 || (mesNum === hoje.getMonth()+1 && d > hoje.getDate());
 
-  for(let d=1;d<=diasNoMes;d++){
-    const dayData = getDayData(mesSelecionado,d);
-    const mtData = getMeetingData(mesSelecionado,d);
+    let cls='day-undefined', lbl='—';
+    let pC=0, fC=0, hasMtg=false;
 
-    // Verifica se é futuro
-    const mesNum = parseInt(MESES_KEY[mesSelecionado]);
-    const isFuture = (mesNum > hojeMes) || (mesNum === hojeMes && d > hojeDia);
-
-    let classDay = isFuture ? 'day-future' : 'day-undefined';
-    let label = isFuture ? '' : '—';
-    let hasMeeting = false;
-
-    if(!isFuture && Object.keys(dayData).length>0){
-      let pCount=0,fCount=0;
+    if(!isFuture && Object.keys(pd).length>0){
       ativos.forEach(p=>{
-        if(dayData[p.nome]===1) pCount++;
-        if(dayData[p.nome]===0) fCount++;
-        if(mtData[p.nome]) hasMeeting=true;
+        if(pd[p.nome]===1) pC++;
+        if(pd[p.nome]===0) fC++;
+        if(md[p.nome]) hasMtg=true;
       });
-      if(pCount>0&&fCount===0){ classDay='day-presente'; label='P'; }
-      else if(pCount===0&&fCount>0){ classDay='day-falta'; label='F'; }
-      else if(pCount>0&&fCount>0){ classDay='day-misto'; label='M'; }
+      if(pC>0&&fC===0){ cls='day-todos-presentes'; lbl=`${pC}P`; }
+      else if(fC>0&&pC===0){ cls='day-todos-falta'; lbl=`${fC}F`; }
+      else if(pC>0&&fC>0){ cls='day-parcial'; lbl=`${pC}/${fC}`; }
     }
 
-    const clickable = currentUser?.role==='admin' && !isFuture;
-    html += `<div class="calendar-day ${classDay}" ${clickable?`onclick="openPresencaModal(${d})"`:''} title="Dia ${d}">
-      ${d}<br/><small>${label}</small>
-      ${hasMeeting?'<div class="day-meeting-dot"></div>':''}
+    if(isFuture) cls='day-future';
+    const clicavel = currentUser?.role==='admin' && !isFuture;
+
+    h += `<div class="calendar-day ${cls}" ${clicavel?`onclick="openPresencaModal(${d})"`:''} title="${MESES[mesAtual]} ${d}">
+      <div>${d}</div><small>${lbl}</small>
+      ${hasMtg?'<div class="day-meeting-dot"></div>':''}
     </div>`;
   }
-  html += `</div>`;
+  h += `</div>`;
 
-  // Legenda
-  html += `
-    <div style="margin-top:16px;display:flex;gap:16px;flex-wrap:wrap;font-size:0.75rem;color:var(--text-dim);">
-      <span>🟢 Todos presentes</span><span>🔴 Todos faltaram</span>
-      <span>🟠 Misto</span><span>⚫ Não definido</span>
-      <span>🟡 Bolinha = teve meeting</span>
-      <span>🔒 Dias futuros bloqueados</span>
-    </div>
-    <p style="margin-top:8px;font-size:0.8rem;color:var(--text-dim);">
-      💡 <b>Admin:</b> clique no dia para abrir a lista de presença e meetings.
-    </p>
-  `;
+  h += `<p style="margin-top:12px;font-size:0.78rem;color:var(--text-dim);">
+    💡 <b>Admin:</b> clique no dia para abrir o modal | <b>XP acumulado</b> de todos os meses |
+    🟡 bolinha = dia com meeting registrado</p>`;
 
-  el.innerHTML = html;
+  el.innerHTML = h;
 }
 
-function changeMes(val){
-  mesSelecionado = parseInt(val);
-  renderPresenca();
-}
+function changeMes(v){ mesAtual=parseInt(v); renderPresenca(); }
 
-// ==================== MODAL PRESENÇA ====================
-let modalDia = 1;
-let modalPresenca = {}; // nome -> 1|0
-let modalMeeting = {};  // nome -> tema ou null
-
+// ==================== MODAL ====================
 function openPresencaModal(dia){
   modalDia = dia;
-  const ativos = professionals.filter(p=>p.ativo);
-
-  // Carrega dados salvos
-  const savedPresenca = getDayData(mesSelecionado,dia);
-  const savedMeeting = getMeetingData(mesSelecionado,dia);
+  const ativos = getAtivos();
+  const savedP = getDayPresenca(mesAtual,dia);
+  const savedM = getDayMeeting(mesAtual,dia);
 
   modalPresenca = {};
   modalMeeting = {};
   ativos.forEach(p=>{
-    modalPresenca[p.nome] = savedPresenca[p.nome]!==undefined ? savedPresenca[p.nome] : 1;
-    modalMeeting[p.nome] = savedMeeting[p.nome] || null;
+    modalPresenca[p.nome] = savedP[p.nome]!==undefined ? savedP[p.nome] : 1;
+    modalMeeting[p.nome] = savedM[p.nome] || null;
   });
 
   document.getElementById('modalDiaLabel').textContent = dia;
-  document.getElementById('modalSubtitle').textContent = `${MESES[mesSelecionado]} 2026 • Clique para marcar falta e/ou meeting`;
-
+  document.getElementById('modalSubtitle').textContent = `${MESES[mesAtual]} 2026 • Marque faltas e meetings`;
   renderModalBody();
-
   document.getElementById('presencaModal').classList.add('active');
   document.body.style.overflow='hidden';
-}
-
-function renderModalBody(){
-  const ativos = professionals.filter(p=>p.ativo);
-  const equipes = {captacao:[],consultoria:[],closer:[]};
-
-  ativos.forEach(p=>{
-    if(p.equipe==='CAPTACAO') equipes.captacao.push(p);
-    else if(p.equipe==='CONSULTORIA') equipes.consultoria.push(p);
-    else equipes.closer.push(p);
-  });
-
-  let html = '';
-  const grupos = [
-    {key:'captacao',label:'Captação',cls:'captacao',icon:'fa-phone-volume',list:equipes.captacao},
-    {key:'consultoria',label:'Consultoria',cls:'consultoria',icon:'fa-handshake',list:equipes.consultoria},
-    {key:'closer',label:'Closer',cls:'closer',icon:'fa-check-double',list:equipes.closer}
-  ];
-
-  grupos.forEach(g=>{
-    if(!g.list.length) return;
-    html += `<div class="team-section">`;
-    html += `<div class="team-header ${g.cls}"><i class="fa-solid ${g.icon}"></i> ${g.label} (${g.list.length})</div>`;
-
-    g.list.forEach(p=>{
-      const presente = modalPresenca[p.nome]===1;
-      const tema = modalMeeting[p.nome]||'';
-      const hasMeeting = !!modalMeeting[p.nome];
-
-      html += `
-        <div class="seller-row" id="row-${escId(p.nome)}">
-          <div class="seller-name">${p.nome}</div>
-          <div class="seller-controls">
-            <button class="toggle-btn ${presente?'toggle-presente':'toggle-falta'}"
-              onclick="togglePresencaModal('${escJS(p.nome)}')">
-              <i class="fa-solid ${presente?'fa-check':'fa-xmark'}"></i> ${presente?'Presente':'Faltou'}
-            </button>
-            <div class="meeting-group">
-              <label style="font-size:0.7rem;color:var(--text-dim);display:flex;align-items:center;gap:4px;cursor:pointer;">
-                <input type="checkbox" ${hasMeeting?'checked':''}
-                  onchange="toggleMeetingModal('${escJS(p.nome)}',this.checked)"
-                  style="accent-color:#ff9800;"/>
-                🎤 Meeting
-              </label>
-              <input type="text" placeholder="Tema do meeting..."
-                value="${escHTML(tema)}"
-                onchange="setMeetingTopic('${escJS(p.nome)}',this.value)"
-                style="${hasMeeting?'':'opacity:0.4;'}"/>
-            </div>
-          </div>
-        </div>`;
-    });
-    html += `</div>`;
-  });
-
-  document.getElementById('modalBody').innerHTML = html;
-}
-
-function escId(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); }
-function escJS(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
-function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function togglePresencaModal(nome){
-  modalPresenca[nome] = modalPresenca[nome]===1?0:1;
-  renderModalBody();
-}
-
-function toggleMeetingModal(nome,checked){
-  if(checked){
-    modalMeeting[nome] = modalMeeting[nome]||'';
-  } else {
-    modalMeeting[nome] = null;
-  }
-  renderModalBody();
-}
-
-function setMeetingTopic(nome,valor){
-  if(valor.trim()){
-    modalMeeting[nome] = valor.trim();
-  } else {
-    modalMeeting[nome] = null;
-  }
-}
-
-function marcarTodosModal(val){
-  for(let nome in modalPresenca){
-    modalPresenca[nome] = val;
-  }
-  renderModalBody();
-}
-
-function salvarPresenca(){
-  setDayData(mesSelecionado,modalDia,modalPresenca);
-  setMeetingData(mesSelecionado,modalDia,modalMeeting);
-  closePresencaModal();
-  renderAll();
-  showToast('Presença e meetings salvos! ✅');
 }
 
 function closePresencaModal(){
@@ -1024,130 +870,142 @@ function closePresencaModal(){
   document.body.style.overflow='';
 }
 
-// ==================== RENDER: STATUS ====================
-function renderStatus(){
-  const el = document.getElementById('statusContent');
-  if(!el||!professionals.length){ el.innerHTML='<p>Nenhum dado.</p>';return; }
-  if(currentUser?.role!=='admin'){ el.innerHTML='<p>Acesso restrito.</p>';return; }
+function renderModalBody(){
+  const ativos = getAtivos();
+  const grupos = [
+    {k:'captacao',list:ativos.filter(p=>p.equipe==='CAPTACAO'),lbl:'Captação',cls:'captacao',ic:'fa-phone-volume'},
+    {k:'consultoria',list:ativos.filter(p=>p.equipe==='CONSULTORIA'),lbl:'Consultoria',cls:'consultoria',ic:'fa-handshake'},
+    {k:'closer',list:ativos.filter(p=>p.equipe==='CLOSER'),lbl:'Closer',cls:'closer',ic:'fa-check-double'}
+  ];
 
-  let html = `<div class="section-title"><i class="fa-solid fa-toggle-on"></i> Gerenciar Ativo/Inativo</div>`;
-  html += `<table><thead><tr><th>Profissional</th><th>Equipe</th><th>Status</th><th>Ação</th></tr></thead><tbody>`;
-
-  [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
-    const ativo = p.ativo;
-    html += `<tr>
-      <td>${p.nome}</td><td>${p.equipe}</td>
-      <td><span style="color:${ativo?'#00c853':'#e53935'};font-weight:700;">${ativo?'ATIVO':'INATIVO'}</span></td>
-      <td><button class="btn ${ativo?'btn-danger':'btn-success'}" onclick="toggleAtivo('${escJS(p.nome)}')">
-        ${ativo?'<i class="fa-solid fa-toggle-off"></i> Desativar':'<i class="fa-solid fa-toggle-on"></i> Ativar'}
-      </button></td>
-    </tr>`;
+  let h = '';
+  grupos.forEach(g=>{
+    if(!g.list.length) return;
+    h += `<div class="team-section"><div class="team-header ${g.cls}"><i class="fa-solid ${g.ic}"></i> ${g.lbl} (${g.list.length})</div>`;
+    g.list.forEach(p=>{
+      const presente = modalPresenca[p.nome]===1;
+      const tema = modalMeeting[p.nome]||'';
+      const hasMtg = !!modalMeeting[p.nome];
+      h += `
+        <div class="seller-row">
+          <div class="seller-name">${p.nome}</div>
+          <div class="seller-controls">
+            <button class="toggle-btn ${presente?'toggle-presente':'toggle-falta'}" onclick="toggleModalPresenca('${escJS(p.nome)}')">
+              ${presente?'✅ Presente':'❌ Faltou'}
+            </button>
+            <div class="meeting-group">
+              <label style="font-size:0.72rem;color:var(--text-dim);display:flex;align-items:center;gap:3px;cursor:pointer;">
+                <input type="checkbox" ${hasMtg?'checked':''} onchange="toggleModalMeeting('${escJS(p.nome)}',this.checked)"/>
+                🎤 Meeting
+              </label>
+              <input type="text" placeholder="Tema..." value="${escHTML(tema)}"
+                onchange="setModalTema('${escJS(p.nome)}',this.value)"
+                style="${hasMtg?'':'opacity:0.4;pointer-events:none;'}"/>
+            </div>
+          </div>
+        </div>`;
+    });
+    h += `</div>`;
   });
-  html += `</tbody></table>`;
-  el.innerHTML = html;
+  document.getElementById('modalBody').innerHTML = h;
 }
 
-function toggleAtivo(nome){
+function toggleModalPresenca(nome){ modalPresenca[nome]=modalPresenca[nome]===1?0:1; renderModalBody(); }
+function toggleModalMeeting(nome,checked){ modalMeeting[nome]=checked?(modalMeeting[nome]||''):null; renderModalBody(); }
+function setModalTema(nome,val){ modalMeeting[nome]=val.trim()||null; }
+function marcarTodosModal(val){ for(const n in modalPresenca) modalPresenca[n]=val; renderModalBody(); }
+function limparMeetingsModal(){
+  for(const n in modalMeeting) modalMeeting[n]=null;
+  renderModalBody();
+}
+
+function salvarPresenca(){
+  setDayPresenca(mesAtual,modalDia,modalPresenca);
+  setDayMeeting(mesAtual,modalDia,modalMeeting);
+  closePresencaModal();
+  renderAll();
+  showToast('Salvo!','success');
+}
+
+// ==================== STATUS ====================
+function renderStatus(){
+  const el = document.getElementById('statusContent');
+  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p>Acesso restrito.</p>'; return; }
+  if(!professionals.length){ el.innerHTML='<p>Carregue os dados primeiro.</p>'; return; }
+
+  let h = `<div class="section-title"><i class="fa-solid fa-toggle-on"></i> Gerenciar Ativos</div><table><thead><tr><th>Nome</th><th>Equipe</th><th>Status</th></tr></thead><tbody>`;
+  [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
+    h += `<tr><td>${p.nome}</td><td>${p.equipe}</td>
+      <td><button class="btn ${p.ativo?'btn-danger':'btn-success'}" onclick="toggleAtivoProf('${escJS(p.nome)}')">
+        ${p.ativo?'🔴 Desativar':'🟢 Ativar'}
+      </button></td></tr>`;
+  });
+  h += `</tbody></table>`;
+  el.innerHTML = h;
+}
+
+function toggleAtivoProf(nome){
   const p = professionals.find(x=>x.nome===nome);
   if(!p) return;
   p.ativo = !p.ativo;
-  setAtivoStatus(nome,p.ativo);
-  renderStatus();
-  renderAll();
-  showToast(`${nome}: ${p.ativo?'ATIVADO':'DESATIVADO'}`);
+  setAtivo(nome, p.ativo);
+  renderStatus(); renderAll();
 }
 
-// ==================== RENDER: ADMIN ====================
+// ==================== ADMIN ====================
 function renderAdmin(){
   const el = document.getElementById('adminDataTable');
-  if(!el) return;
-  if(currentUser?.role!=='admin'){ el.innerHTML='<p>Acesso restrito.</p>';return; }
+  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p>Acesso restrito.</p>'; return; }
+  document.getElementById('csvUrlInput').value = csvUrl;
 
   if(!professionals.length){
-    el.innerHTML = '<p style="color:var(--text-dim);">Nenhum dado carregado. Informe a URL do CSV e clique em Recarregar.</p>';
+    el.innerHTML = '<p style="color:var(--text-dim);">Informe a URL do CSV e clique Recarregar.</p>';
     return;
   }
 
-  document.getElementById('csvUrlInput').value = csvUrl;
-
-  let html = `<p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:10px;">
-    ${professionals.length} profissionais extraídos • ${rawCSV.length} linhas no CSV</p>`;
-  html += `<table><thead><tr><th>Profissional</th><th>Equipe</th><th>VGV Líquido</th><th>Vendas Líquidas</th><th>Vendas Total</th><th>Senha</th></tr></thead><tbody>`;
+  let h = `<p style="font-size:0.85rem;color:var(--text-dim);">${professionals.length} profissionais | ${rawCSV.length} linhas no CSV</p>`;
+  h += `<table><thead><tr><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas Líq.</th><th>Vendas Tot.</th><th>Presenças</th><th>Meetings</th><th>XP</th></tr></thead><tbody>`;
   [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
-    html += `<tr>
-      <td>${p.nome}</td><td>${p.equipe}</td>
-      <td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td><td>${p.vendas_total}</td>
-      <td><code>${p.senha}</code></td>
-    </tr>`;
+    h += `<tr><td>${p.nome}</td><td>${p.equipe}</td><td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td><td>${p.vendas_total}</td>
+      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td><td>${formatXP(calcXP(p))}</td></tr>`;
   });
-  html += `</tbody></table>`;
-  el.innerHTML = html;
+  h += `</tbody></table>`;
+  el.innerHTML = h;
 }
 
-// ==================== RENDER: REGRAS ====================
+// ==================== REGRAS ====================
 function renderRegras(){
   document.getElementById('regrasContent').innerHTML = `
-    <div class="section-title"><i class="fa-solid fa-book"></i> Regras da Competição</div>
-    <div style="background:var(--card);padding:20px;border-radius:12px;line-height:1.7;">
-      <h4 style="color:var(--bmw-light);">🏆 BMW Champions League 2026</h4>
-      <p><strong>Período:</strong> Julho a Dezembro de 2026</p>
-
-      <h5 style="margin-top:16px;color:var(--gold);">📊 Cálculo de XP</h5>
-      <ul style="list-style:disc inside;">
-        <li><strong>XP de VGV:</strong> (VGV ÷ 1.000) × Peso da Equipe</li>
-        <li>Captação: peso <strong>1.200</strong> | Consultoria: <strong>1.100</strong> | Closer: <strong>1.000</strong></li>
-        <li><strong>XP de Presença:</strong> ${formatXP(XP_PRESENCA_DIA)} por dia presente</li>
-        <li><strong>XP de Meeting:</strong> ${formatXP(XP_MEETING)} por meeting ministrado</li>
-      </ul>
-
-      <h5 style="margin-top:16px;color:var(--gold);">📋 Status do Contrato (CSV)</h5>
-      <ul style="list-style:disc inside;">
-        <li>Célula vazia = sem venda</li>
-        <li>"ATIVO" = 1 venda</li>
-        <li>"ATIVO # ATIVO" = 2 vendas</li>
-        <li>"ATIVO # CANCELADO" = 2 vendas (1 líquida)</li>
-      </ul>
-
-      <h5 style="margin-top:16px;color:var(--gold);">📅 Lista de Presença</h5>
-      <ul style="list-style:disc inside;">
-        <li>Clique no dia para abrir a lista de profissionais</li>
-        <li>Todos começam como <strong>presentes</strong> — marque apenas quem faltou</li>
-        <li>Use o checkbox 🎤 para marcar meeting e informe o tema</li>
-        <li>XP acumula de <strong>todos os meses</strong> (Julho a Dezembro)</li>
-      </ul>
-
-      <h5 style="margin-top:16px;color:var(--gold);">👥 Estrutura do CSV</h5>
-      <p>Cada linha = um cliente. Colunas com: <strong>captador</strong>, <strong>consultor</strong>, <strong>closer</strong>, VGV, Status do contrato (coluna P).</p>
+    <div class="section-title"><i class="fa-solid fa-book"></i> Regras</div>
+    <div style="background:var(--card);padding:18px;border-radius:12px;line-height:1.8;">
+      <h4>🏆 BMW Champions League 2026</h4>
+      <p><b>Período:</b> Julho a Dezembro 2026</p>
+      <p><b>XP VGV:</b> (VGV÷1000)×Peso — Captação:1200 | Consultoria:1100 | Closer:1000</p>
+      <p><b>XP Presença:</b> ${formatXP(XP_PRESENCA)}/dia</p>
+      <p><b>XP Meeting:</b> ${formatXP(XP_MEETING)}/meeting ministrado</p>
+      <p><b>CSV:</b> Cada linha = cliente. Colunas: captador (promotor de marketing), consultor, closer, VGV, Status do contrato.</p>
+      <p><b>Status:</b> vazio=sem venda | "ATIVO"=1 | "ATIVO#ATIVO"=2 | "ATIVO#CANCELADO"=2(1líq.)</p>
     </div>
   `;
 }
 
-// ==================== UTILITÁRIOS ====================
+// ==================== UTILS ====================
+function getAtivos(){ return professionals.filter(p=>p.ativo); }
 function renderAll(){
-  const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
-  if(activeTab==='meus-numeros') renderMeusNumeros();
-  if(activeTab==='ranking') renderRanking();
-  if(activeTab==='presenca') renderPresenca();
-  if(activeTab==='status') renderStatus();
-  if(activeTab==='admin') renderAdmin();
-}
-
-function formatCurrency(val){
-  if(!val||isNaN(val)) return 'R$ 0';
-  return 'R$ '+val.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
-}
-
-function formatXP(val){
-  if(!val||isNaN(val)) return '0 XP';
-  return val.toLocaleString('pt-BR')+' XP';
+  const tab = document.querySelector('.tab-btn.active')?.dataset.tab;
+  if(tab==='meus-numeros') renderMeusNumeros();
+  if(tab==='ranking') renderRanking();
+  if(tab==='presenca') renderPresenca();
+  if(tab==='status') renderStatus();
+  if(tab==='admin') renderAdmin();
 }
 
 function showToast(msg,tipo='success'){
-  const c = document.getElementById('toastContainer');
+  const ct = document.getElementById('toastContainer');
   const t = document.createElement('div');
-  t.className = 'toast '+(tipo==='success'?'success':'error');
+  t.className = 'toast '+(tipo==='error'?'error':'success');
   t.textContent = msg;
-  c.appendChild(t);
+  ct.appendChild(t);
   setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); },3500);
 }
 </script>
