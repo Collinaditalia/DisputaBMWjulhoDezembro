@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>🏁 BMW Champions League - Dashboard 2026</title>
+<title>🏁 BMW Champions League 2026</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <style>
 :root {
@@ -23,6 +23,7 @@ body::before{
   background:url('https://images.unsplash.com/photo-1617531653332-bad972bddd65?w=1400&q=80') center 30%/cover;
   opacity:0.04;z-index:0;pointer-events:none;
 }
+
 #loginOverlay{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   background:var(--bg);z-index:10000;
@@ -45,6 +46,9 @@ body::before{
 .login-btn{width:100%;padding:12px;margin-top:8px;background:var(--bmw-blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition)}
 .login-btn:hover{background:var(--bmw-light)}
 .login-error{color:var(--bmw-red);font-size:0.8rem;margin-top:8px;min-height:20px}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid #333;border-top-color:var(--bmw-light);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loadingMsg{text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;}
 
 .header{
   display:flex;justify-content:space-between;align-items:center;
@@ -85,9 +89,6 @@ body::before{
   background:rgba(255,255,255,0.03);position:relative;
 }
 .calendar-day:hover:not(.day-future){transform:scale(1.08);z-index:2;box-shadow:0 4px 15px rgba(0,102,177,0.3)}
-.day-presente{background:#00c853;color:#fff}
-.day-falta{background:#e53935;color:#fff}
-.day-misto{background:#ff9800;color:#fff}
 .day-todos-presentes{background:rgba(0,200,83,0.25);border:2px solid #00c853;color:#00c853}
 .day-todos-falta{background:rgba(229,57,53,0.25);border:2px solid #e53935;color:#e53935}
 .day-parcial{background:rgba(255,152,0,0.25);border:2px solid #ff9800;color:#ff9800}
@@ -155,7 +156,6 @@ tr:hover{background:rgba(255,255,255,0.02)}
 
 .admin-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
 .admin-controls input{background:#1a1a1a;border:1px solid #444;color:#fff;padding:8px 14px;border-radius:8px;font-size:0.85rem;flex:1;min-width:300px}
-
 .debug-box{background:#111;border:1px solid #333;border-radius:8px;padding:14px;margin:10px 0;font-size:0.8rem;color:#0f0;font-family:monospace;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
 
 @media(max-width:768px){
@@ -169,8 +169,13 @@ tr:hover{background:rgba(255,255,255,0.02)}
 </head>
 <body>
 
-<!-- ==================== LOGIN ==================== -->
-<div id="loginOverlay">
+<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div class="spinner" style="width:48px;height:48px;"></div>
+  <div style="color:var(--text);font-size:1rem;font-weight:700;">Carregando dados do CSV...</div>
+  <div id="loadingMsg" style="color:var(--text-dim);font-size:0.8rem;"></div>
+</div>
+
+<div id="loginOverlay" style="display:none;">
   <div class="login-box">
     <div class="bmw-stripes">
       <div class="bmw-stripe"></div><div class="bmw-stripe"></div><div class="bmw-stripe"></div>
@@ -191,7 +196,6 @@ tr:hover{background:rgba(255,255,255,0.02)}
   </div>
 </div>
 
-<!-- ==================== DASHBOARD ==================== -->
 <div id="dashboard" style="display:none;">
   <header class="header">
     <div class="header-brand">
@@ -223,10 +227,6 @@ tr:hover{background:rgba(255,255,255,0.02)}
     <div class="tab-panel" id="panel-status"><div id="statusContent"></div></div>
     <div class="tab-panel" id="panel-admin">
       <div class="section-title"><i class="fa-solid fa-gear"></i> Painel do Administrador</div>
-      <div class="admin-controls">
-        <input type="text" id="csvUrlInput" placeholder="URL raw do dados.csv no GitHub"/>
-        <button class="btn btn-primary" onclick="reloadCSV()"><i class="fa-solid fa-rotate"></i> Recarregar</button>
-      </div>
       <div id="adminDebug" class="debug-box" style="display:none;"></div>
       <div id="adminDataTable" style="margin-top:14px;"></div>
     </div>
@@ -234,13 +234,12 @@ tr:hover{background:rgba(255,255,255,0.02)}
   </div>
 </div>
 
-<!-- ==================== MODAL PRESENÇA ==================== -->
 <div class="modal-overlay" id="presencaModal">
   <div class="modal-box">
     <div class="modal-header">
       <div>
         <div class="modal-title"><i class="fa-solid fa-calendar-day"></i> Presença — <span id="modalDiaLabel">Dia 1</span></div>
-        <div class="modal-subtitle" id="modalSubtitle">Julho 2026 — Marque quem faltou e quem deu meeting</div>
+        <div class="modal-subtitle" id="modalSubtitle">Julho 2026</div>
       </div>
       <button class="modal-close" onclick="closePresencaModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
@@ -257,16 +256,18 @@ tr:hover{background:rgba(255,255,255,0.02)}
 <div id="toastContainer"></div>
 
 <script>
-// ==================== CONFIG ====================
-const DEFAULT_CSV_URL = localStorage.getItem('csvUrl2026_v2')||'';
+// ╔══════════════════════════════════════════════╗
+// ║  🏁 BMW CHAMPIONS LEAGUE 2026             ║
+// ║  ✅ URL DO CSV JÁ CONFIGURADA              ║
+// ╚══════════════════════════════════════════════╝
+const CSV_URL = 'https://raw.githubusercontent.com/Collinaditalia/DisputaBMWjulhoDezembro/main/dados.csv';
+
 const MESES = ['Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MESES_KEY = ['07','08','09','10','11','12'];
 const DIAS_POR_MES = [31,31,30,31,30,31];
 const XP_PRESENCA = 50000;
 const XP_MEETING = 200000;
 
-// ==================== ESTADO ====================
-let csvUrl = DEFAULT_CSV_URL;
 let currentUser = null;
 let rawCSV = [];
 let professionals = [];
@@ -275,13 +276,11 @@ let modalDia = 1;
 let modalPresenca = {};
 let modalMeeting = {};
 
-// ==================== INIT ====================
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('csvUrlInput').value = csvUrl;
   document.querySelectorAll('.tab-btn').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
+  loadCSV();
 });
 
-// ==================== LOGIN ====================
 function doLogin(){
   const u = document.getElementById('loginUser').value.trim().toLowerCase();
   const p = document.getElementById('loginPass').value.trim();
@@ -321,7 +320,6 @@ function updateUI(){
   document.querySelectorAll('.admin-only').forEach(e=>e.style.display=currentUser?.role==='admin'?'':'none');
 }
 
-// ==================== TABS ====================
 function switchTab(tab){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -341,77 +339,81 @@ function switchTab(tab){
   if(renders[tab]) renders[tab]();
 }
 
-// ==================== CSV: PARSE ROBUSTO ====================
 async function loadCSV(){
   const debug = document.getElementById('adminDebug');
-  debug.style.display = 'block';
-  debug.textContent = 'Carregando CSV...\n';
+  const msg = document.getElementById('loadingMsg');
+
+  if(debug){ debug.style.display = 'block'; debug.textContent = '🔄 Iniciando carregamento...\n'; }
+  if(msg) msg.textContent = 'Conectando ao GitHub...';
 
   try{
-    if(!csvUrl){ throw new Error('URL do CSV não configurada'); }
-
-    const resp = await fetch(csvUrl);
-    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    if(msg) msg.textContent = 'Baixando dados.csv...';
+    const resp = await fetch(CSV_URL);
+    if(!resp.ok) throw new Error(`HTTP ${resp.status} — verifique se o link está correto`);
 
     const txt = await resp.text();
-    debug.textContent += `✓ Arquivo carregado: ${txt.length} caracteres\n`;
+    if(debug) debug.textContent += `✓ Arquivo recebido: ${txt.length} caracteres\n`;
 
-    // Detecta delimitador
     const firstLine = txt.split('\n')[0].trim();
     let delim = ',';
     if(firstLine.includes(';') && firstLine.split(';').length > firstLine.split(',').length) delim = ';';
-    debug.textContent += `✓ Delimitador detectado: "${delim}"\n`;
+    if(debug) debug.textContent += `✓ Delimitador: "${delim}"\n`;
 
-    // Parse
     rawCSV = parseCSV(txt, delim);
     if(rawCSV.length === 0) throw new Error('CSV vazio ou mal formatado');
+    if(debug) debug.textContent += `✓ ${rawCSV.length} linhas de dados carregadas\n`;
 
-    debug.textContent += `✓ ${rawCSV.length} linhas de dados\n`;
-
-    // Mostra cabeçalhos detectados
     const headers = Object.keys(rawCSV[0]);
-    debug.textContent += `✓ ${headers.length} colunas detectadas:\n`;
-    headers.forEach((h,i) => {
-      const amostra = rawCSV[0][h]||'';
-      debug.textContent += `  [${i}] "${h}" → "${amostra}"\n`;
-    });
-
-    // Detecta colunas
-    const cols = detectarColunas(headers, rawCSV.slice(0,3));
-    debug.textContent += `\n🔍 Colunas de dados:\n`;
-    debug.textContent += `  Captador: [${cols.captador}] "${headers[cols.captador]||'--'}"\n`;
-    debug.textContent += `  Consultor: [${cols.consultor}] "${headers[cols.consultor]||'--'}"\n`;
-    debug.textContent += `  Closer: [${cols.closer}] "${headers[cols.closer]||'--'}"\n`;
-    debug.textContent += `  VGV: [${cols.vgv}] "${headers[cols.vgv]||'--'}"\n`;
-    debug.textContent += `  Status: [${cols.status}] "${headers[cols.status]||'--'}"\n`;
-
-    if(cols.captador<0||cols.consultor<0||cols.closer<0){
-      throw new Error('Não foi possível detectar colunas de captador/consultor/closer. Verifique os nomes no CSV.');
+    if(debug){
+      debug.textContent += `✓ ${headers.length} colunas encontradas:\n`;
+      headers.forEach((h,i) => {
+        debug.textContent += `  [${i}] "${h}" → "${(rawCSV[0][h]||'').substring(0,40)}"\n`;
+      });
     }
 
-    // Extrai profissionais
+    const cols = detectarColunas(headers);
+    if(debug){
+      debug.textContent += `\n🔍 Mapeamento de colunas:\n`;
+      debug.textContent += `  Captador    → col [${cols.captador}] "${headers[cols.captador]||'N/D'}"\n`;
+      debug.textContent += `  Consultor   → col [${cols.consultor}] "${headers[cols.consultor]||'N/D'}"\n`;
+      debug.textContent += `  Closer      → col [${cols.closer}] "${headers[cols.closer]||'N/D'}"\n`;
+      debug.textContent += `  VGV         → col [${cols.vgv}] "${headers[cols.vgv]||'N/D'}"\n`;
+      debug.textContent += `  Status      → col [${cols.status}] "${headers[cols.status]||'N/D'}"\n`;
+    }
+
+    if(cols.captador<0||cols.consultor<0||cols.closer<0){
+      throw new Error(
+        'Não foi possível encontrar uma ou mais colunas.\n' +
+        'Verifique se o CSV tem colunas com os nomes:\n' +
+        '  - "promotor de marketing" ou "captador"\n' +
+        '  - "consultor"\n' +
+        '  - "closer"'
+      );
+    }
+
     professionals = extrairProfissionais(rawCSV, cols, headers);
-    debug.textContent += `\n✅ ${professionals.length} profissionais extraídos!\n`;
+    if(debug){
+      debug.textContent += `\n✅ ${professionals.length} PROFISSIONAIS EXTRAÍDOS:\n`;
+      professionals.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
+        debug.textContent += `  • ${p.nome.padEnd(20)} | ${p.equipe.padEnd(12)} | VGV: ${formatCurrency(p.vgv)} | Vendas: ${p.vendas}\n`;
+      });
+    }
 
-    professionals.forEach(p => {
-      debug.textContent += `  - ${p.nome} (${p.equipe}): VGV=${formatCurrency(p.vgv)}, Vendas=${p.vendas}\n`;
-    });
+    if(msg) msg.textContent = `${professionals.length} profissionais carregados!`;
 
-    localStorage.setItem('csvUrl2026_v2', csvUrl);
-    showToast(`${professionals.length} profissionais carregados com sucesso!`,'success');
-    renderAll();
+    setTimeout(()=>{
+      document.getElementById('loadingOverlay').style.display='none';
+      document.getElementById('loginOverlay').style.display='flex';
+    }, 600);
+
+    showToast(`${professionals.length} profissionais carregados!`,'success');
 
   } catch(e){
-    debug.textContent += `\n❌ ERRO: ${e.message}`;
-    showToast('Erro: '+e.message,'error');
+    if(debug) debug.textContent += `\n❌ ERRO: ${e.message}`;
+    if(msg) msg.innerHTML = `<span style="color:#e53935;">❌ ${e.message}</span><br>
+      <button onclick="loadCSV()" style="margin-top:12px;padding:8px 16px;background:#0066B1;color:#fff;border:none;border-radius:6px;cursor:pointer;">Tentar novamente</button>`;
+    showToast('Erro ao carregar CSV: '+e.message,'error');
   }
-}
-
-function reloadCSV(){
-  csvUrl = document.getElementById('csvUrlInput').value.trim();
-  if(!csvUrl){ showToast('Informe a URL do CSV','error'); return; }
-  localStorage.setItem('csvUrl2026_v2', csvUrl);
-  loadCSV();
 }
 
 function parseCSV(txt, delim){
@@ -423,6 +425,7 @@ function parseCSV(txt, delim){
   const data = [];
   for(let i=1; i<lines.length; i++){
     const vals = splitCSV(lines[i], delim);
+    if(vals.length < 2) continue;
     const obj = {};
     headers.forEach((h,j) => { obj[h] = (vals[j]||'').trim(); });
     data.push(obj);
@@ -443,8 +446,7 @@ function splitCSV(line, delim){
   return result;
 }
 
-function detectarColunas(headers, amostras){
-  // Cria versão normalizada para busca
+function detectarColunas(headers){
   const hNorm = headers.map(h => h.toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^a-z0-9\s]/g,' ')
@@ -454,11 +456,9 @@ function detectarColunas(headers, amostras){
 
   const find = (palavrasChave) => {
     for(const kw of palavrasChave){
-      // Busca exata primeiro
       for(let i=0; i<headers.length; i++){
-        if(hNorm[i] === kw || hNorm[i].includes(kw)) return i;
+        if(hNorm[i] === kw) return i;
       }
-      // Busca parcial
       for(let i=0; i<headers.length; i++){
         if(hNorm[i].includes(kw)) return i;
       }
@@ -467,8 +467,9 @@ function detectarColunas(headers, amostras){
   };
 
   const captador = find([
-    'promotor de marketing','promotor marketing','promotor','captador','captacao',
-    'captador de marketing','capta','marketing'
+    'promotor de marketing','promotor marketing','promotor',
+    'captador','captacao','captador de marketing','capta',
+    'marketing','promo'
   ]);
   const consultor = find([
     'consultor','consultoria','consultor de vendas','consult'
@@ -503,7 +504,6 @@ function extrairProfissionais(raw, cols, headers){
   const colVGV = cols.vgv>=0 ? headers[cols.vgv] : null;
   const colStatus = cols.status>=0 ? headers[cols.status] : null;
 
-  // Mapa: chave "nome|equipe" -> dados
   const mapa = {};
 
   for(const row of raw){
@@ -511,14 +511,11 @@ function extrairProfissionais(raw, cols, headers){
     const consultor = (row[colConsultor]||'').trim();
     const closer = (row[colCloser]||'').trim();
 
-    // Status
     const statusRaw = colStatus ? (row[colStatus]||'') : '';
     const {ativos, total} = parseStatus(statusRaw);
 
-    // Se não tem venda ativa, pula
     if(ativos === 0) continue;
 
-    // VGV
     let vgvVal = 0;
     if(colVGV){
       const rawV = (row[colVGV]||'').replace(/[R\$\s\.]/g,'').replace(',','.');
@@ -552,7 +549,6 @@ function extrairProfissionais(raw, cols, headers){
   return lista;
 }
 
-// ==================== STORAGE ====================
 function getAtivo(nome){
   const d = JSON.parse(localStorage.getItem('bmw_ativo_2026')||'{}');
   return d[nome] !== false;
@@ -587,7 +583,6 @@ function setDayMeeting(mes, dia, val){
   localStorage.setItem(k, JSON.stringify(d));
 }
 
-// ==================== CÁLCULOS ====================
 function countPresencasTotal(nome){
   let c=0;
   for(let m=0;m<6;m++){
@@ -616,7 +611,6 @@ function calcXP(p){
   return Math.round(xp);
 }
 
-// ==================== HELPERS ====================
 function formatCurrency(v){
   if(!v||isNaN(v)) return 'R$ 0';
   return 'R$ '+Math.round(v).toLocaleString('pt-BR');
@@ -628,7 +622,6 @@ function formatXP(v){
 function escJS(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function escHTML(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// ==================== RENDER ====================
 function renderMeusNumeros(){
   const el = document.getElementById('meusNumerosContent');
   if(!el) return;
@@ -664,7 +657,7 @@ function renderMeusNumeros(){
   }
 
   const p = professionals.find(x=>x.nome.toLowerCase()===currentUser?.name?.toLowerCase());
-  if(!p){ el.innerHTML='<p>Nenhum dado.</p>'; return; }
+  if(!p){ el.innerHTML='<p>Nenhum dado encontrado para seu usuário.</p>'; return; }
 
   const xp = calcXP(p);
   const ativos = getAtivos();
@@ -711,40 +704,35 @@ function renderRanking(){
   if(!el) return;
 
   const ativos = getAtivos();
-  if(!ativos.length){ el.innerHTML='<p>Nenhum dado.</p>'; return; }
+  if(!ativos.length){ el.innerHTML='<p style="padding:20px;color:var(--text-dim);">Nenhum profissional ativo.</p>'; return; }
 
   const ranked = [...ativos].map(p=>({...p,xp:calcXP(p)})).sort((a,b)=>b.xp-a.xp);
 
   let h = `<div class="section-title"><i class="fa-solid fa-trophy"></i> Ranking Geral</div>`;
-  h += `<table><thead><tr><th>#</th><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
+  h += `<table><thead><tr><th>#</th><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas</th><th>Pres.</th><th>Meet.</th><th style="color:var(--gold)">XP</th></tr></thead><tbody>`;
   ranked.forEach((p,i)=>{
     const isMe = currentUser?.name===p.nome;
     h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
       <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
-      <td>${p.nome}${isMe?' ⭐':''}</td>
-      <td>${p.equipe}</td>
+      <td>${p.nome}${isMe?' ⭐':''}</td><td>${p.equipe}</td>
       <td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td>
       <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
-      <td style="color:var(--gold)">${formatXP(p.xp)}</td>
+      <td style="color:var(--gold);font-weight:800;">${formatXP(p.xp)}</td>
     </tr>`;
   });
   h += `</tbody></table>`;
 
-  // Por equipe
-  ['CAPTACAO','CONSULTORIA','CLOSER'].forEach(eq=>{
-    const eqList = ranked.filter(p=>p.equipe===eq);
+  [{k:'CAPTACAO',c:'#b39ddb'},{k:'CONSULTORIA',c:'#64b5f6'},{k:'CLOSER',c:'#ef9a9a'}].forEach(({k,c})=>{
+    const eqList = ranked.filter(p=>p.equipe===k);
     if(!eqList.length) return;
-    h += `<h4 style="margin-top:20px;color:${eq==='CAPTACAO'?'#b39ddb':eq==='CONSULTORIA'?'#64b5f6':'#ef9a9a'}">🏆 ${eq} (${eqList.length})</h4>`;
+    h += `<h4 style="margin-top:20px;color:${c};">🏆 ${k} (${eqList.length})</h4>`;
     h += `<table><thead><tr><th>#</th><th>Nome</th><th>VGV</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
     eqList.forEach((p,i)=>{
       const isMe = currentUser?.name===p.nome;
       h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
-        <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
-        <td>${p.nome}${isMe?' ⭐':''}</td>
-        <td>${formatCurrency(p.vgv)}</td>
-        <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
-        <td>${formatXP(p.xp)}</td>
-      </tr>`;
+        <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td><td>${p.nome}${isMe?' ⭐':''}</td>
+        <td>${formatCurrency(p.vgv)}</td><td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
+        <td style="font-weight:800;">${formatXP(p.xp)}</td></tr>`;
     });
     h += `</tbody></table>`;
   });
@@ -752,7 +740,6 @@ function renderRanking(){
   el.innerHTML = h;
 }
 
-// ==================== PRESENÇA ====================
 function renderPresenca(){
   const el = document.getElementById('presencaContent');
   if(!el) return;
@@ -760,7 +747,6 @@ function renderPresenca(){
   const ativos = getAtivos();
   const diasMes = DIAS_POR_MES[mesAtual];
 
-  // Estatísticas
   let pres=0,falt=0,meet=0;
   for(let d=1;d<=diasMes;d++){
     const pd = getDayPresenca(mesAtual,d);
@@ -772,32 +758,20 @@ function renderPresenca(){
     });
   }
 
-  // XP acumulado total
-  let totalPresXP=0,totalMeetXP=0;
-  ativos.forEach(p=>{
-    totalPresXP += countPresencasTotal(p.nome)*XP_PRESENCA;
-    totalMeetXP += countMeetingsTotal(p.nome)*XP_MEETING;
-  });
-
   let h = `
     <div class="section-title"><i class="fa-solid fa-calendar-check"></i> Lista de Presença</div>
     <div class="month-selector">
-      <label><i class="fa-solid fa-calendar"></i> Mês:</label>
+      <label>📅 Mês:</label>
       <select id="mesSelector" onchange="changeMes(this.value)">
         ${MESES.map((m,i)=>`<option value="${i}" ${i===mesAtual?'selected':''}>${m} 2026</option>`).join('')}
       </select>
       <span style="font-size:0.8rem;color:var(--text-dim);">
-        ${ativos.length} ativos |
-        <span style="color:#00c853;">✅ ${pres} presenças</span> |
-        <span style="color:#e53935;">❌ ${falt} faltas</span> |
-        <span style="color:#ff9800;">🎤 ${meet} meetings</span> |
-        XP acumulado: <span style="color:var(--gold)">${formatXP(totalPresXP+totalMeetXP)}</span>
+        ✅ ${pres} presenças | ❌ ${falt} faltas | 🎤 ${meet} meetings
       </span>
     </div>
   `;
 
-  // Calendário - primeiro dia de cada mês em 2026
-  const offsetDias = [3,5,1,3,0,2]; // Jul=Qua(3), Ago=Sáb(5), Set=Ter(1), Out=Qui(3), Nov=Dom(0), Dez=Ter(2)
+  const offsetDias = [3,5,1,3,0,2];
   const inicio = offsetDias[mesAtual];
 
   h += `<div class="calendar-grid">`;
@@ -836,15 +810,13 @@ function renderPresenca(){
   h += `</div>`;
 
   h += `<p style="margin-top:12px;font-size:0.78rem;color:var(--text-dim);">
-    💡 <b>Admin:</b> clique no dia para abrir o modal | <b>XP acumulado</b> de todos os meses |
-    🟡 bolinha = dia com meeting registrado</p>`;
+    💡 <b>Admin:</b> clique no dia para abrir | 🟡 = dia com meeting</p>`;
 
   el.innerHTML = h;
 }
 
 function changeMes(v){ mesAtual=parseInt(v); renderPresenca(); }
 
-// ==================== MODAL ====================
 function openPresencaModal(dia){
   modalDia = dia;
   const ativos = getAtivos();
@@ -859,7 +831,7 @@ function openPresencaModal(dia){
   });
 
   document.getElementById('modalDiaLabel').textContent = dia;
-  document.getElementById('modalSubtitle').textContent = `${MESES[mesAtual]} 2026 • Marque faltas e meetings`;
+  document.getElementById('modalSubtitle').textContent = `${MESES[mesAtual]} 2026`;
   renderModalBody();
   document.getElementById('presencaModal').classList.add('active');
   document.body.style.overflow='hidden';
@@ -873,9 +845,9 @@ function closePresencaModal(){
 function renderModalBody(){
   const ativos = getAtivos();
   const grupos = [
-    {k:'captacao',list:ativos.filter(p=>p.equipe==='CAPTACAO'),lbl:'Captação',cls:'captacao',ic:'fa-phone-volume'},
-    {k:'consultoria',list:ativos.filter(p=>p.equipe==='CONSULTORIA'),lbl:'Consultoria',cls:'consultoria',ic:'fa-handshake'},
-    {k:'closer',list:ativos.filter(p=>p.equipe==='CLOSER'),lbl:'Closer',cls:'closer',ic:'fa-check-double'}
+    {list:ativos.filter(p=>p.equipe==='CAPTACAO'),lbl:'Captação',cls:'captacao',ic:'fa-phone-volume'},
+    {list:ativos.filter(p=>p.equipe==='CONSULTORIA'),lbl:'Consultoria',cls:'consultoria',ic:'fa-handshake'},
+    {list:ativos.filter(p=>p.equipe==='CLOSER'),lbl:'Closer',cls:'closer',ic:'fa-check-double'}
   ];
 
   let h = '';
@@ -896,9 +868,9 @@ function renderModalBody(){
             <div class="meeting-group">
               <label style="font-size:0.72rem;color:var(--text-dim);display:flex;align-items:center;gap:3px;cursor:pointer;">
                 <input type="checkbox" ${hasMtg?'checked':''} onchange="toggleModalMeeting('${escJS(p.nome)}',this.checked)"/>
-                🎤 Meeting
+                🎤
               </label>
-              <input type="text" placeholder="Tema..." value="${escHTML(tema)}"
+              <input type="text" placeholder="Tema do meeting..." value="${escHTML(tema)}"
                 onchange="setModalTema('${escJS(p.nome)}',this.value)"
                 style="${hasMtg?'':'opacity:0.4;pointer-events:none;'}"/>
             </div>
@@ -914,24 +886,20 @@ function toggleModalPresenca(nome){ modalPresenca[nome]=modalPresenca[nome]===1?
 function toggleModalMeeting(nome,checked){ modalMeeting[nome]=checked?(modalMeeting[nome]||''):null; renderModalBody(); }
 function setModalTema(nome,val){ modalMeeting[nome]=val.trim()||null; }
 function marcarTodosModal(val){ for(const n in modalPresenca) modalPresenca[n]=val; renderModalBody(); }
-function limparMeetingsModal(){
-  for(const n in modalMeeting) modalMeeting[n]=null;
-  renderModalBody();
-}
+function limparMeetingsModal(){ for(const n in modalMeeting) modalMeeting[n]=null; renderModalBody(); }
 
 function salvarPresenca(){
   setDayPresenca(mesAtual,modalDia,modalPresenca);
   setDayMeeting(mesAtual,modalDia,modalMeeting);
   closePresencaModal();
   renderAll();
-  showToast('Salvo!','success');
+  showToast('Presenças salvas!','success');
 }
 
-// ==================== STATUS ====================
 function renderStatus(){
   const el = document.getElementById('statusContent');
-  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p>Acesso restrito.</p>'; return; }
-  if(!professionals.length){ el.innerHTML='<p>Carregue os dados primeiro.</p>'; return; }
+  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p style="padding:20px;">Acesso restrito ao administrador.</p>'; return; }
+  if(!professionals.length){ el.innerHTML='<p style="padding:20px;">Nenhum profissional carregado.</p>'; return; }
 
   let h = `<div class="section-title"><i class="fa-solid fa-toggle-on"></i> Gerenciar Ativos</div><table><thead><tr><th>Nome</th><th>Equipe</th><th>Status</th></tr></thead><tbody>`;
   [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
@@ -952,45 +920,52 @@ function toggleAtivoProf(nome){
   renderStatus(); renderAll();
 }
 
-// ==================== ADMIN ====================
 function renderAdmin(){
   const el = document.getElementById('adminDataTable');
-  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p>Acesso restrito.</p>'; return; }
-  document.getElementById('csvUrlInput').value = csvUrl;
+  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p style="padding:20px;">Acesso restrito.</p>'; return; }
 
   if(!professionals.length){
-    el.innerHTML = '<p style="color:var(--text-dim);">Informe a URL do CSV e clique Recarregar.</p>';
+    el.innerHTML = '<p style="padding:20px;color:var(--text-dim);">Carregando dados do CSV...</p>';
     return;
   }
 
-  let h = `<p style="font-size:0.85rem;color:var(--text-dim);">${professionals.length} profissionais | ${rawCSV.length} linhas no CSV</p>`;
-  h += `<table><thead><tr><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas Líq.</th><th>Vendas Tot.</th><th>Presenças</th><th>Meetings</th><th>XP</th></tr></thead><tbody>`;
+  let h = `<p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:10px;">
+    ${professionals.length} profissionais | ${rawCSV.length} linhas no CSV | URL: <code style="color:var(--bmw-light);">${CSV_URL}</code></p>`;
+  h += `<table><thead><tr><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas Líq.</th><th>Vendas Tot.</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
   [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
     h += `<tr><td>${p.nome}</td><td>${p.equipe}</td><td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td><td>${p.vendas_total}</td>
-      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td><td>${formatXP(calcXP(p))}</td></tr>`;
+      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td><td style="font-weight:800;">${formatXP(calcXP(p))}</td></tr>`;
   });
   h += `</tbody></table>`;
   el.innerHTML = h;
 }
 
-// ==================== REGRAS ====================
 function renderRegras(){
   document.getElementById('regrasContent').innerHTML = `
-    <div class="section-title"><i class="fa-solid fa-book"></i> Regras</div>
-    <div style="background:var(--card);padding:18px;border-radius:12px;line-height:1.8;">
-      <h4>🏆 BMW Champions League 2026</h4>
-      <p><b>Período:</b> Julho a Dezembro 2026</p>
-      <p><b>XP VGV:</b> (VGV÷1000)×Peso — Captação:1200 | Consultoria:1100 | Closer:1000</p>
-      <p><b>XP Presença:</b> ${formatXP(XP_PRESENCA)}/dia</p>
-      <p><b>XP Meeting:</b> ${formatXP(XP_MEETING)}/meeting ministrado</p>
-      <p><b>CSV:</b> Cada linha = cliente. Colunas: captador (promotor de marketing), consultor, closer, VGV, Status do contrato.</p>
-      <p><b>Status:</b> vazio=sem venda | "ATIVO"=1 | "ATIVO#ATIVO"=2 | "ATIVO#CANCELADO"=2(1líq.)</p>
+    <div class="section-title"><i class="fa-solid fa-book"></i> Regras do Campeonato</div>
+    <div style="background:var(--card);padding:18px;border-radius:12px;line-height:1.9;">
+      <h4 style="color:var(--bmw-light);">🏆 BMW Champions League 2026</h4>
+      <p><b>Período:</b> Julho a Dezembro de 2026 (6 meses)</p>
+      <hr style="border-color:#333;margin:12px 0;">
+      <p><b>📊 XP por VGV:</b> (VGV ÷ 1000) × Peso da equipe</p>
+      <p style="margin-left:16px;">🔹 <b style="color:#b39ddb;">Captação:</b> Peso 1.200</p>
+      <p style="margin-left:16px;">🔹 <b style="color:#64b5f6;">Consultoria:</b> Peso 1.100</p>
+      <p style="margin-left:16px;">🔹 <b style="color:#ef9a9a;">Closer:</b> Peso 1.000</p>
+      <p><b>📅 XP Presença:</b> 50.000 XP por dia presente</p>
+      <p><b>🎤 XP Meeting:</b> 200.000 XP por meeting ministrado</p>
+      <hr style="border-color:#333;margin:12px 0;">
+      <p><b>📁 CSV:</b> Cada linha = 1 cliente. O sistema lê as colunas:</p>
+      <p style="margin-left:16px;">• <b>Promotor de Marketing</b> (ou Captador)</p>
+      <p style="margin-left:16px;">• <b>Consultor</b></p>
+      <p style="margin-left:16px;">• <b>Closer</b></p>
+      <p style="margin-left:16px;">• <b>VGV</b> (valor da venda)</p>
+      <p style="margin-left:16px;">• <b>Status do Contrato</b> (ATIVO, CANCELADO, etc.)</p>
     </div>
   `;
 }
 
-// ==================== UTILS ====================
 function getAtivos(){ return professionals.filter(p=>p.ativo); }
+
 function renderAll(){
   const tab = document.querySelector('.tab-btn.active')?.dataset.tab;
   if(tab==='meus-numeros') renderMeusNumeros();
