@@ -1,988 +1,2750 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>🏁 BMW Champions League 2026</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<style>
-:root {
-  --bg: #0a0a0a; --surface: #141414; --card: #1a1a1a;
-  --border: #2a2a2a; --bmw-blue: #0066B1; --bmw-light: #1E93E1;
-  --bmw-red: #E30613; --text: #e0e0e0; --text-dim: #999;
-  --text-bright: #fff; --gold: #f0c040; --green: #00c853;
-  --radius: 12px; --transition: 0.25s;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:'Segoe UI','Inter',system-ui,sans-serif;
-  background:var(--bg);color:var(--text);min-height:100vh;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:url('https://images.unsplash.com/photo-1617531653332-bad972bddd65?w=1400&q=80') center 30%/cover;
-  opacity:0.04;z-index:0;pointer-events:none;
-}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Painel de Atendimentos (dados.csv)</title>
+  <meta name="color-scheme" content="dark light" />
+  <base href="./" />
 
-#loginOverlay{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-  background:var(--bg);z-index:10000;
-}
-.login-box{
-  background:var(--surface);border:1px solid var(--border);border-radius:20px;
-  padding:40px;width:90%;max-width:420px;text-align:center;
-}
-.bmw-stripes{display:flex;justify-content:center;gap:4px;margin-bottom:20px;}
-.bmw-stripe{width:40px;height:6px;border-radius:3px;}
-.bmw-stripe:nth-child(1){background:var(--bmw-blue)}
-.bmw-stripe:nth-child(2){background:var(--bmw-light)}
-.bmw-stripe:nth-child(3){background:var(--bmw-red)}
-.login-logo{font-size:3rem;margin-bottom:8px}
-.login-title{font-size:1.4rem;font-weight:800;color:var(--text-bright)}
-.login-subtitle{font-size:0.85rem;color:var(--text-dim);margin-bottom:24px}
-.input-group{display:flex;align-items:center;background:#222;border:1px solid #333;border-radius:10px;padding:10px 14px;margin-bottom:10px;gap:10px}
-.input-group i{color:var(--text-dim);font-size:0.9rem}
-.input-group input{background:transparent;border:none;outline:none;color:var(--text);font-size:0.95rem;width:100%}
-.login-btn{width:100%;padding:12px;margin-top:8px;background:var(--bmw-blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;transition:var(--transition)}
-.login-btn:hover{background:var(--bmw-light)}
-.login-error{color:var(--bmw-red);font-size:0.8rem;margin-top:8px;min-height:20px}
-.spinner{display:inline-block;width:20px;height:20px;border:3px solid #333;border-top-color:var(--bmw-light);border-radius:50%;animation:spin .7s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-#loadingMsg{text-align:center;padding:40px;color:var(--text-dim);font-size:0.9rem;}
+  <style>
+    :root{
+      --bg0:#070A12; --bg1:#0B1222; --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12); --text:#EAF0FF; --muted: rgba(234,240,255,.72);
+      --good:#5CFFB0; --med:#FFB020; --bad:#FF2D55;
+      --accent:#7C5CFF; --accent2:#22D3EE;
+      --shadow: 0 20px 60px rgba(0,0,0,.55); --radius: 18px; --radius2: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(1200px 700px at 10% 10%, rgba(124,92,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 90% 20%, rgba(34,211,238,.18), transparent 55%),
+        radial-gradient(800px 600px at 40% 90%, rgba(92,255,176,.12), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family:var(--sans); color:var(--text);
+      overflow-x:hidden;
+    }
+    .wrap{display:flex;flex-direction:column;min-height:100vh;margin:0 auto;max-width:1500px;padding:0 24px;}
+    header{padding:40px 0 18px;text-align:center;}
+    h1{
+      font-size:3.0rem;font-weight:800;margin:0 0 10px;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;letter-spacing:-0.02em;
+    }
+    .subtitle{font-size:1.02rem;color:var(--muted);font-weight:450;}
 
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:14px 24px;background:var(--surface);border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:100;
-}
-.header-brand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.1rem}
-.header-brand .icon{font-size:1.5rem}
-.header-brand .title-text{color:var(--bmw-light)}
-.header-brand .champions{color:var(--text-dim);font-size:0.75rem;letter-spacing:2px}
-.header-user{display:flex;align-items:center;gap:12px}
-.user-badge{display:flex;align-items:center;gap:6px;font-size:0.85rem}
-.user-badge i{color:var(--bmw-light)}
-.role{font-size:0.65rem;background:var(--bmw-blue);color:#fff;padding:2px 8px;border-radius:50px}
-.logout-btn{background:transparent;border:1px solid #444;color:var(--text-dim);padding:6px 14px;border-radius:50px;cursor:pointer;font-size:0.75rem;transition:var(--transition)}
-.logout-btn:hover{color:#fff;border-color:#888}
+    .controls{display:flex;flex-wrap:wrap;gap:16px;margin:22px 0 10px;align-items:end;justify-content:center;}
+    .control-group{display:flex;flex-direction:column;gap:8px;min-width:210px;}
+    .control-group label{font-size:0.82rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;text-transform:uppercase;}
+    select,input{
+      padding:12px 14px;border:1px solid var(--stroke);border-radius:var(--radius2);
+      background:var(--card);color:var(--text);font-size:1rem;outline:none;
+      transition:all 0.2s ease;backdrop-filter:blur(10px);
+    }
+    input[type="date"]{color-scheme:dark;cursor:pointer;}
+    input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer;}
+    select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,0.12);}
+    select option{color:#0B1222;background:#EAF0FF;font-weight:700;}
+    .range-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .range-row .sep{color:var(--muted);font-weight:800;padding:0 2px;white-space:nowrap;}
+    .btn{
+      padding:12px 14px;border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;background:rgba(255,255,255,.06);color:var(--text);
+      cursor:pointer;transition:all .2s ease;font-weight:750;white-space:nowrap;
+    }
+    .btn:hover{border-color:rgba(255,255,255,.22);transform:translateY(-1px);box-shadow:var(--shadow);}
+    .btn:active{transform:translateY(0px);box-shadow:none;}
+    .btn.primary{background:rgba(124,92,255,.18);border-color:rgba(124,92,255,.35);}
+    .btn.danger{background:rgba(255,45,85,.12);border-color:rgba(255,45,85,.30);color:#ffd0db;}
 
-.tab-nav{
-  display:flex;gap:2px;padding:8px 16px;background:var(--surface);
-  border-bottom:1px solid var(--border);overflow-x:auto;flex-wrap:wrap;
-  position:sticky;top:58px;z-index:99;
-}
-.tab-btn{padding:8px 16px;border:none;background:transparent;color:var(--text-dim);font-size:0.78rem;font-weight:600;cursor:pointer;border-radius:8px 8px 0 0;transition:var(--transition);white-space:nowrap}
-.tab-btn:hover{color:#fff}
-.tab-btn.active{color:#fff;background:var(--card);border-bottom:2px solid var(--bmw-blue)}
+    .tabs-wrap{
+      margin:16px 0 12px;
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:22px;
+      backdrop-filter:blur(10px);
+      padding:10px;
+    }
+    .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .tab{
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      padding:12px 12px;text-align:center;cursor:pointer;
+      border-radius:16px;border:1px solid rgba(255,255,255,0.10);
+      background:rgba(255,255,255,0.04);font-weight:800;
+      color:rgba(234,240,255,.86);transition:all 0.2s ease;
+      user-select:none;white-space:normal;overflow:visible;
+      text-overflow:clip;min-height:48px;line-height:1.15;
+    }
+    .tab:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.18);box-shadow:0 16px 40px rgba(0,0,0,.35);}
+    .tab.active{
+      background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(34,211,238,.18));
+      border-color:rgba(124,92,255,.55);
+      box-shadow:0 20px 60px rgba(0,0,0,.50);
+      color:white;
+    }
+    .tab-content{display:none;animation:fadeIn 0.25s ease;}
+    .tab-content.active{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-.main-content{padding:20px 24px;position:relative;z-index:1}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;color:var(--text-bright)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin:10px 0 12px;}
+    .stat-card{
+      background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);
+      padding:20px 18px;text-align:center;backdrop-filter:blur(10px);
+      position:relative;overflow:hidden;transition:all 0.25s ease;
+    }
+    .stat-card:hover{transform:translateY(-2px);border-color:rgba(255,255,255,0.18);box-shadow:var(--shadow);}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));}
+    .stat-value{font-size:2.15rem;font-weight:900;margin:0 0 8px;font-family:var(--mono);color:var(--accent2);}
+    .stat-label{font-size:.95rem;color:var(--muted);font-weight:700;letter-spacing:0.2px;}
 
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:8px}
-.calendar-day-header{text-align:center;font-size:0.7rem;font-weight:700;color:var(--text-dim);padding:6px 0;text-transform:uppercase}
-.calendar-day{
-  aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;border-radius:8px;cursor:pointer;transition:0.2s;
-  font-weight:700;font-size:0.85rem;user-select:none;
-  background:rgba(255,255,255,0.03);position:relative;
-}
-.calendar-day:hover:not(.day-future){transform:scale(1.08);z-index:2;box-shadow:0 4px 15px rgba(0,102,177,0.3)}
-.day-todos-presentes{background:rgba(0,200,83,0.25);border:2px solid #00c853;color:#00c853}
-.day-todos-falta{background:rgba(229,57,53,0.25);border:2px solid #e53935;color:#e53935}
-.day-parcial{background:rgba(255,152,0,0.25);border:2px solid #ff9800;color:#ff9800}
-.day-undefined{background:rgba(255,255,255,0.03);border:2px solid #333;color:#666}
-.day-future{background:#1a1a1a;color:#444;cursor:default}
-.day-meeting-dot{position:absolute;top:3px;right:4px;width:7px;height:7px;background:#ff0;border-radius:50%}
+    .note{
+      background:rgba(124,92,255,0.1);border:1px solid rgba(124,92,255,0.22);
+      border-radius:var(--radius2);padding:14px 16px;margin:14px 0;font-size:0.92rem;
+      color:var(--muted);line-height:1.5;
+    }
+    .note.warn{border-color:rgba(255,176,32,.35);background:rgba(255,176,32,.10);}
+    .note.bad{border-color:rgba(255,45,85,.35);background:rgba(255,45,85,.10);color:#ffd0db;}
+    .note.success{border-color:rgba(92,255,176,.35);background:rgba(92,255,176,.08);color:#b0fff0;}
 
-.month-selector{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
-.month-selector select{background:#222;color:#fff;border:1px solid #444;padding:8px 14px;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer}
+    .divider{height:1px;background:rgba(255,255,255,.08);margin:28px 0 22px;border-radius:99px;}
 
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.88);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;visibility:hidden;transition:opacity 0.3s;z-index:9998;
-}
-.modal-overlay.active{opacity:1;visibility:visible}
-.modal-box{
-  background:#1e1e1e;border-radius:20px;max-height:92vh;overflow-y:auto;
-  width:95vw;max-width:960px;box-shadow:0 25px 80px rgba(0,0,0,0.9);
-  transform:translateY(20px);transition:transform 0.3s;
-}
-.modal-overlay.active .modal-box{transform:translateY(0)}
-.modal-header{padding:20px 24px;border-bottom:1px solid #333;position:sticky;top:0;background:#1e1e1e;z-index:10;display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:1.15rem;font-weight:700;color:#eee}
-.modal-subtitle{font-size:0.8rem;color:#999;margin-top:2px}
-.modal-close{background:none;border:none;font-size:1.3rem;color:#999;cursor:pointer;transition:0.2s}
-.modal-close:hover{color:#fff}
-.modal-body{padding:20px 24px}
-.modal-footer{padding:16px 24px;border-top:1px solid #333;display:flex;gap:8px;flex-wrap:wrap;position:sticky;bottom:0;background:#1e1e1e}
+    .section-title{
+      font-size:1.12rem;font-weight:900;color:rgba(234,240,255,.92);margin:0 0 12px;
+      display:flex;align-items:center;gap:10px;
+    }
+    .section-title .pill-tag{
+      font-size:.78rem;font-weight:800;padding:3px 10px;border-radius:999px;
+      background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.35);
+      color:rgba(124,92,255,1);font-family:var(--mono);
+    }
 
-.team-section{margin-bottom:20px}
-.team-header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;margin-bottom:6px;font-weight:700;font-size:0.9rem}
-.captacao{background:rgba(139,108,173,0.18);border-left:3px solid #8B6CAD;color:#b39ddb}
-.consultoria{background:rgba(30,147,225,0.18);border-left:3px solid #1E93E1;color:#64b5f6}
-.closer{background:rgba(227,6,19,0.18);border-left:3px solid #E30613;color:#ef9a9a}
+    .table-wrap{
+      background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);
+      overflow:auto;backdrop-filter:blur(10px);margin:10px 0 26px;max-height:70vh;
+    }
+    table{width:100%;border-collapse:separate;border-spacing:0;min-width:980px;}
+    thead th{
+      text-align:left;padding:12px 14px;font-size:0.8rem;color:var(--muted);
+      text-transform:uppercase;letter-spacing:.6px;background:rgba(255,255,255,0.03);
+      border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:1;white-space:nowrap;
+    }
+    thead th.sortable{cursor:pointer;user-select:none;transition:all 0.2s ease;}
+    thead th.sortable:hover{color:var(--text);background:rgba(255,255,255,0.08);}
+    thead th .sort-ind{margin-left:6px;opacity:.9;font-size:.95em;color:var(--accent2);}
+    tbody td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:middle;white-space:nowrap;}
+    tbody tr:hover{background:rgba(255,255,255,0.03);}
+    tbody tr:last-child td{border-bottom:none;}
+    .rank-col{font-family:var(--mono);font-weight:900;width:76px;}
+    .num{font-family:var(--mono);text-align:right;}
+    .name{font-weight:900;max-width:420px;overflow:hidden;text-overflow:ellipsis;}
+    .badge{
+      display:inline-block;padding:2px 8px;border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;font-size:.78rem;color:var(--muted);font-family:var(--mono);margin-left:8px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      min-width:86px;padding:4px 10px;border-radius:999px;font-family:var(--mono);
+      font-weight:900;border:1px solid rgba(255,255,255,.14);
+    }
+    .p-bad{background:rgba(255,45,85,.12);color:var(--bad);border-color:rgba(255,45,85,.28);}
+    .p-med{background:rgba(255,176,32,.12);color:var(--med);border-color:rgba(255,176,32,.28);}
+    .p-good{background:rgba(92,255,176,.12);color:var(--good);border-color:rgba(92,255,176,.28);}
 
-.seller-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#252525;border-radius:6px;margin-bottom:4px;transition:0.2s;flex-wrap:wrap;gap:8px}
-.seller-row:hover{background:#303030}
-.seller-name{font-weight:600;font-size:0.88rem;min-width:130px}
-.seller-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.meeting-group{display:flex;align-items:center;gap:4px}
-.meeting-group input[type="text"]{background:#1a1a1a;border:1px solid #444;color:#fff;padding:4px 8px;border-radius:6px;font-size:0.75rem;width:140px}
-.meeting-group input[type="text"]:focus{outline:none;border-color:var(--bmw-light)}
+    .name.clickable{cursor:pointer;transition:all 0.15s ease;}
+    .name.clickable:hover{color:var(--accent2);text-decoration:underline;}
 
-.btn{padding:8px 16px;border-radius:50px;font-weight:700;font-size:0.78rem;cursor:pointer;border:none;transition:0.2s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:var(--bmw-blue);color:#fff}
-.btn-primary:hover{background:var(--bmw-light)}
-.btn-success{background:var(--green);color:#fff}
-.btn-danger{background:#e53935;color:#fff}
-.btn-warning{background:#ff9800;color:#fff}
-.btn-secondary{background:#444;color:#fff}
-.toggle-btn{padding:5px 12px;border-radius:50px;border:none;cursor:pointer;font-weight:700;font-size:0.75rem;transition:0.2s}
-.toggle-presente{background:#00c853;color:#fff}
-.toggle-falta{background:#e53935;color:#fff}
+    .client-detail-panel{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      margin:0 0 20px;
+      overflow:hidden;
+      backdrop-filter:blur(10px);
+      animation:fadeIn 0.25s ease;
+    }
+    .client-detail-header{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 18px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      flex-wrap:wrap;
+    }
+    .client-detail-header strong{color:var(--accent2);}
+    .client-detail-close{
+      cursor:pointer;
+      padding:6px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      color:var(--text);
+      font-weight:750;
+      font-size:.88rem;
+      transition:all 0.15s ease;
+      user-select:none;
+    }
+    .client-detail-close:hover{
+      background:rgba(255,45,85,.15);
+      border-color:rgba(255,45,85,.40);
+      color:#ffd0db;
+    }
+    .client-detail-section{
+      padding:14px 18px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .client-detail-section:last-child{border-bottom:none;}
+    .client-detail-section h4{
+      margin:0 0 10px;
+      font-size:.95rem;
+      font-weight:900;
+      display:flex;align-items:center;gap:8px;
+    }
+    .client-detail-section h4 .badge{
+      font-size:.78rem;
+      padding:2px 10px;
+      border-radius:999px;
+      background:rgba(124,92,255,.18);
+      border:1px solid rgba(124,92,255,.35);
+      color:var(--accent);
+      font-weight:800;
+      margin-left:0;
+    }
+    .client-detail-section .table-wrap{
+      margin:0;
+      max-height:45vh;
+      border-radius:var(--radius2);
+    }
+    .client-detail-section .table-wrap table{min-width:700px;}
+    .client-detail-section .note{margin:0;}
 
-table{width:100%;border-collapse:collapse;font-size:0.85rem}
-th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #222}
-th{background:#1a1a1a;color:var(--text-dim);font-weight:700;font-size:0.75rem;text-transform:uppercase}
-tr:hover{background:rgba(255,255,255,0.02)}
+    .promo-list{display:flex;flex-direction:column;gap:8px;margin:0 0 6px;}
+    .promo-row{
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      padding:12px 14px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.03);
+      transition:background .15s;
+      flex-wrap:wrap;
+    }
+    .promo-row:hover{background:rgba(255,255,255,.06);}
+    .promo-row .pr-left{display:flex;align-items:center;gap:10px;flex:1;min-width:200px;flex-wrap:wrap;}
+    .promo-row .pr-name{font-weight:850;font-size:.97rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .pr-tag{font-size:.78rem;font-family:var(--mono);font-weight:800;padding:3px 10px;border-radius:999px;white-space:nowrap;}
+    .pr-tag.parque{background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.38);color:#c4b5ff;}
+    .pr-tag.externa{background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.35);color:#7eedff;}
+    .pr-tag.inativo{background:rgba(255,176,32,.10);border:1px solid rgba(255,176,32,.28);color:#ffc966;}
+    .pr-tag.none{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--muted);}
+    .promo-row select.mini-sel{
+      padding:7px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);color:var(--text);font-size:.9rem;font-weight:750;
+      cursor:pointer;min-width:180px;
+    }
+    .promo-row select.mini-sel:focus{border-color:var(--accent);}
 
-#toastContainer{position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:6px}
-.toast{padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;color:#fff;opacity:1;transition:opacity 0.3s}
-.toast.success{background:#00c853}
-.toast.error{background:#e53935}
+    .inativo-dates{
+      display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+      padding:8px 10px;border-radius:10px;
+      border:1px dashed rgba(255,176,32,.30);
+      background:rgba(255,176,32,.06);
+      margin-top:4px;width:100%;
+    }
+    .inativo-dates label{
+      font-size:0.72rem;color:var(--muted);font-weight:700;
+      text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap;
+    }
+    .inativo-dates input[type="date"]{
+      padding:5px 8px;font-size:0.82rem;min-width:135px;
+      border-radius:8px;border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.06);color:var(--text);
+    }
+    .inativo-dates.hidden{display:none;}
+    .inativo-dates .inativo-badge{
+      font-size:.72rem;font-weight:800;color:#ffc966;
+      background:rgba(255,176,32,.12);padding:3px 8px;border-radius:999px;
+      white-space:nowrap;
+    }
 
-.admin-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
-.admin-controls input{background:#1a1a1a;border:1px solid #444;color:#fff;padding:8px 14px;border-radius:8px;font-size:0.85rem;flex:1;min-width:300px}
-.debug-box{background:#111;border:1px solid #333;border-radius:8px;padding:14px;margin:10px 0;font-size:0.8rem;color:#0f0;font-family:monospace;max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all}
+    .config-panel{
+      background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);padding:20px;margin:0 0 18px;
+    }
+    .config-panel h4{margin:0 0 14px;font-size:1rem;font-weight:900;color:rgba(234,240,255,.9);}
 
-@media(max-width:768px){
-  .header{padding:10px 14px;font-size:0.85rem}
-  .tab-btn{padding:6px 10px;font-size:0.7rem}
-  .main-content{padding:14px}
-  .seller-row{flex-direction:column;align-items:flex-start}
-  .modal-box{width:96vw;max-height:85vh}
-}
-</style>
+    .sup-compare-wrap{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      overflow:hidden;
+      margin:14px 0;
+      backdrop-filter:blur(10px);
+    }
+    .sup-compare-header{
+      display:grid;
+      grid-template-columns: 220px 1fr 1fr 1fr;
+      gap:0;
+      border-bottom:2px solid rgba(255,255,255,.10);
+    }
+    .sup-compare-header > div{
+      padding:14px 18px;
+      font-weight:900;
+      font-size:.95rem;
+      text-align:center;
+    }
+    .sup-compare-header .col-label{
+      text-align:left;
+      color:var(--muted);
+      font-size:.82rem;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      border-right:1px solid rgba(255,255,255,.07);
+    }
+    .sup-compare-header .col-parque{
+      background:rgba(124,92,255,.10);
+      border-right:1px solid rgba(255,255,255,.07);
+      color:#c4b5ff;
+    }
+    .sup-compare-header .col-externa{
+      background:rgba(34,211,238,.08);
+      border-right:1px solid rgba(255,255,255,.07);
+      color:#7eedff;
+    }
+    .sup-compare-header .col-geral{
+      background:rgba(92,255,176,.06);
+      color:#b0fff0;
+    }
+    .sup-compare-row{
+      display:grid;
+      grid-template-columns: 220px 1fr 1fr 1fr;
+      gap:0;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      transition:background .15s;
+    }
+    .sup-compare-row:last-child{border-bottom:none;}
+    .sup-compare-row:hover{background:rgba(255,255,255,.025);}
+    .sup-compare-row > div{
+      padding:13px 18px;
+      font-family:var(--mono);
+      font-size:.95rem;
+      text-align:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .sup-compare-row .rc-label{
+      text-align:left;
+      justify-content:flex-start;
+      font-family:var(--sans);
+      font-weight:850;
+      color:rgba(234,240,255,.9);
+      font-size:.93rem;
+      border-right:1px solid rgba(255,255,255,.07);
+    }
+    .sup-compare-row .rc-parque{
+      border-right:1px solid rgba(255,255,255,.06);
+      color:#c4b5ff;
+      font-weight:900;
+    }
+    .sup-compare-row .rc-externa{
+      border-right:1px solid rgba(255,255,255,.06);
+      color:#7eedff;
+      font-weight:900;
+    }
+    .sup-compare-row .rc-geral{color:#b0fff0;font-weight:900;}
+
+    .sup-compare-row.section-sep > div{
+      background:rgba(255,255,255,.03);
+      padding:8px 18px;
+      font-size:.78rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.7px;
+      color:var(--muted);
+      font-family:var(--sans);
+      border-top:1px solid rgba(255,255,255,.07);
+    }
+    .sup-compare-row.section-sep .rc-label{ justify-content:flex-start; }
+
+    .rep-bar-wrap{
+      background:rgba(255,255,255,.05);
+      border-radius:999px;
+      height:8px;
+      overflow:hidden;
+      margin-top:6px;
+      width:100%;
+    }
+    .rep-bar-fill{height:100%;border-radius:999px;}
+    .rep-bar-fill.parque{background:linear-gradient(90deg,#7C5CFF,#c4b5ff);}
+    .rep-bar-fill.externa{background:linear-gradient(90deg,#22D3EE,#7eedff);}
+
+    .rep-panel{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      padding:20px 22px;
+      margin:14px 0;
+    }
+    .rep-panel h4{margin:0 0 16px;font-size:1rem;font-weight:900;}
+    .rep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+    .rep-card{
+      background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius2);
+      padding:16px 18px;position:relative;overflow:hidden;
+    }
+    .rep-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+    .rep-card.parque::before{background:linear-gradient(90deg,#7C5CFF,#c4b5ff);}
+    .rep-card.externa::before{background:linear-gradient(90deg,#22D3EE,#7eedff);}
+    .rep-card.geral::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+    .rep-kpi-label{font-size:.82rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+    .rep-kpi-row{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:8px;}
+    .rep-kpi-val{font-family:var(--mono);font-weight:900;font-size:1.35rem;}
+    .rep-kpi-pct{font-family:var(--mono);font-weight:900;font-size:.88rem;padding:3px 9px;border-radius:999px;}
+    .rep-kpi-pct.parque{background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.35);color:#c4b5ff;}
+    .rep-kpi-pct.externa{background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.35);color:#7eedff;}
+    .rep-kpi-pct.geral{background:rgba(92,255,176,.12);border:1px solid rgba(92,255,176,.30);color:#b0fff0;}
+
+    .chart-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);backdrop-filter:blur(10px);padding:14px 14px 12px;margin:14px 0;}
+    .chart-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between;margin:2px 2px 10px;}
+    .chart-title{font-weight:950;letter-spacing:.2px;}
+    .chart-sub{color:var(--muted);font-size:.92rem;}
+    .chart-wrap{height:360px;position:relative;}
+    .chart-wrap.small{height:320px;position:relative;}
+    canvas{width:100% !important;height:100% !important;display:block;}
+
+    .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px;margin:10px 0 12px;}
+    .team-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;backdrop-filter:blur(10px);}
+    .team-card h3{margin:0 0 10px;font-size:1.05rem;}
+
+    .compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-top:10px;}
+    .compare-card{background:var(--card);border:1px solid var(--stroke);border-radius:var(--radius);padding:14px;backdrop-filter:blur(10px);}
+    .compare-card h3{margin:0 0 10px;font-size:1.05rem;}
+    .kpi-row{display:flex;flex-direction:column;gap:6px;padding:12px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.03);margin-bottom:10px;}
+    .kpi-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;}
+    .kpi-name{font-weight:950;}
+    .kpi-delta{font-family:var(--mono);font-weight:950;padding:3px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.14);min-width:110px;text-align:center;}
+    .kpi-delta.pos{background:rgba(92,255,176,.12);color:var(--good);border-color:rgba(92,255,176,.28);}
+    .kpi-delta.neg{background:rgba(255,45,85,.12);color:var(--bad);border-color:rgba(255,45,85,.28);}
+    .kpi-delta.neu{background:rgba(255,255,255,.06);color:rgba(234,240,255,.85);border-color:rgba(255,255,255,.14);}
+    .kpi-sub{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;color:var(--muted);font-size:.9rem;}
+    .kpi-sub > div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .kpi-sub b{color:rgba(234,240,255,.88)}
+    .hint{font-size:.9rem;color:var(--muted);line-height:1.45;}
+
+    .challenge-grid{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:14px;
+      align-items:start;
+      margin-top:10px;
+    }
+    .challenge-card{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      padding:14px;
+      backdrop-filter:blur(10px);
+      overflow:hidden;
+    }
+    .challenge-card h3{margin:0 0 10px;font-size:1.05rem;}
+    .challenge-list{display:flex;flex-direction:column;gap:10px;max-height:65vh;overflow:auto;padding-right:6px;}
+    .challenge-item{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      border-radius:14px;
+      padding:12px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .challenge-item .top{
+      display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;
+    }
+    .challenge-item .title{
+      font-weight:950;
+      display:flex;gap:10px;align-items:center;min-width:0;
+    }
+    .challenge-item .title span{
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:360px;
+    }
+    .challenge-item .meta{color:var(--muted);font-size:.9rem;}
+    .challenge-item .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .teams-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;}
+    .team-box{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.02);
+      border-radius:14px;
+      padding:12px;
+    }
+    .team-box .hdr{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .team-box .hdr b{font-size:.98rem;}
+    .team-members{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:10px;
+      margin-top:10px;
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .member-row label{font-weight:750;color:rgba(234,240,255,.88);text-transform:none;letter-spacing:0;font-size:.95rem;}
+    .member-row input[type="checkbox"]{transform:scale(1.1);}
+    .tiny{font-size:.85rem;color:var(--muted);}
+
+    .mm-panel{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      padding:16px;
+      margin:12px 0 10px;
+      backdrop-filter:blur(10px);
+    }
+    .mm-head{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:flex-end;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .mm-head .left{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;}
+    .mm-meta{color:var(--muted);font-size:.92rem;line-height:1.35;}
+    .mm-months{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-start;
+      margin-top:10px;
+    }
+    .chip{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.05);
+      color:rgba(234,240,255,.86);
+      cursor:pointer;
+      user-select:none;
+      font-weight:850;
+      font-family:var(--mono);
+      transition:all .15s ease;
+    }
+    .chip:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.22);box-shadow:0 16px 40px rgba(0,0,0,.30);}
+    .chip.active{
+      background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(34,211,238,.18));
+      border-color:rgba(124,92,255,.55);
+      color:white;
+    }
+    .chip.ghost{opacity:.6}
+    .mm-grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      margin-top:12px;
+    }
+    .mm-col{
+      background:var(--card);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      overflow:hidden;
+      backdrop-filter:blur(10px);
+    }
+    .mm-col-hdr{
+      padding:12px 14px;
+      font-weight:950;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+      background:rgba(255,255,255,.03);
+    }
+    .mm-col-hdr .title{display:flex;align-items:baseline;gap:10px;min-width:0}
+    .mm-col-hdr .title b{font-size:1rem;white-space:nowrap;}
+    .mm-col-hdr .title span{color:var(--muted);font-size:.85rem;white-space:nowrap;}
+    .mm-kpis{padding:12px 14px;}
+    .mm-kpi{
+      display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+      padding:10px 10px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.03);
+      margin-bottom:10px;
+    }
+    .mm-kpi:last-child{margin-bottom:0;}
+    .mm-kpi .lab{color:var(--muted);font-weight:850;}
+    .mm-kpi .val{font-family:var(--mono);font-weight:950;}
+    .mm-kpi .val .pill{margin-left:8px;}
+    .mm-empty{padding:14px;}
+    .mm-empty .note{margin:0;}
+
+    @media(max-width:1100px){
+      .tabs{grid-template-columns:repeat(3,minmax(0,1fr));}
+      .sup-compare-header,.sup-compare-row{grid-template-columns:160px 1fr 1fr 1fr;}
+      .challenge-grid{grid-template-columns: 1fr;}
+    }
+    @media(max-width:820px){
+      .wrap{padding:0 16px}
+      h1{font-size:2.2rem}
+      .control-group{min-width:unset;width:100%}
+      .range-row{flex-direction:column;align-items:stretch}
+      .range-row .sep{display:none;}
+      table{min-width:820px;}
+      .chart-wrap{height:320px;}
+      .tabs{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .tab{justify-content:flex-start;text-align:left;padding:12px 12px;}
+      .kpi-sub{grid-template-columns:1fr;}
+      .promo-row{flex-wrap:wrap;}
+      .promo-row select.mini-sel{min-width:140px;}
+      .sup-compare-header,.sup-compare-row{grid-template-columns:130px 1fr 1fr 1fr;font-size:.85rem;}
+      .sup-compare-row > div,.sup-compare-header > div{padding:10px 10px;}
+      .inativo-dates{flex-direction:column;align-items:stretch;}
+      .client-detail-section .table-wrap table{min-width:600px;}
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
-
-<div id="loadingOverlay" style="position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
-  <div class="spinner" style="width:48px;height:48px;"></div>
-  <div style="color:var(--text);font-size:1rem;font-weight:700;">Carregando dados do CSV...</div>
-  <div id="loadingMsg" style="color:var(--text-dim);font-size:0.8rem;"></div>
-</div>
-
-<div id="loginOverlay" style="display:none;">
-  <div class="login-box">
-    <div class="bmw-stripes">
-      <div class="bmw-stripe"></div><div class="bmw-stripe"></div><div class="bmw-stripe"></div>
-    </div>
-    <div class="login-logo">🏁</div>
-    <div class="login-title">BMW CHAMPIONS LEAGUE</div>
-    <div class="login-subtitle">Temporada 2026 • Julho a Dezembro</div>
-    <div class="input-group">
-      <i class="fa-solid fa-user"></i>
-      <input type="text" id="loginUser" placeholder="Usuário" autocomplete="off"/>
-    </div>
-    <div class="input-group">
-      <i class="fa-solid fa-lock"></i>
-      <input type="password" id="loginPass" placeholder="Senha"/>
-    </div>
-    <button class="login-btn" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> Entrar</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-</div>
-
-<div id="dashboard" style="display:none;">
-  <header class="header">
-    <div class="header-brand">
-      <span class="icon">🏁</span><span class="title-text">BMW</span>
-      <span class="champions">Champions League</span>
-    </div>
-    <div class="header-user">
-      <div class="user-badge">
-        <i class="fa-solid fa-circle-user"></i> <span id="headerUserName">Admin</span>
-        <span class="role" id="headerUserRole">ADMIN</span>
-      </div>
-      <button class="logout-btn" onclick="doLogout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</button>
-    </div>
+<div class="wrap">
+  <header>
+    <h1>Painel de Atendimentos</h1>
+    <p class="subtitle">Fonte: <strong>dados.csv</strong> (VGV = soma simples da coluna G)</p>
   </header>
 
-  <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="meus-numeros"><i class="fa-solid fa-gauge-high"></i> Meus Números</button>
-    <button class="tab-btn" data-tab="ranking"><i class="fa-solid fa-trophy"></i> Ranking Geral</button>
-    <button class="tab-btn" data-tab="presenca"><i class="fa-solid fa-calendar-check"></i> Lista de Presença</button>
-    <button class="tab-btn admin-only" data-tab="status" style="display:none;"><i class="fa-solid fa-toggle-on"></i> Ativo/Inativo</button>
-    <button class="tab-btn admin-only" data-tab="admin" style="display:none;"><i class="fa-solid fa-gear"></i> Admin</button>
-    <button class="tab-btn" data-tab="regras"><i class="fa-solid fa-book"></i> Regras</button>
-  </nav>
-
-  <div class="main-content">
-    <div class="tab-panel active" id="panel-meus-numeros"><div id="meusNumerosContent"></div></div>
-    <div class="tab-panel" id="panel-ranking"><div id="rankingContent"></div></div>
-    <div class="tab-panel" id="panel-presenca"><div id="presencaContent"></div></div>
-    <div class="tab-panel" id="panel-status"><div id="statusContent"></div></div>
-    <div class="tab-panel" id="panel-admin">
-      <div class="section-title"><i class="fa-solid fa-gear"></i> Painel do Administrador</div>
-      <div id="adminDebug" class="debug-box" style="display:none;"></div>
-      <div id="adminDataTable" style="margin-top:14px;"></div>
-    </div>
-    <div class="tab-panel" id="panel-regras"><div id="regrasContent"></div></div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="presencaModal">
-  <div class="modal-box">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title"><i class="fa-solid fa-calendar-day"></i> Presença — <span id="modalDiaLabel">Dia 1</span></div>
-        <div class="modal-subtitle" id="modalSubtitle">Julho 2026</div>
+  <!-- FILTROS GLOBAIS -->
+  <div class="controls">
+    <div class="control-group" style="min-width:420px">
+      <label>Período</label>
+      <div class="range-row">
+        <input id="dateStart" type="date" />
+        <span class="sep">a</span>
+        <input id="dateEnd" type="date" />
+        <button class="btn" id="btnHoje">Hoje</button>
+        <button class="btn" id="btn30">30 dias</button>
+        <button class="btn" id="btnLimparPeriodo">Limpar</button>
       </div>
-      <button class="modal-close" onclick="closePresencaModal()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="modal-body" id="modalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-success" onclick="marcarTodosModal(1)"><i class="fa-solid fa-check"></i> Todos Presentes</button>
-      <button class="btn btn-danger" onclick="marcarTodosModal(0)"><i class="fa-solid fa-xmark"></i> Todos Faltaram</button>
-      <button class="btn btn-warning" onclick="limparMeetingsModal()"><i class="fa-solid fa-eraser"></i> Limpar Meetings</button>
-      <button class="btn btn-primary" onclick="salvarPresenca()"><i class="fa-solid fa-floppy-disk"></i> Salvar e Fechar</button>
+    <div class="control-group">
+      <label>Status do contrato</label>
+      <select id="statusSelect">
+        <option value="todos">Todos</option>
+        <option value="ativo">Ativo</option>
+        <option value="cancelado">Cancelado</option>
+        <option value="sem_status">Sem status</option>
+        <option value="outro">Outro</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Profissional</label>
+      <select id="profTipo">
+        <option value="promotor de marketing">Promotor de marketing</option>
+        <option value="liner">Liner</option>
+        <option value="closer">Closer</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Nome</label>
+      <select id="profNome"><option value="todos">Todos</option></select>
+    </div>
+    <div class="control-group">
+      <label>UF</label>
+      <select id="ufSelect"><option value="todos">Todas</option></select>
     </div>
   </div>
-</div>
 
-<div id="toastContainer"></div>
+  <!-- ABAS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" data-tab="resumo">📊 Resumo</div>
+      <div class="tab" data-tab="comparativo">🆚 Comparativo de períodos</div>
+      <div class="tab" data-tab="curva">📈 Curva de casais e vendas</div>
+      <div class="tab" data-tab="cancelamento">❌ Análise de cancelamento</div>
+      <div class="tab" data-tab="equipes">🧲 Equipes de captação</div>
+      <div class="tab" data-tab="equipes-supervisores">🧑‍✈️ Promotores (2 supervisores)</div>
+      <div class="tab" data-tab="individual-mes-mes">🗓️ Individual mês/mês</div>
+      <div class="tab" data-tab="desafios">🏁 Desafios</div>
+      <div class="tab" data-tab="ranking-promotor">🎯 Ranking Promotor</div>
+      <div class="tab" data-tab="ranking-liner">💬 Ranking Liner</div>
+      <div class="tab" data-tab="ranking-closer">🤝 Ranking Closer</div>
+      <div class="tab" data-tab="perfil-renda">💸 Perfil de renda</div>
+      <div class="tab" data-tab="profissionais">👥 Profissionais</div>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div id="content">
+    <div id="loading" class="note">Carregando dados...</div>
+    <div id="error"   class="note bad" style="display:none"></div>
+
+    <!-- RESUMO -->
+    <div id="tab-resumo" class="tab-content active">
+      <div class="stats" id="stats"></div>
+      <div class="note">
+        <strong>Critérios</strong><br>
+        • Casais = linhas (com ajuste: Total − NoTour).<br>
+        • NoTour = linhas com <strong>Status atendimento</strong> = "NoTour".<br>
+        • Cotas ativas/canceladas = tokens na coluna "Status do contrato".<br>
+        • <strong>VGV total = Σ(coluna G)</strong> (soma simples).<br>
+        • VGV ativo/cancelado: rateio proporcional pelos tokens ATIVO/CANCELADO da linha.<br>
+        • <strong>Eficiência = (Cotas ÷ Casais) × 100</strong>.<br>
+        • <strong>Aproveitamento = (Clientes que compraram ÷ Total de clientes) × 100</strong> (independente da qtd. de cotas).<br>
+        • <strong>Média de Casais/dia</strong> = total ÷ dias do período (inclusivo).
+      </div>
+    </div>
+
+    <!-- COMPARATIVO -->
+    <div id="tab-comparativo" class="tab-content">
+      <div class="note">
+        <strong>Comparativo entre dois períodos</strong><br>
+        Período X e Y respeitam os filtros globais. <strong>Variação %</strong> = (X − Y) / Y × 100.
+      </div>
+      <div class="compare-grid">
+        <div class="compare-card">
+          <h3>Período X</h3>
+          <div class="controls" style="margin:0;justify-content:flex-start">
+            <div class="control-group" style="min-width:330px">
+              <label>Datas (X)</label>
+              <div class="range-row">
+                <input id="cmpXStart" type="date"/><span class="sep">a</span><input id="cmpXEnd" type="date"/>
+                <button class="btn" id="btnCmpXHoje">Hoje</button>
+                <button class="btn" id="btnCmpX30">30 dias</button>
+              </div>
+            </div>
+          </div>
+          <div class="stats" id="cmpStatsX" style="margin-top:10px"></div>
+        </div>
+        <div class="compare-card">
+          <h3>Período Y</h3>
+          <div class="controls" style="margin:0;justify-content:flex-start">
+            <div class="control-group" style="min-width:330px">
+              <label>Datas (Y)</label>
+              <div class="range-row">
+                <input id="cmpYStart" type="date"/><span class="sep">a</span><input id="cmpYEnd" type="date"/>
+                <button class="btn" id="btnCmpYHoje">Hoje</button>
+                <button class="btn" id="btnCmpY30">30 dias</button>
+              </div>
+            </div>
+          </div>
+          <div class="stats" id="cmpStatsY" style="margin-top:10px"></div>
+        </div>
+      </div>
+      <div class="compare-card" style="margin-top:14px">
+        <h3>Variação percentual (X vs Y)</h3>
+        <div id="cmpMeta" class="hint" style="margin:6px 0 12px">—</div>
+        <div id="cmpDeltas"></div>
+      </div>
+    </div>
+
+    <!-- CURVA -->
+    <div id="tab-curva" class="tab-content">
+      <div class="stats" id="stats-curva"></div>
+      <div class="note">Respeita os filtros globais. • Casais/dia = linhas no dia. • Vendas/dia = soma de cotas. • Eficiência = Vendas ÷ Casais. • Aproveitamento = Clientes que compraram ÷ Total de clientes.</div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div class="chart-title">Curva diária (Casais × Vendas)</div>
+          <div class="chart-sub" id="curva-meta">—</div>
+        </div>
+        <div class="chart-wrap"><canvas id="chartCurva"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div class="chart-title">Performance por dia da semana</div>
+          <div class="chart-sub">Vendas, VGV, Casais, Eficiência e Média de Casais/dia da semana</div>
+        </div>
+        <div class="chart-wrap small"><canvas id="chartSemana"></canvas></div>
+      </div>
+    </div>
+
+    <!-- CANCELAMENTO -->
+    <div id="tab-cancelamento" class="tab-content">
+      <div class="note"><strong>% Cancelamento</strong> = (cotas canceladas ÷ cotas totais) × 100.</div>
+      <div class="chart-card">
+        <div class="chart-head">
+          <div class="chart-title">% Cancelamento por qtd de cotas vendidas</div>
+          <div class="chart-sub" id="cancel-meta">—</div>
+        </div>
+        <div class="chart-wrap"><canvas id="chartCancelamento"></canvas></div>
+      </div>
+      <div id="cancelamento-table"></div>
+    </div>
+
+    <!-- EQUIPES DE CAPTAÇÃO -->
+    <div id="tab-equipes" class="tab-content">
+      <div class="note">
+        <strong>Equipes de captação</strong> — defina abaixo a equipe de cada Promotor de marketing.<br>
+        As opções são: <strong>Equipe Parque</strong>, <strong>Equipe Externa</strong> ou <strong>Inativo</strong>.<br>
+        Ao selecionar <strong>Inativo</strong>, informe o período de inatividade. Os registros nesse período serão contados como <strong>Inativo</strong>.<br>
+        Fora do período de inatividade, o profissional é contado na sua <strong>equipe base</strong> (Parque ou Externa).<br>
+        Tudo fica salvo no seu navegador (localStorage).
+      </div>
+
+      <h3 style="margin:10px 0 6px">🟣 Equipe Parque</h3>
+      <div class="stats" id="stats-equipe-parque"></div>
+
+      <h3 style="margin:16px 0 6px">🔵 Equipe Externa</h3>
+      <div class="stats" id="stats-equipe-externa"></div>
+
+      <h3 style="margin:16px 0 6px">🟡 Inativo (registros dentro do período de inatividade)</h3>
+      <div class="stats" id="stats-equipe-inativo"></div>
+
+      <div class="note warn">Promotores sem nenhuma marcação entram em <strong>Sem equipe</strong>.</div>
+      <h3 style="margin:10px 0 6px">⚪ Sem equipe</h3>
+      <div class="stats" id="stats-equipe-sem"></div>
+
+      <div class="divider"></div>
+
+      <div class="config-panel">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <h4 style="margin:0">Lista completa de profissionais</h4>
+          <button class="btn danger" id="btnLimparEquipes">🗑 Limpar tudo</button>
+        </div>
+        <div class="tiny" style="margin-bottom:12px">
+          Altere a equipe no seletor ao lado de cada nome. Ao selecionar <strong>Inativo</strong>, preencha as datas de início e fim da inatividade.<br>
+          A alteração é salva automaticamente.
+        </div>
+        <div id="teamMappingList" class="promo-list"></div>
+      </div>
+    </div>
+
+    <!-- ABA: PROMOTORES (2 SUPERVISORES) -->
+    <div id="tab-equipes-supervisores" class="tab-content">
+      <div class="note">
+        <strong>Promotores de Marketing — 2 Supervisores</strong><br>
+        Comparativo lado a lado: Equipe Parque × Equipe Externa × Geral. Percentual de representação ao final.<br>
+        <em>Registros de profissionais no período de inatividade são contados como "Inativo" e não entram neste comparativo.</em>
+      </div>
+      <div class="section-title">
+        Comparativo Parque × Externa <span class="pill-tag">dado por dado</span>
+      </div>
+      <div class="sup-compare-wrap">
+        <div class="sup-compare-header">
+          <div class="col-label">Indicador</div>
+          <div class="col-parque">🟣 Equipe Parque</div>
+          <div class="col-externa">🔵 Equipe Externa</div>
+          <div class="col-geral">⚪ Geral</div>
+        </div>
+        <div id="supCompareRows"></div>
+      </div>
+      <div class="section-title" style="margin-top:22px">
+        Representatividade no total <span class="pill-tag">% de cada equipe</span>
+      </div>
+      <div id="supRepGrid"></div>
+      <div class="divider"></div>
+      <div class="section-title">
+        Configurar promotores <span class="pill-tag">Definir equipe</span>
+      </div>
+      <div class="config-panel">
+        <h4>Seleção rápida</h4>
+        <div class="controls" style="margin:0;justify-content:flex-start;flex-wrap:wrap">
+          <div class="control-group" style="min-width:260px">
+            <label>Promotor</label>
+            <select id="supPromotorSelect"><option value="">Carregando...</option></select>
+          </div>
+          <div class="control-group" style="min-width:200px">
+            <label>Equipe</label>
+            <select id="supEquipeSelect">
+              <option value="Equipe Parque">Equipe Parque</option>
+              <option value="Equipe Externa">Equipe Externa</option>
+              <option value="Inativo">Inativo</option>
+            </select>
+          </div>
+          <div class="control-group" style="min-width:150px">
+            <label>&nbsp;</label>
+            <button class="btn primary" id="btnSalvarEquipeSup">💾 Salvar</button>
+          </div>
+          <div class="control-group" style="min-width:180px">
+            <label>&nbsp;</label>
+            <button class="btn danger" id="btnLimparEquipesSup">🗑 Limpar tudo</button>
+          </div>
+        </div>
+        <div class="tiny" style="margin-top:8px">
+          Ao selecionar <strong>Inativo</strong> na lista abaixo, preencha as datas para definir o período de inatividade.
+        </div>
+      </div>
+      <div class="config-panel" style="margin-top:0">
+        <h4>Lista completa — altere diretamente</h4>
+        <div id="supMappingList" class="promo-list"></div>
+      </div>
+    </div>
+
+    <!-- NOVA ABA: INDIVIDUAL MÊS/MÊS -->
+    <div id="tab-individual-mes-mes" class="tab-content">
+      <div class="note">
+        <strong>Individual mês/mês</strong><br>
+        Selecione o <strong>tipo</strong> e o <strong>profissional</strong>. Depois clique nos <strong>meses</strong> desejados para comparar lado a lado.
+        Os dados respeitam os filtros globais de <strong>Status</strong> e <strong>UF</strong>.
+        O período global (data início/fim) define quais meses ficam disponíveis (se estiver vazio, usa todo o CSV).
+      </div>
+      <div class="mm-panel">
+        <div class="mm-head">
+          <div class="left">
+            <div class="control-group" style="min-width:240px">
+              <label>Área (mês/mês)</label>
+              <select id="mmProfTipo">
+                <option value="promotor de marketing">Promotor de marketing</option>
+                <option value="liner">Liner</option>
+                <option value="closer">Closer</option>
+              </select>
+            </div>
+            <div class="control-group" style="min-width:320px">
+              <label>Profissional (mês/mês)</label>
+              <select id="mmProfNome"><option value="">Selecione...</option></select>
+            </div>
+            <div class="control-group" style="min-width:220px">
+              <label>Atalhos</label>
+              <div class="range-row">
+                <button class="btn" id="mmBtnUlt3">Últimos 3</button>
+                <button class="btn" id="mmBtnUlt6">Últimos 6</button>
+                <button class="btn" id="mmBtnTodos">Todos</button>
+                <button class="btn danger" id="mmBtnLimpar">Limpar</button>
+              </div>
+            </div>
+          </div>
+          <div class="mm-meta" id="mmMeta">—</div>
+        </div>
+        <div class="section-title" style="margin:10px 0 6px">
+          Meses para comparar <span class="pill-tag">clique para filtrar</span>
+        </div>
+        <div id="mmMonths" class="mm-months"></div>
+      </div>
+      <div id="mmGrid" class="mm-grid"></div>
+    </div>
+
+    <!-- ABA: DESAFIOS -->
+    <div id="tab-desafios" class="tab-content">
+      <div class="note">
+        <strong>Desafios</strong><br>
+        Crie desafios com período, número de equipes, nome das equipes, seleção de profissionais por equipe e escolha do critério de apuração.
+        Tudo fica salvo no seu navegador (localStorage).
+      </div>
+      <div class="challenge-grid">
+        <div class="challenge-card">
+          <h3 id="challengeFormTitle">Criar desafio</h3>
+          <div class="controls" style="margin:0;justify-content:flex-start">
+            <div class="control-group" style="min-width:260px">
+              <label>Nome do desafio</label>
+              <input id="chName" placeholder="Ex.: Desafio Junho" />
+            </div>
+            <div class="control-group" style="min-width:330px">
+              <label>Período do desafio</label>
+              <div class="range-row">
+                <input id="chStart" type="date" />
+                <span class="sep">a</span>
+                <input id="chEnd" type="date" />
+              </div>
+            </div>
+            <div class="control-group" style="min-width:220px">
+              <label>Apuração</label>
+              <select id="chMetric">
+                <option value="casais">Número de casais</option>
+                <option value="vgv">VGV</option>
+                <option value="casais_atendidos">Casais atendidos</option>
+                <option value="eficiencia">Eficiência</option>
+                <option value="aproveitamento">Aproveitamento</option>
+              </select>
+            </div>
+            <div class="control-group" style="min-width:220px">
+              <label>Qtd. de equipes</label>
+              <select id="chTeamsCount">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+            <div class="control-group" style="min-width:180px">
+              <label>Tipo de profissional</label>
+              <select id="chProfTipo">
+                <option value="promotor de marketing">Promotor de marketing</option>
+                <option value="liner">Liner</option>
+                <option value="closer">Closer</option>
+              </select>
+              <div class="tiny">A seleção abaixo lista apenas nomes desse tipo.</div>
+            </div>
+          </div>
+          <div class="divider" style="margin:16px 0 14px"></div>
+          <div class="section-title" style="margin-bottom:10px">
+            Equipes <span class="pill-tag">nomes + membros</span>
+          </div>
+          <div id="chTeamsEditor" class="teams-wrap"></div>
+          <div class="divider" style="margin:16px 0 14px"></div>
+          <div class="controls" style="margin:0;justify-content:flex-start">
+            <div class="control-group" style="min-width:180px">
+              <label>&nbsp;</label>
+              <button class="btn primary" id="btnChSave">💾 Salvar desafio</button>
+            </div>
+            <div class="control-group" style="min-width:220px">
+              <label>&nbsp;</label>
+              <button class="btn" id="btnChNew">➕ Novo</button>
+            </div>
+            <div class="control-group" style="min-width:220px">
+              <label>&nbsp;</label>
+              <button class="btn danger" id="btnChClearAll">🗑 Apagar todos</button>
+            </div>
+          </div>
+          <div id="chFormMsg" class="note" style="display:none;margin-top:12px"></div>
+        </div>
+        <div class="challenge-card">
+          <h3>Meus desafios</h3>
+          <div id="chList" class="challenge-list"></div>
+          <div class="divider"></div>
+          <h3>Apuração (no período do desafio)</h3>
+          <div class="note warn" style="margin-top:10px">
+            A apuração do desafio <strong>ignora</strong> o filtro global de período e usa o período definido no desafio.
+            Ela <strong>respeita</strong> os filtros globais de <strong>Status</strong> e <strong>UF</strong>.
+          </div>
+          <div id="chResults"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANKING PROMOTOR -->
+    <div id="tab-ranking-promotor" class="tab-content">
+      <div class="note">Ranking por <span class="badge">Promotor de marketing</span>. Clique nos cabeçalhos para ordenar. <strong>Clique no nome do profissional para ver os clientes.</strong></div>
+      <div id="ranking-promotor"></div>
+    </div>
+
+    <!-- RANKING LINER -->
+    <div id="tab-ranking-liner" class="tab-content">
+      <div class="note">Ranking por <span class="badge">Liner</span>. Clique nos cabeçalhos para ordenar. <strong>Clique no nome do profissional para ver os clientes.</strong></div>
+      <div id="ranking-liner"></div>
+    </div>
+
+    <!-- RANKING CLOSER -->
+    <div id="tab-ranking-closer" class="tab-content">
+      <div class="note">Ranking por <span class="badge">Closer</span>. Clique nos cabeçalhos para ordenar. <strong>Clique no nome do profissional para ver os clientes.</strong></div>
+      <div id="ranking-closer"></div>
+    </div>
+
+    <!-- PERFIL DE RENDA -->
+    <div id="tab-perfil-renda" class="tab-content">
+      <div class="note">Performance por faixa de renda. Clique nos cabeçalhos para ordenar.</div>
+      <div id="perfil-renda"></div>
+    </div>
+
+    <!-- PROFISSIONAIS -->
+    <div id="tab-profissionais" class="tab-content">
+      <div class="note">Selecione um profissional para ver o detalhe individual no período filtrado.</div>
+      <div class="controls" style="margin-top:10px">
+        <div class="control-group">
+          <label>Área (individual)</label>
+          <select id="profTipoSingle">
+            <option value="promotor de marketing">Promotor de marketing</option>
+            <option value="liner">Liner</option>
+            <option value="closer">Closer</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Nome (individual)</label>
+          <select id="profNomeSingle"><option value="">Selecione...</option></select>
+        </div>
+      </div>
+      <div class="stats" id="stats-single" style="margin-top:10px"></div>
+      <div class="note" style="margin-top:8px">Tabela por profissional (respeita os filtros globais):</div>
+      <div id="profissionais-table"></div>
+    </div>
+
+  </div>
+</div>
 
 <script>
-// ╔══════════════════════════════════════════════╗
-// ║  🏁 BMW CHAMPIONS LEAGUE 2026             ║
-// ║  ✅ URL DO CSV JÁ CONFIGURADA              ║
-// ╚══════════════════════════════════════════════╝
-const CSV_URL = 'https://raw.githubusercontent.com/Collinaditalia/DisputaBMWjulhoDezembro/main/dados.csv';
+/* ═══════════════════════════════════════════════
+   UTILITÁRIOS
+═══════════════════════════════════════════════ */
+const el   = id => document.getElementById(id);
+const norm = s  => (s ?? "").toString().toLowerCase().trim().replace(/\s+/g," ");
 
-const MESES = ['Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const MESES_KEY = ['07','08','09','10','11','12'];
-const DIAS_POR_MES = [31,31,30,31,30,31];
-const XP_PRESENCA = 50000;
-const XP_MEETING = 200000;
+const CLIENT_NAME_HEADERS = [
+  norm("nome do cliente"),norm("cliente"),norm("nome"),norm("casal"),
+  norm("nome completo"),norm("nome do casal"),
+];
+const KEY = {
+  dataAtendimento  : norm("data de atendimento"),
+  statusContrato   : norm("status do contrato"),
+  statusAtendimento: norm("status atendimento"),
+  renda   : norm("renda"),
+  uf      : norm("uf"),
+  promotor: norm("promotor de marketing"),
+  liner   : norm("liner"),
+  closer  : norm("closer"),
+};
 
-let currentUser = null;
-let rawCSV = [];
-let professionals = [];
-let mesAtual = 0;
-let modalDia = 1;
-let modalPresenca = {};
-let modalMeeting = {};
+const state   = { rows:[], filtered:[], meta:{ vgvColKey:null, firstColKey:null }, expandedRanking:{cid:null,name:null} };
+const charts  = { curva:null, semana:null, cancelamento:null };
+const sortState = {
+  "ranking-promotor"   :{ key:"vendas",    dir:"desc" },
+  "ranking-liner"      :{ key:"vendas",    dir:"desc" },
+  "ranking-closer"     :{ key:"vendas",    dir:"desc" },
+  "profissionais-table":{ key:"vendas",    dir:"desc" },
+  "perfil-renda"       :{ key:"vgvTotal",  dir:"desc" },
+  "cancelamento-table" :{ key:"cotasTotal",dir:"desc" },
+  "ch-results-table"   :{ key:"valor",     dir:"desc" },
+};
 
-document.addEventListener('DOMContentLoaded',()=>{
-  document.querySelectorAll('.tab-btn').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
-  loadCSV();
-});
+/* ═══════════════════════════════════════════════
+   localStorage — EQUIPES v2 (com inatividade)
+═══════════════════════════════════════════════ */
+const TEAM_KEY_V2 = "painel_equipes_promotores_v2";
 
-function doLogin(){
-  const u = document.getElementById('loginUser').value.trim().toLowerCase();
-  const p = document.getElementById('loginPass').value.trim();
-  const err = document.getElementById('loginError');
-  err.textContent = '';
+function loadTeamMapV2(){
+  try {
+    const r = localStorage.getItem(TEAM_KEY_V2);
+    if(r){
+      const o = JSON.parse(r);
+      if(o && typeof o === "object") return o;
+    }
+    const old = localStorage.getItem("painel_equipes_promotores_v1");
+    if(old){
+      const oldMap = JSON.parse(old);
+      if(oldMap && typeof oldMap === "object"){
+        const newMap = {};
+        for(const [k, v] of Object.entries(oldMap)){
+          if(typeof v === "string"){
+            newMap[k] = { equipe: v, inativoInicio: null, inativoFim: null };
+          } else if(v && typeof v === "object"){
+            newMap[k] = {
+              equipe: v.equipe || null,
+              inativoInicio: v.inativoInicio || null,
+              inativoFim: v.inativoFim || null
+            };
+          }
+        }
+        saveTeamMapV2(newMap);
+        return newMap;
+      }
+    }
+    return {};
+  } catch(e){ return {}; }
+}
 
-  if(u==='admin' && p==='admin123'){
-    currentUser = {name:'Administrador',role:'admin'};
-    showDashboard(); return;
+function saveTeamMapV2(m){
+  localStorage.setItem(TEAM_KEY_V2, JSON.stringify(m || {}));
+}
+
+function getTeamConfig(promotorNome){
+  const map = loadTeamMapV2();
+  const raw = map[promotorNome];
+  if(!raw) return null;
+  if(typeof raw === "string"){
+    return { equipe: raw, inativoInicio: null, inativoFim: null };
   }
-
-  const prof = professionals.find(x=>x.nome.toLowerCase()===u && x.senha===p);
-  if(prof){
-    currentUser = {name:prof.nome,role:'vendedor',team:prof.equipe};
-    showDashboard();
-  } else {
-    err.textContent = 'Usuário ou senha inválidos';
-  }
-}
-
-function showDashboard(){
-  document.getElementById('loginOverlay').style.display='none';
-  document.getElementById('dashboard').style.display='block';
-  updateUI();
-  switchTab('meus-numeros');
-}
-
-function doLogout(){
-  currentUser = null;
-  document.getElementById('loginOverlay').style.display='flex';
-  document.getElementById('dashboard').style.display='none';
-}
-
-function updateUI(){
-  document.getElementById('headerUserName').textContent = currentUser?.name||'';
-  document.getElementById('headerUserRole').textContent = currentUser?.role==='admin'?'ADMIN':(currentUser?.team||'VENDEDOR');
-  document.querySelectorAll('.admin-only').forEach(e=>e.style.display=currentUser?.role==='admin'?'':'none');
-}
-
-function switchTab(tab){
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  const panel = document.getElementById('panel-'+tab);
-  const btn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
-  if(panel) panel.classList.add('active');
-  if(btn) btn.classList.add('active');
-
-  const renders = {
-    'meus-numeros': renderMeusNumeros,
-    'ranking': renderRanking,
-    'presenca': renderPresenca,
-    'status': renderStatus,
-    'admin': renderAdmin,
-    'regras': renderRegras
+  return {
+    equipe: raw.equipe || null,
+    inativoInicio: raw.inativoInicio || null,
+    inativoFim: raw.inativoFim || null,
   };
-  if(renders[tab]) renders[tab]();
 }
 
-async function loadCSV(){
-  const debug = document.getElementById('adminDebug');
-  const msg = document.getElementById('loadingMsg');
-
-  if(debug){ debug.style.display = 'block'; debug.textContent = '🔄 Iniciando carregamento...\n'; }
-  if(msg) msg.textContent = 'Conectando ao GitHub...';
-
-  try{
-    if(msg) msg.textContent = 'Baixando dados.csv...';
-    const resp = await fetch(CSV_URL);
-    if(!resp.ok) throw new Error(`HTTP ${resp.status} — verifique se o link está correto`);
-
-    const txt = await resp.text();
-    if(debug) debug.textContent += `✓ Arquivo recebido: ${txt.length} caracteres\n`;
-
-    const firstLine = txt.split('\n')[0].trim();
-    let delim = ',';
-    if(firstLine.includes(';') && firstLine.split(';').length > firstLine.split(',').length) delim = ';';
-    if(debug) debug.textContent += `✓ Delimitador: "${delim}"\n`;
-
-    rawCSV = parseCSV(txt, delim);
-    if(rawCSV.length === 0) throw new Error('CSV vazio ou mal formatado');
-    if(debug) debug.textContent += `✓ ${rawCSV.length} linhas de dados carregadas\n`;
-
-    const headers = Object.keys(rawCSV[0]);
-    if(debug){
-      debug.textContent += `✓ ${headers.length} colunas encontradas:\n`;
-      headers.forEach((h,i) => {
-        debug.textContent += `  [${i}] "${h}" → "${(rawCSV[0][h]||'').substring(0,40)}"\n`;
-      });
-    }
-
-    const cols = detectarColunas(headers);
-    if(debug){
-      debug.textContent += `\n🔍 Mapeamento de colunas:\n`;
-      debug.textContent += `  Captador    → col [${cols.captador}] "${headers[cols.captador]||'N/D'}"\n`;
-      debug.textContent += `  Consultor   → col [${cols.consultor}] "${headers[cols.consultor]||'N/D'}"\n`;
-      debug.textContent += `  Closer      → col [${cols.closer}] "${headers[cols.closer]||'N/D'}"\n`;
-      debug.textContent += `  VGV         → col [${cols.vgv}] "${headers[cols.vgv]||'N/D'}"\n`;
-      debug.textContent += `  Status      → col [${cols.status}] "${headers[cols.status]||'N/D'}"\n`;
-    }
-
-    if(cols.captador<0||cols.consultor<0||cols.closer<0){
-      throw new Error(
-        'Não foi possível encontrar uma ou mais colunas.\n' +
-        'Verifique se o CSV tem colunas com os nomes:\n' +
-        '  - "promotor de marketing" ou "captador"\n' +
-        '  - "consultor"\n' +
-        '  - "closer"'
-      );
-    }
-
-    professionals = extrairProfissionais(rawCSV, cols, headers);
-    if(debug){
-      debug.textContent += `\n✅ ${professionals.length} PROFISSIONAIS EXTRAÍDOS:\n`;
-      professionals.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
-        debug.textContent += `  • ${p.nome.padEnd(20)} | ${p.equipe.padEnd(12)} | VGV: ${formatCurrency(p.vgv)} | Vendas: ${p.vendas}\n`;
-      });
-    }
-
-    if(msg) msg.textContent = `${professionals.length} profissionais carregados!`;
-
-    setTimeout(()=>{
-      document.getElementById('loadingOverlay').style.display='none';
-      document.getElementById('loginOverlay').style.display='flex';
-    }, 600);
-
-    showToast(`${professionals.length} profissionais carregados!`,'success');
-
-  } catch(e){
-    if(debug) debug.textContent += `\n❌ ERRO: ${e.message}`;
-    if(msg) msg.innerHTML = `<span style="color:#e53935;">❌ ${e.message}</span><br>
-      <button onclick="loadCSV()" style="margin-top:12px;padding:8px 16px;background:#0066B1;color:#fff;border:none;border-radius:6px;cursor:pointer;">Tentar novamente</button>`;
-    showToast('Erro ao carregar CSV: '+e.message,'error');
-  }
+function setTeamConfig(promotorNome, config){
+  const map = loadTeamMapV2();
+  map[promotorNome] = config;
+  saveTeamMapV2(map);
 }
 
-function parseCSV(txt, delim){
-  const lines = txt.trim().split('\n');
-  if(lines.length < 2) return [];
+function removeTeamConfig(promotorNome){
+  const map = loadTeamMapV2();
+  delete map[promotorNome];
+  saveTeamMapV2(map);
+}
 
-  const headers = splitCSV(lines[0], delim).map(h=>h.trim());
+function getEquipeEfetiva(promotorNome, dt){
+  const cfg = getTeamConfig(promotorNome);
+  if(!cfg || !cfg.equipe) return null;
 
-  const data = [];
-  for(let i=1; i<lines.length; i++){
-    const vals = splitCSV(lines[i], delim);
-    if(vals.length < 2) continue;
-    const obj = {};
-    headers.forEach((h,j) => { obj[h] = (vals[j]||'').trim(); });
-    data.push(obj);
+  const ini = cfg.inativoInicio ? parseDateOnlyInput(cfg.inativoInicio) : null;
+  const fim = cfg.inativoFim   ? parseDateOnlyInput(cfg.inativoFim)   : null;
+
+  if(ini && fim && dt){
+    const d = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    const i = new Date(ini.getFullYear(), ini.getMonth(), ini.getDate());
+    const f = new Date(fim.getFullYear(), fim.getMonth(), fim.getDate());
+    if(d >= i && d <= f){
+      return "Inativo";
+    }
   }
+
+  return cfg.equipe;
+}
+
+/* ═══════════════════════════════════════════════
+   DESAFIOS localStorage
+═══════════════════════════════════════════════ */
+const CH_KEY = "painel_desafios_v1";
+const loadChallenges = () => { try{ const r=localStorage.getItem(CH_KEY); const o=r?JSON.parse(r):[]; return Array.isArray(o)?o:[]; }catch(e){ return []; } };
+const saveChallenges = arr => localStorage.setItem(CH_KEY, JSON.stringify(Array.isArray(arr)?arr:[]));
+
+/* ═══════════════════════════════════════════════
+   PARSE CSV
+═══════════════════════════════════════════════ */
+function parseDelimited(text, delimiter=";"){
+  const lines=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n").split("\n").filter(l=>l.trim());
+  if(!lines.length) return [];
+  const parseLine=line=>{
+    const out=[]; let cur="",inQ=false;
+    for(let i=0;i<line.length;i++){
+      const ch=line[i];
+      if(ch==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+      else if(ch===delimiter&&!inQ){out.push(cur);cur="";}
+      else cur+=ch;
+    }
+    out.push(cur);
+    return out.map(v=>v.trim());
+  };
+  const headers=parseLine(lines[0]).map(h=>h.replace(/^"|"$/g,""));
+  const data=[];
+  for(let i=1;i<lines.length;i++){
+    const vals=parseLine(lines[i]).map(v=>v.replace(/^"|"$/g,""));
+    if(vals.length!==headers.length) continue;
+    const row={}; headers.forEach((h,idx)=>row[norm(h)]=vals[idx]??""); data.push(row);
+  }
+  const keys=Object.keys(data[0]||{});
+  state.meta.firstColKey=keys[0]||null;
+  state.meta.vgvColKey  =keys[6]||null;
+  if(!state.meta.vgvColKey) throw new Error("CSV precisa ter pelo menos 7 colunas (VGV na coluna G).");
   return data;
 }
 
-function splitCSV(line, delim){
-  const result = [];
-  let current = '', inQuotes = false;
-  for(let i=0; i<line.length; i++){
-    const ch = line[i];
-    if(ch === '"'){ inQuotes = !inQuotes; }
-    else if(ch === delim && !inQuotes){ result.push(current); current = ''; }
-    else { current += ch; }
+/* ═══════════════════════════════════════════════
+   HELPERS DE VALOR
+═══════════════════════════════════════════════ */
+function parseMoneyBR(str){
+  if(!str||typeof str!=="string") return 0;
+  const c=str.replace(/[^\d,.-]/g,""); if(!c) return 0;
+  if(c.includes(",")&&c.includes(".")){
+    const lC=c.lastIndexOf(","),lD=c.lastIndexOf(".");
+    return lC>lD?parseFloat(c.replace(/\./g,"").replace(",","."))||0:parseFloat(c.replace(/,/g,""))||0;
   }
-  result.push(current);
-  return result;
+  if(c.includes(",")) return parseFloat(c.replace(",","."))||0;
+  return parseFloat(c)||0;
+}
+const fmtMoney = v => new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(v||0);
+const fmtPctBR = f => new Intl.NumberFormat("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1}).format((f||0)*100)+"%";
+const fmtNumBR = (v,mn=1,mx=1) => new Intl.NumberFormat("pt-BR",{minimumFractionDigits:mn,maximumFractionDigits:mx}).format(v||0);
+const fmtPct2  = (num,den) => den ? fmtNumBR((num/den)*100,1,1)+"%" : "—";
+
+function parseBRDateTime(str){
+  if(!str||typeof str!=="string") return null;
+  const s=str.trim(); if(!s) return null;
+  let m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){ const[,d,mo,y,hh,mm,ss]=m; return new Date(+y,+mo-1,+d,hh?+hh:0,mm?+mm:0,ss?+ss:0); }
+  m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/);
+  if(m){ const[,y,mo,d,hh,mm,ss]=m; return new Date(+y,+mo-1,+d,hh?+hh:0,mm?+mm:0,ss?+ss:0); }
+  return null;
+}
+function parseDateOnlyInput(s){
+  if(!s) return null;
+  const m=String(s).trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(m) return new Date(+m[1],+m[2]-1,+m[3]);
+  const d2=parseBRDateTime(s); if(!d2) return null;
+  return new Date(d2.getFullYear(),d2.getMonth(),d2.getDate());
+}
+const toISO = dt => `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;
+const fmtBR = iso => { const m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m?`${m[3]}/${m[2]}/${m[1]}`:iso; };
+
+/* ═══════════════════════════════════════════════
+   STATUS / COTAS
+═══════════════════════════════════════════════ */
+function countQuotas(s){
+  let a=0,c=0,o=0;
+  ((s??"")+"").trim().split("#").map(x=>x.trim()).filter(Boolean).forEach(t=>{
+    const k=norm(t);
+    if(k.includes("cancel"))c++; else if(k.includes("ativo"))a++; else o++;
+  });
+  return{ativo:a,cancelado:c,outro:o,total:a+c+o};
+}
+function contractBucket(s){
+  const n=norm(s); if(!n) return "sem_status";
+  if(n.includes("cancel")) return "cancelado";
+  if(n.includes("ativo"))  return "ativo";
+  return "outro";
 }
 
-function detectarColunas(headers){
-  const hNorm = headers.map(h => h.toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^a-z0-9\s]/g,' ')
-    .replace(/\s+/g,' ')
-    .trim()
-  );
+/* ═══════════════════════════════════════════════
+   BUILD OBJECTS
+═══════════════════════════════════════════════ */
+function buildObjects(rows){
+  if(!rows.length) throw new Error("CSV vazio.");
+  const cnk=(()=>{ const ks=Object.keys(rows[0]); for(const c of CLIENT_NAME_HEADERS) if(ks.includes(c)) return c; return null; })();
+  return rows.map(r=>{
+    const o={...r};
+    o._dt        =parseBRDateTime(o[KEY.dataAtendimento])||parseBRDateTime(o[state.meta.firstColKey]);
+    o._valorVgv  =parseMoneyBR(o[state.meta.vgvColKey]);
+    o._renda     =parseMoneyBR(o[KEY.renda]);
+    o._quotas    =countQuotas(o[KEY.statusContrato]);
+    o._bucket    =contractBucket(o[KEY.statusContrato]);
+    o._clientName=cnk?(o[cnk]??"").toString().trim():"";
+    o._statusAt  =norm(o[KEY.statusAtendimento]??"");
+    return o;
+  });
+}
 
-  const find = (palavrasChave) => {
-    for(const kw of palavrasChave){
-      for(let i=0; i<headers.length; i++){
-        if(hNorm[i] === kw) return i;
-      }
-      for(let i=0; i<headers.length; i++){
-        if(hNorm[i].includes(kw)) return i;
-      }
-    }
-    return -1;
+/* ═══════════════════════════════════════════════
+   FILTROS
+═══════════════════════════════════════════════ */
+function applyFilters(rows){
+  const status  =el("statusSelect").value;
+  const profTipo=norm(el("profTipo").value);
+  const profNome=el("profNome").value;
+  const ufSel   =el("ufSelect").value;
+  const d1=parseDateOnlyInput(el("dateStart").value);
+  const d2=parseDateOnlyInput(el("dateEnd").value);
+  let f=rows.slice();
+  if(d1||d2){
+    const s=d1?d1.getTime():-Infinity;
+    const e=d2?new Date(d2.getFullYear(),d2.getMonth(),d2.getDate(),23,59,59,999).getTime():Infinity;
+    f=f.filter(r=>r._dt&&r._dt.getTime()>=s&&r._dt.getTime()<=e);
+  }
+  if(status!=="todos")   f=f.filter(r=>r._bucket===status);
+  if(ufSel !=="todos")   f=f.filter(r=>(r[KEY.uf]??"").toString().trim()===ufSel);
+  if(profNome!=="todos") f=f.filter(r=>norm(r[profTipo]??"")=== norm(profNome));
+  return f;
+}
+
+/* ═══════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════ */
+function sumVGV(rows){
+  return rows.reduce((a,r)=>{
+    const v=r._valorVgv??0,at=r._quotas?.ativo??0,ca=r._quotas?.cancelado??0,t=at+ca;
+    a.total+=v; if(t>0){a.ativo+=v*(at/t);a.cancelado+=v*(ca/t);} return a;
+  },{ativo:0,cancelado:0,total:0});
+}
+function avgRenda(rows){ if(!rows.length) return 0; return rows.reduce((s,r)=>s+(r._renda??0),0)/rows.length; }
+function daysInclusive(){
+  const d1=parseDateOnlyInput(el("dateStart").value);
+  const d2=parseDateOnlyInput(el("dateEnd").value);
+  if(!d1||!d2) return null;
+  const diff=new Date(d2.getFullYear(),d2.getMonth(),d2.getDate()).getTime()-new Date(d1.getFullYear(),d1.getMonth(),d1.getDate()).getTime();
+  return diff<0?0:Math.floor(diff/86400000)+1;
+}
+function distinctDays(rows){ const s=new Set(); rows.forEach(r=>{if(r._dt)s.add(`${r._dt.getFullYear()}-${r._dt.getMonth()}-${r._dt.getDate()}`);}); return s.size; }
+function avgCasais(rows){ const tot=rows.length; const days=daysInclusive(); const d=days??distinctDays(rows); return d?tot/d:0; }
+
+function statsFor(rows){
+  const q  =rows.reduce((a,r)=>({ativo:a.ativo+(r._quotas?.ativo??0),cancelado:a.cancelado+(r._quotas?.cancelado??0),outro:a.outro+(r._quotas?.outro??0),total:a.total+(r._quotas?.total??0)}),{ativo:0,cancelado:0,outro:0,total:0});
+  const vgv=sumVGV(rows);
+  const noTour=rows.filter(r=>r._statusAt==="notour").length;
+  const casais=Math.max(0,rows.length-noTour);
+  const eff=casais?(q.total/casais):0;
+  const clientesCompraram = rows.filter(r => (r._quotas?.total ?? 0) > 0).length;
+  const aproveitamento = rows.length ? (clientesCompraram / rows.length) : 0;
+  return{
+    totalLinhas:rows.length,noTour,casais,
+    vendas:q.total,cotasCanceladas:q.cancelado,
+    vgvTotal:vgv.total,vgvAtivo:vgv.ativo,vgvCancelado:vgv.cancelado,
+    eficiencia:eff,pctCancel:q.total?(q.cancelado/q.total):0,
+    ticketMedio:q.total?(vgv.total/q.total):0,
+    rendaMed:avgRenda(rows),mediaCasaisPeriodo:avgCasais(rows),
+    pctCancelamentosVendas: q.total ? (q.cancelado / q.total) : 0,
+    aproveitamento, clientesCompraram,
+  };
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER CARDS
+═══════════════════════════════════════════════ */
+function renderCards(cid,rows){
+  const s=statsFor(rows);
+  el(cid).innerHTML=`
+    <div class="stat-card"><div class="stat-value">${s.casais}</div><div class="stat-label">Casais</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtNumBR(s.mediaCasaisPeriodo,1,1)}</div><div class="stat-label">Média de Casais/dia</div></div>
+    <div class="stat-card"><div class="stat-value">${s.vendas}</div><div class="stat-label">Cotas (vendas totais)</div></div>
+    <div class="stat-card"><div class="stat-value">${s.cotasCanceladas}</div><div class="stat-label">Cotas canceladas</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtPctBR(s.pctCancelamentosVendas)}</div><div class="stat-label">% Cancelamentos (Canceladas ÷ Vendas)</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtMoney(s.vgvTotal)}</div><div class="stat-label">VGV total (Σ col G)</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtPctBR(s.eficiencia)}</div><div class="stat-label">Eficiência</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtPctBR(s.aproveitamento)}</div><div class="stat-label">Aproveitamento</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtMoney(s.rendaMed)}</div><div class="stat-label">Renda média</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtMoney(s.ticketMedio)}</div><div class="stat-label">Ticket médio (cota)</div></div>
+    <div class="stat-card"><div class="stat-value">${s.noTour}</div><div class="stat-label">NoTour</div></div>`;
+}
+
+/* ═══════════════════════════════════════════════
+   RANKING
+═══════════════════════════════════════════════ */
+function groupRanking(rows,fieldKey){
+  const map=new Map();
+  rows.forEach(r=>{ const n=(r[fieldKey]??"").toString().trim(); if(!n) return; if(!map.has(n)) map.set(n,[]); map.get(n).push(r); });
+  return Array.from(map.entries()).map(([name,list])=>{
+    const s=statsFor(list);
+    return{name,casais:s.casais,vendas:s.vendas,cotasCanceladas:s.cotasCanceladas,vgvTotal:s.vgvTotal,eficiencia:s.eficiencia,pctCancel:s.pctCancel,ticketMedio:s.ticketMedio,rendaMed:s.rendaMed,aproveitamento:s.aproveitamento,clientesCompraram:s.clientesCompraram};
+  }).sort((a,b)=>(b.vendas-a.vendas)||(b.vgvTotal-a.vgvTotal)||a.name.localeCompare(b.name));
+}
+
+function setSort(tid,key){ const c=sortState[tid]||{key,dir:"desc"}; if(c.key===key)c.dir=c.dir==="desc"?"asc":"desc"; else{c.key=key;c.dir="desc";} sortState[tid]=c; }
+function sortInd(tid,key){ const c=sortState[tid]; if(!c||c.key!==key) return ""; return `<span class="sort-ind">${c.dir==="desc"?"▼":"▲"}</span>`; }
+function sortedList(list,tid,defKey="vendas"){
+  const s=sortState[tid]||{key:defKey,dir:"desc"};
+  return list.slice().sort((a,b)=>{
+    const cmp=(x,y,k,d)=>{ const va=x?.[k],vb=y?.[k]; if(va==null&&vb==null)return 0; if(va==null)return 1; if(vb==null)return-1; if(typeof va==="number"&&typeof vb==="number")return d==="asc"?va-vb:vb-va; return d==="asc"?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va)); };
+    return cmp(a,b,s.key,s.dir)||cmp(a,b,"vgvTotal","desc")||cmp(a,b,"vendas","desc");
+  });
+}
+
+const effPill = f => { const p=(f||0)*100; return p<15?"p-bad":p<25?"p-med":"p-good"; };
+const canPill = f => { const p=(f||0)*100; return p<20?"p-good":p<=30?"p-med":"p-bad"; };
+const aprPill = f => { const p=(f||0)*100; return p<15?"p-bad":p<25?"p-med":"p-good"; };
+
+function getFieldKeyForRankingCid(cid){
+  if(cid==="ranking-promotor") return KEY.promotor;
+  if(cid==="ranking-liner")    return KEY.liner;
+  if(cid==="ranking-closer")   return KEY.closer;
+  return null;
+}
+
+function renderClientDetailForRanking(profName, cid){
+  const fieldKey = getFieldKeyForRankingCid(cid);
+  if(!fieldKey) return "";
+
+  const rows = state.filtered.filter(r => {
+    const n = (r[fieldKey] ?? "").toString().trim();
+    return n === profName;
+  });
+
+  const comprou    = rows.filter(r => (r._quotas?.total ?? 0) > 0);
+  const naoComprou = rows.filter(r => (r._quotas?.total ?? 0) === 0);
+
+  const clientRow = (r, idx) => {
+    const clientName = r._clientName || `Cliente #${idx + 1}`;
+    const dt         = r._dt ? toISO(r._dt) : "—";
+    const quotas     = r._quotas?.total ?? 0;
+    const vgv        = r._valorVgv ?? 0;
+    const statusContrato = (r[KEY.statusContrato] ?? "").toString().trim() || "—";
+    const statusAt   = (r[KEY.statusAtendimento] ?? "").toString().trim() || "—";
+    return `
+      <tr>
+        <td class="name" style="max-width:300px" title="${clientName.replace(/"/g,"&quot;")}">${clientName}</td>
+        <td>${fmtBR(dt)}</td>
+        <td class="num">${quotas}</td>
+        <td class="num">${fmtMoney(vgv)}</td>
+        <td>${statusContrato}</td>
+        <td>${statusAt}</td>
+      </tr>`;
   };
 
-  const captador = find([
-    'promotor de marketing','promotor marketing','promotor',
-    'captador','captacao','captador de marketing','capta',
-    'marketing','promo'
-  ]);
-  const consultor = find([
-    'consultor','consultoria','consultor de vendas','consult'
-  ]);
-  const closer = find([
-    'closer','fechador','closer de vendas','close','finalizador'
-  ]);
-  const vgv = find([
-    'vgv','valor total','valor venda','valor','valor bruto','total','receita'
-  ]);
-  const status = find([
-    'status do contrato','status contrato','status','situacao','contrato','situacao contrato'
-  ]);
-
-  return { captador, consultor, closer, vgv, status };
-}
-
-function parseStatus(raw){
-  if(!raw||raw.trim()==='') return {ativos:0, total:0};
-  const partes = raw.toUpperCase().split('#').map(s=>s.trim()).filter(s=>s.length>0);
-  let ativos = 0;
-  for(const p of partes){
-    if(p==='ATIVO'||p.includes('ATIVO')) ativos++;
-  }
-  return {ativos, total: partes.length};
-}
-
-function extrairProfissionais(raw, cols, headers){
-  const colCaptador = headers[cols.captador];
-  const colConsultor = headers[cols.consultor];
-  const colCloser = headers[cols.closer];
-  const colVGV = cols.vgv>=0 ? headers[cols.vgv] : null;
-  const colStatus = cols.status>=0 ? headers[cols.status] : null;
-
-  const mapa = {};
-
-  for(const row of raw){
-    const captador = (row[colCaptador]||'').trim();
-    const consultor = (row[colConsultor]||'').trim();
-    const closer = (row[colCloser]||'').trim();
-
-    const statusRaw = colStatus ? (row[colStatus]||'') : '';
-    const {ativos, total} = parseStatus(statusRaw);
-
-    if(ativos === 0) continue;
-
-    let vgvVal = 0;
-    if(colVGV){
-      const rawV = (row[colVGV]||'').replace(/[R\$\s\.]/g,'').replace(',','.');
-      vgvVal = parseFloat(rawV) || 0;
+  const sectionTable = (title, icon, list, emptyMsg) => {
+    if(!list.length){
+      return `
+      <div class="client-detail-section">
+        <h4>${icon} ${title} <span class="badge">0</span></h4>
+        <div class="note" style="margin:0">${emptyMsg}</div>
+      </div>`;
     }
+    return `
+    <div class="client-detail-section">
+      <h4>${icon} ${title} <span class="badge">${list.length}</span></h4>
+      <div class="table-wrap" style="max-height:45vh;margin-bottom:0">
+        <table>
+          <thead><tr>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th class="num">Cotas</th>
+            <th class="num">VGV</th>
+            <th>Status Contrato</th>
+            <th>Status Atend.</th>
+          </tr></thead>
+          <tbody>${list.map(clientRow).join("")}</tbody>
+        </table>
+      </div>
+    </div>`;
+  };
 
-    const envolvidos = [
-      {nome: captador, equipe: 'CAPTACAO'},
-      {nome: consultor, equipe: 'CONSULTORIA'},
-      {nome: closer, equipe: 'CLOSER'}
-    ];
+  return `
+    <div class="client-detail-panel" id="client-detail-${cid}">
+      <div class="client-detail-header">
+        <span>👤 <strong>${profName}</strong> — ${rows.length} cliente(s) no período</span>
+        <span class="client-detail-close" data-close-ranking="${cid}">✕ Fechar</span>
+      </div>
+      ${sectionTable("Compraram", "✅", comprou, "Nenhum cliente com compra neste período.")}
+      ${sectionTable("Não compraram", "❌", naoComprou, "Nenhum cliente sem compra neste período.")}
+    </div>`;
+}
 
-    for(const {nome, equipe} of envolvidos){
-      if(!nome || nome==='') continue;
-      const key = nome+'|'+equipe;
-      if(!mapa[key]){
-        mapa[key] = {nome, equipe, vgv:0, vendas:0, vendas_total:0};
-      }
-      mapa[key].vgv += vgvVal;
-      mapa[key].vendas += ativos;
-      mapa[key].vendas_total += total;
-    }
+function closeRankingDetail(cid){
+  state.expandedRanking = {cid:null,name:null};
+  const panel = el("client-detail-" + cid);
+  if(panel) panel.remove();
+}
+
+function renderRanking(cid, rows, fieldKey){
+  const isExpanded = state.expandedRanking.cid === cid;
+  const list = sortedList(groupRanking(rows, fieldKey), cid);
+
+  let html = "";
+  if(isExpanded && state.expandedRanking.name){
+    html += renderClientDetailForRanking(state.expandedRanking.name, cid);
   }
 
-  const lista = Object.values(mapa).map(p => ({
-    ...p,
-    senha: (p.nome||'').toLowerCase().replace(/\s/g,'').substring(0,10),
-    ativo: getAtivo(p.nome)
-  }));
+  html += `<div class="table-wrap"><table>
+    <thead><tr>
+      <th class="rank-col">#</th>
+      <th>Nome</th>
+      <th class="num sortable" data-sort="casais" data-tid="${cid}">Casais ${sortInd(cid,"casais")}</th>
+      <th class="num sortable" data-sort="vendas" data-tid="${cid}">Vendas ${sortInd(cid,"vendas")}</th>
+      <th class="num sortable" data-sort="cotasCanceladas" data-tid="${cid}">Cancel. ${sortInd(cid,"cotasCanceladas")}</th>
+      <th class="num sortable" data-sort="vgvTotal" data-tid="${cid}">VGV ${sortInd(cid,"vgvTotal")}</th>
+      <th class="num sortable" data-sort="eficiencia" data-tid="${cid}">Eficiênc. ${sortInd(cid,"eficiencia")}</th>
+      <th class="num sortable" data-sort="aproveitamento" data-tid="${cid}">Aproveit. ${sortInd(cid,"aproveitamento")}</th>
+      <th class="num sortable" data-sort="pctCancel" data-tid="${cid}">% Canc. ${sortInd(cid,"pctCancel")}</th>
+      <th class="num sortable" data-sort="ticketMedio" data-tid="${cid}">Ticket méd. ${sortInd(cid,"ticketMedio")}</th>
+    </tr></thead>
+    <tbody>`;
 
-  return lista;
-}
-
-function getAtivo(nome){
-  const d = JSON.parse(localStorage.getItem('bmw_ativo_2026')||'{}');
-  return d[nome] !== false;
-}
-function setAtivo(nome,val){
-  const d = JSON.parse(localStorage.getItem('bmw_ativo_2026')||'{}');
-  d[nome] = val;
-  localStorage.setItem('bmw_ativo_2026', JSON.stringify(d));
-}
-
-function presencaKey(mes){ return `bmw_presenca_2026_${MESES_KEY[mes]}`; }
-function meetingKey(mes){ return `bmw_meeting_2026_${MESES_KEY[mes]}`; }
-
-function getDayPresenca(mes, dia){
-  const d = JSON.parse(localStorage.getItem(presencaKey(mes))||'{}');
-  return d[String(dia).padStart(2,'0')] || {};
-}
-function setDayPresenca(mes, dia, val){
-  const k = presencaKey(mes);
-  const d = JSON.parse(localStorage.getItem(k)||'{}');
-  d[String(dia).padStart(2,'0')] = val;
-  localStorage.setItem(k, JSON.stringify(d));
-}
-function getDayMeeting(mes, dia){
-  const d = JSON.parse(localStorage.getItem(meetingKey(mes))||'{}');
-  return d[String(dia).padStart(2,'0')] || {};
-}
-function setDayMeeting(mes, dia, val){
-  const k = meetingKey(mes);
-  const d = JSON.parse(localStorage.getItem(k)||'{}');
-  d[String(dia).padStart(2,'0')] = val;
-  localStorage.setItem(k, JSON.stringify(d));
-}
-
-function countPresencasTotal(nome){
-  let c=0;
-  for(let m=0;m<6;m++){
-    for(let d=1;d<=DIAS_POR_MES[m];d++){
-      const day = getDayPresenca(m,d);
-      if(day[nome]===1) c++;
-    }
-  }
-  return c;
-}
-function countMeetingsTotal(nome){
-  let c=0;
-  for(let m=0;m<6;m++){
-    for(let d=1;d<=DIAS_POR_MES[m];d++){
-      const day = getDayMeeting(m,d);
-      if(day[nome]) c++;
-    }
-  }
-  return c;
-}
-function calcXP(p){
-  const peso = p.equipe==='CAPTACAO'?1200:p.equipe==='CONSULTORIA'?1100:1000;
-  let xp = (p.vgv/1000)*peso;
-  xp += countPresencasTotal(p.nome)*XP_PRESENCA;
-  xp += countMeetingsTotal(p.nome)*XP_MEETING;
-  return Math.round(xp);
-}
-
-function formatCurrency(v){
-  if(!v||isNaN(v)) return 'R$ 0';
-  return 'R$ '+Math.round(v).toLocaleString('pt-BR');
-}
-function formatXP(v){
-  if(!v||isNaN(v)) return '0 XP';
-  return Math.round(v).toLocaleString('pt-BR')+' XP';
-}
-function escJS(s){ return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
-function escHTML(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-function renderMeusNumeros(){
-  const el = document.getElementById('meusNumerosContent');
-  if(!el) return;
-
-  if(currentUser?.role==='admin'){
-    const ativos = getAtivos();
-    const tv = ativos.reduce((a,p)=>a+p.vgv,0);
-    const tn = ativos.reduce((a,p)=>a+p.vendas,0);
-    const tp = ativos.reduce((a,p)=>a+countPresencasTotal(p.nome),0);
-    const tm = ativos.reduce((a,p)=>a+countMeetingsTotal(p.nome),0);
-    el.innerHTML = `
-      <div class="section-title"><i class="fa-solid fa-gauge-high"></i> Visão Geral</div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
-        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--bmw-light)">${ativos.length}</div>
-          <div style="font-size:0.75rem;color:var(--text-dim)">Profissionais Ativos</div>
-        </div>
-        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--gold)">${formatCurrency(tv)}</div>
-          <div style="font-size:0.75rem;color:var(--text-dim)">VGV Total</div>
-        </div>
-        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:var(--green)">${tp}</div>
-          <div style="font-size:0.75rem;color:var(--text-dim)">Presenças Totais</div>
-        </div>
-        <div style="background:var(--card);padding:14px;border-radius:10px;text-align:center">
-          <div style="font-size:1.8rem;font-weight:800;color:#ff9800">${tm}</div>
-          <div style="font-size:0.75rem;color:var(--text-dim)">Meetings Totais</div>
-        </div>
-      </div>
-    `;
-    return;
-  }
-
-  const p = professionals.find(x=>x.nome.toLowerCase()===currentUser?.name?.toLowerCase());
-  if(!p){ el.innerHTML='<p>Nenhum dado encontrado para seu usuário.</p>'; return; }
-
-  const xp = calcXP(p);
-  const ativos = getAtivos();
-  const ranked = [...ativos].map(x=>({...x,xp:calcXP(x)})).sort((a,b)=>b.xp-a.xp);
-  const rg = ranked.findIndex(x=>x.nome===p.nome)+1;
-  const req = ranked.filter(x=>x.equipe===p.equipe);
-  const re = req.findIndex(x=>x.nome===p.nome)+1;
-  const pres = countPresencasTotal(p.nome);
-  const meet = countMeetingsTotal(p.nome);
-
-  el.innerHTML = `
-    <div class="section-title"><i class="fa-solid fa-user"></i> ${p.nome}</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;color:var(--gold)">#${rg}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">Rank Geral (${ativos.length})</div>
-      </div>
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;color:var(--bmw-light)">#${re}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">Rank ${p.equipe} (${req.length})</div>
-      </div>
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;">${formatCurrency(p.vgv)}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">VGV (${p.vendas} vendas)</div>
-      </div>
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;color:#fff">${formatXP(xp)}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">XP Total</div>
-      </div>
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;color:var(--green)">${pres}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">Presenças (${formatXP(pres*XP_PRESENCA)})</div>
-      </div>
-      <div style="background:var(--card);padding:12px;border-radius:8px;text-align:center">
-        <div style="font-size:1.4rem;font-weight:800;color:#ff9800">${meet}</div>
-        <div style="font-size:0.7rem;color:var(--text-dim)">Meetings (${formatXP(meet*XP_MEETING)})</div>
-      </div>
-    </div>
-  `;
-}
-
-function renderRanking(){
-  const el = document.getElementById('rankingContent');
-  if(!el) return;
-
-  const ativos = getAtivos();
-  if(!ativos.length){ el.innerHTML='<p style="padding:20px;color:var(--text-dim);">Nenhum profissional ativo.</p>'; return; }
-
-  const ranked = [...ativos].map(p=>({...p,xp:calcXP(p)})).sort((a,b)=>b.xp-a.xp);
-
-  let h = `<div class="section-title"><i class="fa-solid fa-trophy"></i> Ranking Geral</div>`;
-  h += `<table><thead><tr><th>#</th><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas</th><th>Pres.</th><th>Meet.</th><th style="color:var(--gold)">XP</th></tr></thead><tbody>`;
-  ranked.forEach((p,i)=>{
-    const isMe = currentUser?.name===p.nome;
-    h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
-      <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
-      <td>${p.nome}${isMe?' ⭐':''}</td><td>${p.equipe}</td>
-      <td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td>
-      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
-      <td style="color:var(--gold);font-weight:800;">${formatXP(p.xp)}</td>
+  list.forEach((it, idx) => {
+    const isActive = isExpanded && state.expandedRanking.name === it.name;
+    html += `<tr>
+      <td class="rank-col">${idx+1}</td>
+      <td class="name clickable ${isActive?'style="color:var(--accent2)"':''}" data-ranking-name="${it.name.replace(/"/g,"&quot;")}" data-ranking-cid="${cid}">${it.name}</td>
+      <td class="num">${it.casais}</td>
+      <td class="num">${it.vendas}</td>
+      <td class="num">${it.cotasCanceladas}</td>
+      <td class="num">${fmtMoney(it.vgvTotal)}</td>
+      <td class="num"><span class="pill ${effPill(it.eficiencia)}">${fmtPctBR(it.eficiencia)}</span></td>
+      <td class="num"><span class="pill ${aprPill(it.aproveitamento)}">${fmtPctBR(it.aproveitamento)}</span></td>
+      <td class="num"><span class="pill ${canPill(it.pctCancel)}">${fmtPctBR(it.pctCancel)}</span></td>
+      <td class="num">${fmtMoney(it.ticketMedio)}</td>
     </tr>`;
   });
-  h += `</tbody></table>`;
 
-  [{k:'CAPTACAO',c:'#b39ddb'},{k:'CONSULTORIA',c:'#64b5f6'},{k:'CLOSER',c:'#ef9a9a'}].forEach(({k,c})=>{
-    const eqList = ranked.filter(p=>p.equipe===k);
-    if(!eqList.length) return;
-    h += `<h4 style="margin-top:20px;color:${c};">🏆 ${k} (${eqList.length})</h4>`;
-    h += `<table><thead><tr><th>#</th><th>Nome</th><th>VGV</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
-    eqList.forEach((p,i)=>{
-      const isMe = currentUser?.name===p.nome;
-      h += `<tr style="${isMe?'background:rgba(0,102,177,0.2);font-weight:700;':''}">
-        <td>${i<3?['🥇','🥈','🥉'][i]:i+1}</td><td>${p.nome}${isMe?' ⭐':''}</td>
-        <td>${formatCurrency(p.vgv)}</td><td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td>
-        <td style="font-weight:800;">${formatXP(p.xp)}</td></tr>`;
+  html += `</tbody></table></div>`;
+  el(cid).innerHTML = html;
+
+  el(cid).querySelectorAll("[data-sort]").forEach(th=>{
+    th.addEventListener("click",()=>{
+      setSort(th.dataset.tid, th.dataset.sort);
+      refreshTab(getActiveTab());
     });
-    h += `</tbody></table>`;
   });
 
-  el.innerHTML = h;
+  el(cid).querySelectorAll("[data-ranking-name]").forEach(elName=>{
+    elName.addEventListener("click", ()=>{
+      const name = elName.dataset.rankingName;
+      const cid2 = elName.dataset.rankingCid;
+      if(state.expandedRanking.cid === cid2 && state.expandedRanking.name === name){
+        closeRankingDetail(cid2);
+      } else {
+        if(state.expandedRanking.cid) closeRankingDetail(state.expandedRanking.cid);
+        state.expandedRanking = {cid:cid2, name};
+      }
+      refreshTab(getActiveTab());
+    });
+  });
+
+  el(cid).querySelectorAll("[data-close-ranking]").forEach(elClose=>{
+    elClose.addEventListener("click", ()=>{
+      closeRankingDetail(elClose.dataset.closeRanking);
+      refreshTab(getActiveTab());
+    });
+  });
 }
 
-function renderPresenca(){
-  const el = document.getElementById('presencaContent');
-  if(!el) return;
+/* ═══════════════════════════════════════════════
+   PERFIL DE RENDA (novas faixas)
+═══════════════════════════════════════════════ */
+function getRendaFaixa(renda){
+  if(renda < 11900) return "Abaixo de R$ 11,9 mil";
+  if(renda >= 12000 && renda < 15000) return "R$ 12 mil a R$ 14,9 mil";
+  if(renda >= 15000 && renda < 20000) return "R$ 15 mil a R$ 19,9 mil";
+  if(renda >= 20000 && renda < 35000) return "R$ 20 mil a R$ 34,9 mil";
+  if(renda >= 35000 && renda <= 50000) return "R$ 35 mil a R$ 50 mil";
+  if(renda > 50000) return "Acima de 51 mil";
+  return "Abaixo de R$ 11,9 mil";
+}
 
-  const ativos = getAtivos();
-  const diasMes = DIAS_POR_MES[mesAtual];
+const RENDA_FAIXAS_ORDEM = [
+  "Abaixo de R$ 11,9 mil",
+  "R$ 12 mil a R$ 14,9 mil",
+  "R$ 15 mil a R$ 19,9 mil",
+  "R$ 20 mil a R$ 34,9 mil",
+  "R$ 35 mil a R$ 50 mil",
+  "Acima de 51 mil",
+];
 
-  let pres=0,falt=0,meet=0;
-  for(let d=1;d<=diasMes;d++){
-    const pd = getDayPresenca(mesAtual,d);
-    const md = getDayMeeting(mesAtual,d);
-    ativos.forEach(p=>{
-      if(pd[p.nome]===1) pres++;
-      if(pd[p.nome]===0) falt++;
-      if(md[p.nome]) meet++;
+function renderPerfilRenda(rows){
+  const map = new Map();
+  RENDA_FAIXAS_ORDEM.forEach(f => map.set(f, []));
+  rows.forEach(r => {
+    const faixa = getRendaFaixa(r._renda ?? 0);
+    if(!map.has(faixa)) map.set(faixa, []); // fallback
+    map.get(faixa).push(r);
+  });
+
+  const list = Array.from(map.entries()).map(([faixa, listRows]) => {
+    const s = statsFor(listRows);
+    const totalClientes = listRows.length;
+    const compraram = s.clientesCompraram;
+    const aproveitamento = totalClientes ? compraram / totalClientes : 0;
+    return {
+      faixa,
+      totalClientes,
+      compraram,
+      aproveitamento,
+      vendas: s.vendas,
+      vgvTotal: s.vgvTotal,
+      eficiencia: s.eficiencia,
+      ticketMedio: s.ticketMedio,
+      rendaMed: s.rendaMed,
+      pctCancel: s.pctCancel,
+      cotasCanceladas: s.cotasCanceladas,
+      casais: s.casais,
+    };
+  });
+
+  // Ordenar pelas faixas definidas
+  const ordemMap = {};
+  RENDA_FAIXAS_ORDEM.forEach((f, i) => { ordemMap[f] = i; });
+  list.sort((a, b) => (ordemMap[a.faixa] ?? 999) - (ordemMap[b.faixa] ?? 999));
+
+  const sorted = sortedList(list, "perfil-renda", "vgvTotal");
+
+  let html = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>Faixa de renda</th>
+      <th class="num sortable" data-sort="totalClientes" data-tid="perfil-renda">Total Clientes ${sortInd("perfil-renda","totalClientes")}</th>
+      <th class="num sortable" data-sort="compraram" data-tid="perfil-renda">Compraram ${sortInd("perfil-renda","compraram")}</th>
+      <th class="num sortable" data-sort="aproveitamento" data-tid="perfil-renda">Aproveit. ${sortInd("perfil-renda","aproveitamento")}</th>
+      <th class="num sortable" data-sort="casais" data-tid="perfil-renda">Casais ${sortInd("perfil-renda","casais")}</th>
+      <th class="num sortable" data-sort="vendas" data-tid="perfil-renda">Vendas ${sortInd("perfil-renda","vendas")}</th>
+      <th class="num sortable" data-sort="vgvTotal" data-tid="perfil-renda">VGV ${sortInd("perfil-renda","vgvTotal")}</th>
+      <th class="num sortable" data-sort="eficiencia" data-tid="perfil-renda">Eficiênc. ${sortInd("perfil-renda","eficiencia")}</th>
+      <th class="num sortable" data-sort="ticketMedio" data-tid="perfil-renda">Ticket méd. ${sortInd("perfil-renda","ticketMedio")}</th>
+      <th class="num sortable" data-sort="pctCancel" data-tid="perfil-renda">% Canc. ${sortInd("perfil-renda","pctCancel")}</th>
+    </tr></thead>
+    <tbody>`;
+
+  sorted.forEach(it => {
+    html += `<tr>
+      <td class="name"><strong>${it.faixa}</strong></td>
+      <td class="num">${it.totalClientes}</td>
+      <td class="num">${it.compraram}</td>
+      <td class="num"><span class="pill ${aprPill(it.aproveitamento)}">${fmtPctBR(it.aproveitamento)}</span></td>
+      <td class="num">${it.casais}</td>
+      <td class="num">${it.vendas}</td>
+      <td class="num">${fmtMoney(it.vgvTotal)}</td>
+      <td class="num"><span class="pill ${effPill(it.eficiencia)}">${fmtPctBR(it.eficiencia)}</span></td>
+      <td class="num">${fmtMoney(it.ticketMedio)}</td>
+      <td class="num"><span class="pill ${canPill(it.pctCancel)}">${fmtPctBR(it.pctCancel)}</span></td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  el("perfil-renda").innerHTML = html;
+
+  el("perfil-renda").querySelectorAll("[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      setSort(th.dataset.tid, th.dataset.sort);
+      renderPerfilRenda(state.filtered);
     });
-  }
+  });
+}
 
-  let h = `
-    <div class="section-title"><i class="fa-solid fa-calendar-check"></i> Lista de Presença</div>
-    <div class="month-selector">
-      <label>📅 Mês:</label>
-      <select id="mesSelector" onchange="changeMes(this.value)">
-        ${MESES.map((m,i)=>`<option value="${i}" ${i===mesAtual?'selected':''}>${m} 2026</option>`).join('')}
-      </select>
-      <span style="font-size:0.8rem;color:var(--text-dim);">
-        ✅ ${pres} presenças | ❌ ${falt} faltas | 🎤 ${meet} meetings
-      </span>
-    </div>
-  `;
+/* ═══════════════════════════════════════════════
+   CURVA DIÁRIA
+═══════════════════════════════════════════════ */
+function renderCurva(rows){
+  renderCards("stats-curva", rows);
+  const map = new Map();
+  rows.forEach(r => {
+    if(!r._dt) return;
+    const key = toISO(r._dt);
+    if(!map.has(key)) map.set(key, {casais:0, vendas:0, vgv:0, compraram:0, total:0});
+    const d = map.get(key);
+    d.casais++;
+    d.vendas += r._quotas?.total ?? 0;
+    d.vgv    += r._valorVgv ?? 0;
+    if((r._quotas?.total ?? 0) > 0) d.compraram++;
+    d.total++;
+  });
+  const entries = Array.from(map.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+  const labels = entries.map(e=>fmtBR(e[0]));
+  const casais  = entries.map(e=>e[1].casais);
+  const vendas  = entries.map(e=>e[1].vendas);
+  const vgv     = entries.map(e=>e[1].vgv);
+  const aproveit = entries.map(e => e[1].total ? (e[1].compraram / e[1].total * 100) : 0);
 
-  const offsetDias = [3,5,1,3,0,2];
-  const inicio = offsetDias[mesAtual];
-
-  h += `<div class="calendar-grid">`;
-  ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'].forEach(d=>h+=`<div class="calendar-day-header">${d}</div>`);
-  for(let i=0;i<inicio;i++) h+=`<div></div>`;
-
-  const hoje = new Date();
-  for(let d=1;d<=diasMes;d++){
-    const pd = getDayPresenca(mesAtual,d);
-    const md = getDayMeeting(mesAtual,d);
-    const mesNum = parseInt(MESES_KEY[mesAtual]);
-    const isFuture = mesNum > hoje.getMonth()+1 || (mesNum === hoje.getMonth()+1 && d > hoje.getDate());
-
-    let cls='day-undefined', lbl='—';
-    let pC=0, fC=0, hasMtg=false;
-
-    if(!isFuture && Object.keys(pd).length>0){
-      ativos.forEach(p=>{
-        if(pd[p.nome]===1) pC++;
-        if(pd[p.nome]===0) fC++;
-        if(md[p.nome]) hasMtg=true;
-      });
-      if(pC>0&&fC===0){ cls='day-todos-presentes'; lbl=`${pC}P`; }
-      else if(fC>0&&pC===0){ cls='day-todos-falta'; lbl=`${fC}F`; }
-      else if(pC>0&&fC>0){ cls='day-parcial'; lbl=`${pC}/${fC}`; }
+  if(charts.curva) charts.curva.destroy();
+  const ctx = el("chartCurva").getContext("2d");
+  charts.curva = new Chart(ctx, {
+    type:"line",
+    data:{
+      labels,
+      datasets:[
+        {label:"Casais",data:casais,borderColor:"#7C5CFF",backgroundColor:"rgba(124,92,255,0.10)",fill:true,tension:0.3,pointRadius:2,yAxisID:"y"},
+        {label:"Vendas (cotas)",data:vendas,borderColor:"#22D3EE",backgroundColor:"rgba(34,211,238,0.10)",fill:true,tension:0.3,pointRadius:2,yAxisID:"y"},
+        {label:"VGV",data:vgv,borderColor:"#5CFFB0",backgroundColor:"rgba(92,255,176,0.08)",fill:true,tension:0.3,pointRadius:2,yAxisID:"y1"},
+        {label:"Aproveit. %",data:aproveit,borderColor:"#FFB020",borderDash:[5,3],tension:0.3,pointRadius:2,yAxisID:"y2"},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},
+      plugins:{legend:{labels:{color:"rgba(234,240,255,.72)",usePointStyle:true,padding:20}}},
+      scales:{
+        y:{type:"linear",position:"left",title:{display:true,text:"Casais/Vendas",color:"rgba(234,240,255,.6)"},grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"rgba(234,240,255,.72)"}},
+        y1:{type:"linear",position:"right",title:{display:true,text:"VGV (R$)",color:"rgba(234,240,255,.6)"},grid:{display:false},ticks:{color:"#5CFFB0",callback:v=>fmtMoney(v)}},
+        y2:{type:"linear",position:"right",title:{display:true,text:"Aproveitamento %",color:"#FFB020"},grid:{display:false},ticks:{color:"#FFB020",callback:v=>fmtNumBR(v,1,1)+"%"},min:0,max:100},
+        x:{grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"rgba(234,240,255,.72)",maxRotation:45}}
+      }
     }
-
-    if(isFuture) cls='day-future';
-    const clicavel = currentUser?.role==='admin' && !isFuture;
-
-    h += `<div class="calendar-day ${cls}" ${clicavel?`onclick="openPresencaModal(${d})"`:''} title="${MESES[mesAtual]} ${d}">
-      <div>${d}</div><small>${lbl}</small>
-      ${hasMtg?'<div class="day-meeting-dot"></div>':''}
-    </div>`;
-  }
-  h += `</div>`;
-
-  h += `<p style="margin-top:12px;font-size:0.78rem;color:var(--text-dim);">
-    💡 <b>Admin:</b> clique no dia para abrir | 🟡 = dia com meeting</p>`;
-
-  el.innerHTML = h;
-}
-
-function changeMes(v){ mesAtual=parseInt(v); renderPresenca(); }
-
-function openPresencaModal(dia){
-  modalDia = dia;
-  const ativos = getAtivos();
-  const savedP = getDayPresenca(mesAtual,dia);
-  const savedM = getDayMeeting(mesAtual,dia);
-
-  modalPresenca = {};
-  modalMeeting = {};
-  ativos.forEach(p=>{
-    modalPresenca[p.nome] = savedP[p.nome]!==undefined ? savedP[p.nome] : 1;
-    modalMeeting[p.nome] = savedM[p.nome] || null;
   });
 
-  document.getElementById('modalDiaLabel').textContent = dia;
-  document.getElementById('modalSubtitle').textContent = `${MESES[mesAtual]} 2026`;
-  renderModalBody();
-  document.getElementById('presencaModal').classList.add('active');
-  document.body.style.overflow='hidden';
+  const s = statsFor(rows);
+  el("curva-meta").textContent = `${s.casais} casais · ${s.vendas} vendas · Eficiência ${fmtPctBR(s.eficiencia)} · Aproveitamento ${fmtPctBR(s.aproveitamento)}`;
 }
 
-function closePresencaModal(){
-  document.getElementById('presencaModal').classList.remove('active');
-  document.body.style.overflow='';
+/* ═══════════════════════════════════════════════
+   PERFORMANCE DIA DA SEMANA
+═══════════════════════════════════════════════ */
+function renderSemana(rows){
+  const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const map = new Map();
+  DIAS.forEach(d=>map.set(d,{casais:0, vendas:0, vgv:0, dias:new Set()}));
+  rows.forEach(r=>{
+    if(!r._dt) return;
+    const dia = DIAS[r._dt.getDay()];
+    const d = map.get(dia);
+    d.casais++;
+    d.vendas += r._quotas?.total ?? 0;
+    d.vgv    += r._valorVgv ?? 0;
+    d.dias.add(toISO(r._dt));
+  });
+  const labels = DIAS;
+  const casais  = DIAS.map(d=>map.get(d).casais);
+  const vendas  = DIAS.map(d=>map.get(d).vendas);
+  const vgv     = DIAS.map(d=>map.get(d).vgv);
+  const efic    = DIAS.map(d=>{const m=map.get(d);return m.casais?m.vendas/m.casais:0;});
+  const mediaDia= DIAS.map(d=>{const m=map.get(d);return m.dias.size?m.casais/m.dias.size:0;});
+
+  if(charts.semana) charts.semana.destroy();
+  const ctx = el("chartSemana").getContext("2d");
+  charts.semana = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"Casais",data:casais,backgroundColor:"rgba(124,92,255,.60)",borderRadius:6},
+        {label:"Vendas",data:vendas,backgroundColor:"rgba(34,211,238,.60)",borderRadius:6},
+        {label:"VGV",data:vgv,backgroundColor:"rgba(92,255,176,.60)",borderRadius:6,yAxisID:"y1"},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:"rgba(234,240,255,.72)",usePointStyle:true,padding:20}},
+        tooltip:{
+          callbacks:{
+            afterBody:(ctx)=>{
+              const i=ctx[0].dataIndex;
+              return [`Eficiência: ${fmtPctBR(efic[i])}`,`Média casais/dia: ${fmtNumBR(mediaDia[i],1,1)}`];
+            }
+          }
+        }
+      },
+      scales:{
+        y:{type:"linear",position:"left",title:{display:true,text:"Casais/Vendas",color:"rgba(234,240,255,.6)"},grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"rgba(234,240,255,.72)"}},
+        y1:{type:"linear",position:"right",title:{display:true,text:"VGV (R$)",color:"rgba(234,240,255,.6)"},grid:{display:false},ticks:{color:"#5CFFB0",callback:v=>fmtMoney(v)}},
+        x:{grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"rgba(234,240,255,.72)"}}
+      }
+    }
+  });
 }
 
-function renderModalBody(){
-  const ativos = getAtivos();
-  const grupos = [
-    {list:ativos.filter(p=>p.equipe==='CAPTACAO'),lbl:'Captação',cls:'captacao',ic:'fa-phone-volume'},
-    {list:ativos.filter(p=>p.equipe==='CONSULTORIA'),lbl:'Consultoria',cls:'consultoria',ic:'fa-handshake'},
-    {list:ativos.filter(p=>p.equipe==='CLOSER'),lbl:'Closer',cls:'closer',ic:'fa-check-double'}
+/* ═══════════════════════════════════════════════
+   CANCELAMENTO
+═══════════════════════════════════════════════ */
+function renderCancelamento(rows){
+  const map = new Map();
+  rows.forEach(r=>{
+    const t = r._quotas?.total ?? 0;
+    if(t===0) return;
+    if(!map.has(t)) map.set(t,{cotasTotal:0,canceladas:0,vgvTotal:0,vgvCancelado:0});
+    const d = map.get(t);
+    d.cotasTotal  += t;
+    d.canceladas  += r._quotas?.cancelado ?? 0;
+    d.vgvTotal    += r._valorVgv ?? 0;
+    const qt = r._quotas?.total ?? 0;
+    if(qt>0) d.vgvCancelado += (r._valorVgv ?? 0) * ((r._quotas?.cancelado ?? 0) / qt);
+  });
+  const list = Array.from(map.entries()).map(([cotas, d])=>({
+    cotas,
+    cotasTotal:d.cotasTotal,
+    canceladas:d.canceladas,
+    pct:d.cotasTotal?(d.canceladas/d.cotasTotal):0,
+    vgvTotal:d.vgvTotal,
+    vgvCancelado:d.vgvCancelado,
+  })).sort((a,b)=>a.cotas-b.cotas);
+
+  const labels = list.map(l=>`${l.cotas} cota(s)`);
+  const pctData = list.map(l=>l.pct*100);
+  const cancData = list.map(l=>l.canceladas);
+
+  if(charts.cancelamento) charts.cancelamento.destroy();
+  const ctx = el("chartCancelamento").getContext("2d");
+  charts.cancelamento = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels,
+      datasets:[
+        {label:"% Cancelamento",data:pctData,backgroundColor:"rgba(255,45,85,.60)",borderRadius:6,yAxisID:"y"},
+        {label:"Canceladas",data:cancData,backgroundColor:"rgba(255,176,32,.50)",borderRadius:6,yAxisID:"y1"},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:"rgba(234,240,255,.72)",usePointStyle:true,padding:20}}},
+      scales:{
+        y:{type:"linear",position:"left",title:{display:true,text:"% Cancel.",color:"rgba(234,240,255,.6)"},min:0,max:100,grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"#FF2D55",callback:v=>v+"%"}},
+        y1:{type:"linear",position:"right",title:{display:true,text:"Qtd. Cancel.",color:"rgba(234,240,255,.6)"},grid:{display:false},ticks:{color:"#FFB020"}},
+        x:{grid:{color:"rgba(255,255,255,.06)"},ticks:{color:"rgba(234,240,255,.72)"}}
+      }
+    }
+  });
+
+  const sorted = sortedList(list, "cancelamento-table", "cotasTotal");
+  el("cancelamento-table").innerHTML = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th class="num sortable" data-sort="cotas" data-tid="cancelamento-table">Cotas/venda ${sortInd("cancelamento-table","cotas")}</th>
+      <th class="num sortable" data-sort="cotasTotal" data-tid="cancelamento-table">Total cotas ${sortInd("cancelamento-table","cotasTotal")}</th>
+      <th class="num sortable" data-sort="canceladas" data-tid="cancelamento-table">Canceladas ${sortInd("cancelamento-table","canceladas")}</th>
+      <th class="num sortable" data-sort="pct" data-tid="cancelamento-table">% Canc. ${sortInd("cancelamento-table","pct")}</th>
+      <th class="num sortable" data-sort="vgvTotal" data-tid="cancelamento-table">VGV Total ${sortInd("cancelamento-table","vgvTotal")}</th>
+      <th class="num sortable" data-sort="vgvCancelado" data-tid="cancelamento-table">VGV Cancel. ${sortInd("cancelamento-table","vgvCancelado")}</th>
+    </tr></thead>
+    <tbody>${sorted.map(l=>`<tr>
+      <td class="num">${l.cotas}</td>
+      <td class="num">${l.cotasTotal}</td>
+      <td class="num">${l.canceladas}</td>
+      <td class="num"><span class="pill ${canPill(l.pct)}">${fmtPctBR(l.pct)}</span></td>
+      <td class="num">${fmtMoney(l.vgvTotal)}</td>
+      <td class="num">${fmtMoney(l.vgvCancelado)}</td>
+    </tr>`).join("")}</tbody></table></div>`;
+
+  el("cancelamento-table").querySelectorAll("[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      setSort("cancelamento-table", th.dataset.sort);
+      renderCancelamento(state.filtered);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   EQUIPES DE CAPTAÇÃO
+═══════════════════════════════════════════════ */
+function filtraEquipe(rows, equipe){
+  return rows.filter(r=>{
+    const nome = (r[KEY.promotor]??"").toString().trim();
+    if(!nome) return false;
+    return getEquipeEfetiva(nome, r._dt) === equipe;
+  });
+}
+
+function renderEquipes(){
+  const parque  = filtraEquipe(state.filtered, "Equipe Parque");
+  const externa = filtraEquipe(state.filtered, "Equipe Externa");
+  const inativo = filtraEquipe(state.filtered, "Inativo");
+
+  const todosNomes = new Set();
+  state.filtered.forEach(r=>{ const n=(r[KEY.promotor]??"").toString().trim(); if(n) todosNomes.add(n); });
+  const comEquipe = new Set();
+  [...todosNomes].forEach(n=>{ if(getTeamConfig(n)) comEquipe.add(n); });
+  const semEquipe = state.filtered.filter(r=>{
+    const n=(r[KEY.promotor]??"").toString().trim();
+    return n && !comEquipe.has(n);
+  });
+
+  renderCards("stats-equipe-parque", parque);
+  renderCards("stats-equipe-externa", externa);
+  renderCards("stats-equipe-inativo", inativo);
+  renderCards("stats-equipe-sem", semEquipe);
+
+  renderTeamMappingList();
+}
+
+function renderTeamMappingList(){
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[KEY.promotor]??"").toString().trim(); if(n) nomes.add(n); });
+  const sorted = [...nomes].sort((a,b)=>a.localeCompare(b));
+
+  el("teamMappingList").innerHTML = sorted.map(n=>{
+    const cfg = getTeamConfig(n);
+    const equipe = cfg?.equipe || "";
+    const ini = cfg?.inativoInicio || "";
+    const fim = cfg?.inativoFim || "";
+    const isInativo = equipe === "Inativo";
+    const tagClass = equipe==="Equipe Parque"?"parque":equipe==="Equipe Externa"?"externa":equipe==="Inativo"?"inativo":"none";
+    const tagLabel = equipe || "Sem equipe";
+    return `<div class="promo-row" data-promotor="${n.replace(/"/g,"&quot;")}">
+      <div class="pr-left">
+        <span class="pr-name">${n}</span>
+        <span class="pr-tag ${tagClass}">${tagLabel}</span>
+      </div>
+      <select class="mini-sel team-sel">
+        <option value="">Sem equipe</option>
+        <option value="Equipe Parque" ${equipe==="Equipe Parque"?"selected":""}>Equipe Parque</option>
+        <option value="Equipe Externa" ${equipe==="Equipe Externa"?"selected":""}>Equipe Externa</option>
+        <option value="Inativo" ${equipe==="Inativo"?"selected":""}>Inativo</option>
+      </select>
+      <div class="inativo-dates ${isInativo?"":"hidden"}">
+        <label>Início:</label><input type="date" class="inativo-inicio" value="${ini}"/>
+        <label>Fim:</label><input type="date" class="inativo-fim" value="${fim}"/>
+        ${isInativo?"<span class=\"inativo-badge\">Inativo</span>":""}
+      </div>
+    </div>`;
+  }).join("");
+
+  el("teamMappingList").querySelectorAll(".team-sel").forEach(sel=>{
+    sel.addEventListener("change", ()=>{
+      const row = sel.closest(".promo-row");
+      const datesDiv = row.querySelector(".inativo-dates");
+      const badge = datesDiv.querySelector(".inativo-badge");
+      if(sel.value === "Inativo"){
+        datesDiv.classList.remove("hidden");
+        if(!badge){
+          const span = document.createElement("span");
+          span.className = "inativo-badge";
+          span.textContent = "Inativo";
+          datesDiv.appendChild(span);
+        }
+      } else {
+        datesDiv.classList.add("hidden");
+        if(badge) badge.remove();
+      }
+      salvarEquipeRow(row);
+    });
+  });
+
+  el("teamMappingList").querySelectorAll(".inativo-inicio, .inativo-fim").forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const row = inp.closest(".promo-row");
+      salvarEquipeRow(row);
+    });
+  });
+}
+
+function salvarEquipeRow(row){
+  const nome  = row.dataset.promotor;
+  const sel   = row.querySelector(".team-sel");
+  const ini   = row.querySelector(".inativo-inicio");
+  const fim   = row.querySelector(".inativo-fim");
+  const equipe = sel?.value || "";
+  if(!equipe){
+    removeTeamConfig(nome);
+  } else {
+    setTeamConfig(nome, {
+      equipe,
+      inativoInicio: ini?.value || null,
+      inativoFim: fim?.value || null,
+    });
+  }
+  // Re-render tags sem perder foco
+  const prLeft = row.querySelector(".pr-left .pr-tag");
+  if(prLeft){
+    const tagClass = equipe==="Equipe Parque"?"parque":equipe==="Equipe Externa"?"externa":equipe==="Inativo"?"inativo":"none";
+    prLeft.className = "pr-tag " + tagClass;
+    prLeft.textContent = equipe || "Sem equipe";
+  }
+  refreshTab("equipes");
+}
+
+/* ═══════════════════════════════════════════════
+   SUPERVISORES
+═══════════════════════════════════════════════ */
+function renderSupervisores(){
+  const parque  = filtraEquipe(state.filtered, "Equipe Parque");
+  const externa = filtraEquipe(state.filtered, "Equipe Externa");
+  const geralRows = [...parque, ...externa];
+
+  const sp = statsFor(parque);
+  const se = statsFor(externa);
+  const sg = statsFor(geralRows);
+
+  const metricas = [
+    {label:"Casais", p:sp.casais, e:se.casais, g:sg.casais, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"Média Casais/dia", p:sp.mediaCasaisPeriodo, e:se.mediaCasaisPeriodo, g:sg.mediaCasaisPeriodo, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"Vendas (cotas)", p:sp.vendas, e:se.vendas, g:sg.vendas, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"Cotas canceladas", p:sp.cotasCanceladas, e:se.cotasCanceladas, g:sg.cotasCanceladas, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"VGV total", p:sp.vgvTotal, e:se.vgvTotal, g:sg.vgvTotal, fmt:v=>fmtMoney(v)},
+    {label:"VGV ativo", p:sp.vgvAtivo, e:se.vgvAtivo, g:sg.vgvAtivo, fmt:v=>fmtMoney(v)},
+    {label:"VGV cancelado", p:sp.vgvCancelado, e:se.vgvCancelado, g:sg.vgvCancelado, fmt:v=>fmtMoney(v)},
+    {label:"Eficiência", p:sp.eficiencia, e:se.eficiencia, g:sg.eficiencia, fmt:v=>fmtPctBR(v)},
+    {label:"Aproveitamento", p:sp.aproveitamento, e:se.aproveitamento, g:sg.aproveitamento, fmt:v=>fmtPctBR(v)},
+    {label:"% Cancelamento", p:sp.pctCancel, e:se.pctCancel, g:sg.pctCancel, fmt:v=>fmtPctBR(v)},
+    {label:"Ticket médio", p:sp.ticketMedio, e:se.ticketMedio, g:sg.ticketMedio, fmt:v=>fmtMoney(v)},
+    {label:"Renda média", p:sp.rendaMed, e:se.rendaMed, g:sg.rendaMed, fmt:v=>fmtMoney(v)},
+    {label:"Total linhas", p:sp.totalLinhas, e:se.totalLinhas, g:sg.totalLinhas, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"NoTour", p:sp.noTour, e:se.noTour, g:sg.noTour, fmt:v=>fmtNumBR(v,1,1)},
   ];
 
-  let h = '';
-  grupos.forEach(g=>{
-    if(!g.list.length) return;
-    h += `<div class="team-section"><div class="team-header ${g.cls}"><i class="fa-solid ${g.ic}"></i> ${g.lbl} (${g.list.length})</div>`;
-    g.list.forEach(p=>{
-      const presente = modalPresenca[p.nome]===1;
-      const tema = modalMeeting[p.nome]||'';
-      const hasMtg = !!modalMeeting[p.nome];
-      h += `
-        <div class="seller-row">
-          <div class="seller-name">${p.nome}</div>
-          <div class="seller-controls">
-            <button class="toggle-btn ${presente?'toggle-presente':'toggle-falta'}" onclick="toggleModalPresenca('${escJS(p.nome)}')">
-              ${presente?'✅ Presente':'❌ Faltou'}
-            </button>
-            <div class="meeting-group">
-              <label style="font-size:0.72rem;color:var(--text-dim);display:flex;align-items:center;gap:3px;cursor:pointer;">
-                <input type="checkbox" ${hasMtg?'checked':''} onchange="toggleModalMeeting('${escJS(p.nome)}',this.checked)"/>
-                🎤
-              </label>
-              <input type="text" placeholder="Tema do meeting..." value="${escHTML(tema)}"
-                onchange="setModalTema('${escJS(p.nome)}',this.value)"
-                style="${hasMtg?'':'opacity:0.4;pointer-events:none;'}"/>
-            </div>
-          </div>
-        </div>`;
+  el("supCompareRows").innerHTML = metricas.map(m=>`
+    <div class="sup-compare-row">
+      <div class="rc-label">${m.label}</div>
+      <div class="rc-parque">${m.fmt(m.p)}</div>
+      <div class="rc-externa">${m.fmt(m.e)}</div>
+      <div class="rc-geral">${m.fmt(m.g)}</div>
+    </div>
+  `).join("");
+
+  const rep = (label, valP, valE, total, clsP, clsE) => {
+    const pp = total ? (valP/total)*100 : 0;
+    const pe = total ? (valE/total)*100 : 0;
+    return `
+    <div class="rep-card geral">
+      <div class="rep-kpi-label">${label}</div>
+      <div class="rep-kpi-row">
+        <span class="rep-kpi-val">${total?fmtNumBR(total,1,1):"—"}</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px">
+        <span class="rep-kpi-pct ${clsP}">🟣 ${fmtNumBR(pp,1,1)}%</span>
+        <span class="rep-kpi-pct ${clsE}">🔵 ${fmtNumBR(pe,1,1)}%</span>
+      </div>
+      <div class="rep-bar-wrap">
+        <div style="display:flex;width:100%;height:8px">
+          <div class="rep-bar-fill parque" style="width:${pp}%"></div>
+          <div class="rep-bar-fill externa" style="width:${pe}%"></div>
+        </div>
+      </div>
+    </div>`;
+  };
+
+  el("supRepGrid").innerHTML = `<div class="rep-grid">
+    ${rep("Casais", sp.casais, se.casais, sg.casais, "parque", "externa")}
+    ${rep("Vendas (cotas)", sp.vendas, se.vendas, sg.vendas, "parque", "externa")}
+    ${rep("VGV total", sp.vgvTotal, se.vgvTotal, sg.vgvTotal, "parque", "externa")}
+    ${rep("Clientes que compraram", sp.clientesCompraram, se.clientesCompraram, sg.clientesCompraram, "parque", "externa")}
+  </div>`;
+
+  renderSupMappingList();
+}
+
+function renderSupMappingList(){
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[KEY.promotor]??"").toString().trim(); if(n) nomes.add(n); });
+  const sorted = [...nomes].sort((a,b)=>a.localeCompare(b));
+
+  const sel = el("supPromotorSelect");
+  sel.innerHTML = '<option value="">Selecione...</option>' + sorted.map(n=>`<option value="${n.replace(/"/g,"&quot;")}">${n}</option>`).join("");
+
+  el("supMappingList").innerHTML = sorted.map(n=>{
+    const cfg = getTeamConfig(n);
+    const equipe = cfg?.equipe || "";
+    const ini = cfg?.inativoInicio || "";
+    const fim = cfg?.inativoFim || "";
+    const isInativo = equipe === "Inativo";
+    const tagClass = equipe==="Equipe Parque"?"parque":equipe==="Equipe Externa"?"externa":equipe==="Inativo"?"inativo":"none";
+    const tagLabel = equipe || "Sem equipe";
+    return `<div class="promo-row" data-sup-promotor="${n.replace(/"/g,"&quot;")}">
+      <div class="pr-left">
+        <span class="pr-name">${n}</span>
+        <span class="pr-tag ${tagClass}">${tagLabel}</span>
+      </div>
+      <select class="mini-sel sup-team-sel">
+        <option value="">Sem equipe</option>
+        <option value="Equipe Parque" ${equipe==="Equipe Parque"?"selected":""}>Equipe Parque</option>
+        <option value="Equipe Externa" ${equipe==="Equipe Externa"?"selected":""}>Equipe Externa</option>
+        <option value="Inativo" ${equipe==="Inativo"?"selected":""}>Inativo</option>
+      </select>
+      <div class="inativo-dates ${isInativo?"":"hidden"}">
+        <label>Início:</label><input type="date" class="inativo-inicio" value="${ini}"/>
+        <label>Fim:</label><input type="date" class="inativo-fim" value="${fim}"/>
+        ${isInativo?"<span class=\"inativo-badge\">Inativo</span>":""}
+      </div>
+    </div>`;
+  }).join("");
+
+  el("supMappingList").querySelectorAll(".sup-team-sel").forEach(selItem=>{
+    selItem.addEventListener("change", ()=>{
+      const row = selItem.closest(".promo-row");
+      const datesDiv = row.querySelector(".inativo-dates");
+      const badge = datesDiv.querySelector(".inativo-badge");
+      if(selItem.value === "Inativo"){
+        datesDiv.classList.remove("hidden");
+        if(!badge){
+          const span = document.createElement("span");
+          span.className = "inativo-badge";
+          span.textContent = "Inativo";
+          datesDiv.appendChild(span);
+        }
+      } else {
+        datesDiv.classList.add("hidden");
+        if(badge) badge.remove();
+      }
+      salvarSupRow(row);
     });
-    h += `</div>`;
   });
-  document.getElementById('modalBody').innerHTML = h;
-}
 
-function toggleModalPresenca(nome){ modalPresenca[nome]=modalPresenca[nome]===1?0:1; renderModalBody(); }
-function toggleModalMeeting(nome,checked){ modalMeeting[nome]=checked?(modalMeeting[nome]||''):null; renderModalBody(); }
-function setModalTema(nome,val){ modalMeeting[nome]=val.trim()||null; }
-function marcarTodosModal(val){ for(const n in modalPresenca) modalPresenca[n]=val; renderModalBody(); }
-function limparMeetingsModal(){ for(const n in modalMeeting) modalMeeting[n]=null; renderModalBody(); }
-
-function salvarPresenca(){
-  setDayPresenca(mesAtual,modalDia,modalPresenca);
-  setDayMeeting(mesAtual,modalDia,modalMeeting);
-  closePresencaModal();
-  renderAll();
-  showToast('Presenças salvas!','success');
-}
-
-function renderStatus(){
-  const el = document.getElementById('statusContent');
-  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p style="padding:20px;">Acesso restrito ao administrador.</p>'; return; }
-  if(!professionals.length){ el.innerHTML='<p style="padding:20px;">Nenhum profissional carregado.</p>'; return; }
-
-  let h = `<div class="section-title"><i class="fa-solid fa-toggle-on"></i> Gerenciar Ativos</div><table><thead><tr><th>Nome</th><th>Equipe</th><th>Status</th></tr></thead><tbody>`;
-  [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
-    h += `<tr><td>${p.nome}</td><td>${p.equipe}</td>
-      <td><button class="btn ${p.ativo?'btn-danger':'btn-success'}" onclick="toggleAtivoProf('${escJS(p.nome)}')">
-        ${p.ativo?'🔴 Desativar':'🟢 Ativar'}
-      </button></td></tr>`;
+  el("supMappingList").querySelectorAll(".inativo-inicio, .inativo-fim").forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const row = inp.closest(".promo-row");
+      salvarSupRow(row);
+    });
   });
-  h += `</tbody></table>`;
-  el.innerHTML = h;
 }
 
-function toggleAtivoProf(nome){
-  const p = professionals.find(x=>x.nome===nome);
-  if(!p) return;
-  p.ativo = !p.ativo;
-  setAtivo(nome, p.ativo);
-  renderStatus(); renderAll();
+function salvarSupRow(row){
+  const nome  = row.dataset.supPromotor;
+  const sel   = row.querySelector(".sup-team-sel");
+  const ini   = row.querySelector(".inativo-inicio");
+  const fim   = row.querySelector(".inativo-fim");
+  const equipe = sel?.value || "";
+  if(!equipe){
+    removeTeamConfig(nome);
+  } else {
+    setTeamConfig(nome, {
+      equipe,
+      inativoInicio: ini?.value || null,
+      inativoFim: fim?.value || null,
+    });
+  }
+  const prLeft = row.querySelector(".pr-left .pr-tag");
+  if(prLeft){
+    const tagClass = equipe==="Equipe Parque"?"parque":equipe==="Equipe Externa"?"externa":equipe==="Inativo"?"inativo":"none";
+    prLeft.className = "pr-tag " + tagClass;
+    prLeft.textContent = equipe || "Sem equipe";
+  }
+  refreshTab("equipes-supervisores");
 }
 
-function renderAdmin(){
-  const el = document.getElementById('adminDataTable');
-  if(!el||currentUser?.role!=='admin'){ if(el)el.innerHTML='<p style="padding:20px;">Acesso restrito.</p>'; return; }
+/* ═══════════════════════════════════════════════
+   INDIVIDUAL MÊS/MÊS
+═══════════════════════════════════════════════ */
+let mmSelectedMonths = [];
 
-  if(!professionals.length){
-    el.innerHTML = '<p style="padding:20px;color:var(--text-dim);">Carregando dados do CSV...</p>';
+function getMonthKey(dt){
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}`;
+}
+
+function monthLabel(key){
+  const [y,m] = key.split("-");
+  const nomes = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+  return `${nomes[parseInt(m)-1]}/${y}`;
+}
+
+function getAvailableMonths(rows){
+  const set = new Set();
+  rows.forEach(r=>{ if(r._dt) set.add(getMonthKey(r._dt)); });
+  return [...set].sort();
+}
+
+function renderMM(){
+  const profTipo = norm(el("mmProfTipo").value);
+  const profNome = el("mmProfNome").value;
+  if(!profNome) { el("mmGrid").innerHTML = '<div class="mm-empty"><div class="note">Selecione um profissional.</div></div>'; el("mmMonths").innerHTML = ""; el("mmMeta").textContent = "—"; return; }
+
+  const d1 = parseDateOnlyInput(el("dateStart").value);
+  const d2 = parseDateOnlyInput(el("dateEnd").value);
+  let scope = state.rows.slice();
+  if(d1||d2){
+    const s=d1?d1.getTime():-Infinity;
+    const e=d2?new Date(d2.getFullYear(),d2.getMonth(),d2.getDate(),23,59,59,999).getTime():Infinity;
+    scope = scope.filter(r=>r._dt&&r._dt.getTime()>=s&&r._dt.getTime()<=e);
+  }
+  const available = getAvailableMonths(scope);
+  el("mmMeta").textContent = `${available.length} meses disponíveis no período global`;
+
+  mmSelectedMonths = mmSelectedMonths.filter(m=>available.includes(m));
+
+  el("mmMonths").innerHTML = available.map(m=>{
+    const active = mmSelectedMonths.includes(m);
+    return `<span class="chip ${active?"active":""}" data-mm="${m}">${monthLabel(m)}</span>`;
+  }).join("");
+
+  el("mmMonths").querySelectorAll(".chip").forEach(chip=>{
+    chip.addEventListener("click", ()=>{
+      const m = chip.dataset.mm;
+      const idx = mmSelectedMonths.indexOf(m);
+      if(idx>=0) mmSelectedMonths.splice(idx,1); else mmSelectedMonths.push(m);
+      mmSelectedMonths.sort();
+      renderMM();
+    });
+  });
+
+  if(!mmSelectedMonths.length){
+    el("mmGrid").innerHTML = '<div class="mm-empty"><div class="note">Clique nos meses acima para comparar.</div></div>';
     return;
   }
 
-  let h = `<p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:10px;">
-    ${professionals.length} profissionais | ${rawCSV.length} linhas no CSV | URL: <code style="color:var(--bmw-light);">${CSV_URL}</code></p>`;
-  h += `<table><thead><tr><th>Nome</th><th>Equipe</th><th>VGV</th><th>Vendas Líq.</th><th>Vendas Tot.</th><th>Pres.</th><th>Meet.</th><th>XP</th></tr></thead><tbody>`;
-  [...professionals].sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p=>{
-    h += `<tr><td>${p.nome}</td><td>${p.equipe}</td><td>${formatCurrency(p.vgv)}</td><td>${p.vendas}</td><td>${p.vendas_total}</td>
-      <td>${countPresencasTotal(p.nome)}</td><td>${countMeetingsTotal(p.nome)}</td><td style="font-weight:800;">${formatXP(calcXP(p))}</td></tr>`;
+  el("mmGrid").innerHTML = mmSelectedMonths.map(m=>{
+    const [y,mn] = m.split("-");
+    const sDate = new Date(+y, +mn-1, 1);
+    const eDate = new Date(+y, +mn, 0);
+    const monthRows = state.rows.filter(r=>{
+      if(!r._dt) return false;
+      const n = (r[profTipo]??"").toString().trim();
+      if(n !== profNome) return false;
+      const status  = el("statusSelect").value;
+      if(status!=="todos" && r._bucket !== status) return false;
+      const ufSel   = el("ufSelect").value;
+      if(ufSel !=="todos" && (r[KEY.uf]??"").toString().trim() !== ufSel) return false;
+      return r._dt >= sDate && r._dt <= new Date(eDate.getFullYear(),eDate.getMonth(),eDate.getDate(),23,59,59,999);
+    });
+    const s = statsFor(monthRows);
+    return `<div class="mm-col">
+      <div class="mm-col-hdr">
+        <div class="title"><b>${monthLabel(m)}</b><span>${s.totalLinhas} linhas</span></div>
+      </div>
+      <div class="mm-kpis">
+        <div class="mm-kpi"><span class="lab">Casais</span><span class="val">${fmtNumBR(s.casais,1,1)}</span></div>
+        <div class="mm-kpi"><span class="lab">Média Casais/dia</span><span class="val">${fmtNumBR(s.mediaCasaisPeriodo,1,1)}</span></div>
+        <div class="mm-kpi"><span class="lab">Vendas</span><span class="val">${fmtNumBR(s.vendas,1,1)}</span></div>
+        <div class="mm-kpi"><span class="lab">VGV</span><span class="val">${fmtMoney(s.vgvTotal)}</span></div>
+        <div class="mm-kpi"><span class="lab">Eficiência</span><span class="val"><span class="pill ${effPill(s.eficiencia)}">${fmtPctBR(s.eficiencia)}</span></span></div>
+        <div class="mm-kpi"><span class="lab">Aproveitamento</span><span class="val"><span class="pill ${aprPill(s.aproveitamento)}">${fmtPctBR(s.aproveitamento)}</span></span></div>
+        <div class="mm-kpi"><span class="lab">% Cancel.</span><span class="val"><span class="pill ${canPill(s.pctCancel)}">${fmtPctBR(s.pctCancel)}</span></span></div>
+        <div class="mm-kpi"><span class="lab">Ticket médio</span><span class="val">${fmtMoney(s.ticketMedio)}</span></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function populateMMNames(){
+  const profTipo = norm(el("mmProfTipo").value);
+  const sel = el("mmProfNome");
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[profTipo]??"").toString().trim(); if(n) nomes.add(n); });
+  const sorted = [...nomes].sort((a,b)=>a.localeCompare(b));
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Selecione...</option>' + sorted.map(n=>`<option value="${n.replace(/"/g,"&quot;")}" ${n===current?"selected":""}>${n}</option>`).join("");
+}
+
+/* ═══════════════════════════════════════════════
+   DESAFIOS
+═══════════════════════════════════════════════ */
+let challengeEditId = null;
+
+function getProfissionaisByTipo(tipo){
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[tipo]??"").toString().trim(); if(n) nomes.add(n); });
+  return [...nomes].sort((a,b)=>a.localeCompare(b));
+}
+
+function renderChTeamsEditor(){
+  const count = parseInt(el("chTeamsCount").value) || 2;
+  const profTipo = norm(el("chProfTipo").value);
+  const nomes = getProfissionaisByTipo(profTipo);
+
+  let existingTeams = [];
+  if(challengeEditId !== null){
+    const challenges = loadChallenges();
+    const found = challenges.find(c=>c.id===challengeEditId);
+    if(found) existingTeams = found.teams || [];
+  }
+
+  el("chTeamsEditor").innerHTML = Array.from({length:count}, (_,i)=>{
+    const existing = existingTeams[i] || {name:`Equipe ${i+1}`, members:[]};
+    return `<div class="team-box">
+      <div class="hdr">
+        <b>Equipe ${i+1}</b>
+        <input class="ch-team-name" value="${(existing.name||`Equipe ${i+1}`).replace(/"/g,"&quot;")}" placeholder="Nome da equipe" style="width:200px" />
+      </div>
+      <div class="tiny" style="margin-bottom:8px">Selecione os membros:</div>
+      <div class="team-members">
+        ${nomes.map(n=>`<div class="member-row">
+          <label>${n}</label>
+          <input type="checkbox" class="ch-member" data-team="${i}" data-name="${n.replace(/"/g,"&quot;")}" ${(existing.members||[]).includes(n)?"checked":""} />
+        </div>`).join("")}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function collectChallengeForm(){
+  const name = el("chName").value.trim();
+  const start = el("chStart").value;
+  const end = el("chEnd").value;
+  const metric = el("chMetric").value;
+  const profTipo = norm(el("chProfTipo").value);
+  const count = parseInt(el("chTeamsCount").value) || 2;
+  if(!name || !start || !end){ alert("Preencha nome e período do desafio."); return null; }
+
+  const teams = [];
+  const teamBoxes = el("chTeamsEditor").querySelectorAll(".team-box");
+  teamBoxes.forEach((box,i)=>{
+    const tname = box.querySelector(".ch-team-name")?.value?.trim() || `Equipe ${i+1}`;
+    const members = [];
+    box.querySelectorAll(".ch-member:checked").forEach(cb=>members.push(cb.dataset.name));
+    teams.push({name:tname, members});
   });
-  h += `</tbody></table>`;
-  el.innerHTML = h;
+
+  return {name, start, end, metric, profTipo, teams, id: challengeEditId || Date.now()};
 }
 
-function renderRegras(){
-  document.getElementById('regrasContent').innerHTML = `
-    <div class="section-title"><i class="fa-solid fa-book"></i> Regras do Campeonato</div>
-    <div style="background:var(--card);padding:18px;border-radius:12px;line-height:1.9;">
-      <h4 style="color:var(--bmw-light);">🏆 BMW Champions League 2026</h4>
-      <p><b>Período:</b> Julho a Dezembro de 2026 (6 meses)</p>
-      <hr style="border-color:#333;margin:12px 0;">
-      <p><b>📊 XP por VGV:</b> (VGV ÷ 1000) × Peso da equipe</p>
-      <p style="margin-left:16px;">🔹 <b style="color:#b39ddb;">Captação:</b> Peso 1.200</p>
-      <p style="margin-left:16px;">🔹 <b style="color:#64b5f6;">Consultoria:</b> Peso 1.100</p>
-      <p style="margin-left:16px;">🔹 <b style="color:#ef9a9a;">Closer:</b> Peso 1.000</p>
-      <p><b>📅 XP Presença:</b> 50.000 XP por dia presente</p>
-      <p><b>🎤 XP Meeting:</b> 200.000 XP por meeting ministrado</p>
-      <hr style="border-color:#333;margin:12px 0;">
-      <p><b>📁 CSV:</b> Cada linha = 1 cliente. O sistema lê as colunas:</p>
-      <p style="margin-left:16px;">• <b>Promotor de Marketing</b> (ou Captador)</p>
-      <p style="margin-left:16px;">• <b>Consultor</b></p>
-      <p style="margin-left:16px;">• <b>Closer</b></p>
-      <p style="margin-left:16px;">• <b>VGV</b> (valor da venda)</p>
-      <p style="margin-left:16px;">• <b>Status do Contrato</b> (ATIVO, CANCELADO, etc.)</p>
-    </div>
-  `;
+function saveChallenge(){
+  const data = collectChallengeForm();
+  if(!data) return;
+  const challenges = loadChallenges();
+  if(challengeEditId !== null){
+    const idx = challenges.findIndex(c=>c.id===challengeEditId);
+    if(idx>=0) challenges[idx] = data;
+    else challenges.push(data);
+  } else {
+    challenges.push(data);
+  }
+  saveChallenges(challenges);
+  challengeEditId = null;
+  el("challengeFormTitle").textContent = "Criar desafio";
+  el("chName").value = "";
+  el("chStart").value = "";
+  el("chEnd").value = "";
+  el("chFormMsg").style.display = "block";
+  el("chFormMsg").className = "note success";
+  el("chFormMsg").textContent = "✅ Desafio salvo!";
+  setTimeout(()=>{el("chFormMsg").style.display="none";}, 2500);
+  renderChallenges();
 }
 
-function getAtivos(){ return professionals.filter(p=>p.ativo); }
-
-function renderAll(){
-  const tab = document.querySelector('.tab-btn.active')?.dataset.tab;
-  if(tab==='meus-numeros') renderMeusNumeros();
-  if(tab==='ranking') renderRanking();
-  if(tab==='presenca') renderPresenca();
-  if(tab==='status') renderStatus();
-  if(tab==='admin') renderAdmin();
+function editChallenge(id){
+  const challenges = loadChallenges();
+  const found = challenges.find(c=>c.id===id);
+  if(!found) return;
+  challengeEditId = id;
+  el("challengeFormTitle").textContent = "Editar desafio";
+  el("chName").value = found.name;
+  el("chStart").value = found.start;
+  el("chEnd").value = found.end;
+  el("chMetric").value = found.metric;
+  el("chProfTipo").value = found.profTipo;
+  el("chTeamsCount").value = found.teams.length;
+  renderChTeamsEditor();
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
-function showToast(msg,tipo='success'){
-  const ct = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast '+(tipo==='error'?'error':'success');
-  t.textContent = msg;
-  ct.appendChild(t);
-  setTimeout(()=>{ t.style.opacity='0'; setTimeout(()=>t.remove(),300); },3500);
+function deleteChallenge(id){
+  if(!confirm("Apagar este desafio?")) return;
+  const challenges = loadChallenges().filter(c=>c.id!==id);
+  saveChallenges(challenges);
+  if(challengeEditId===id){ challengeEditId=null; el("challengeFormTitle").textContent="Criar desafio"; el("chName").value=""; el("chStart").value=""; el("chEnd").value=""; }
+  renderChallenges();
 }
+
+function apurarDesafio(challenge){
+  const d1 = parseDateOnlyInput(challenge.start);
+  const d2 = parseDateOnlyInput(challenge.end);
+  if(!d1||!d2) return [];
+  const s = d1.getTime();
+  const e = new Date(d2.getFullYear(),d2.getMonth(),d2.getDate(),23,59,59,999).getTime();
+
+  const status  = el("statusSelect").value;
+  const ufSel   = el("ufSelect").value;
+
+  const rows = state.rows.filter(r=>{
+    if(!r._dt || r._dt.getTime()<s || r._dt.getTime()>e) return false;
+    if(status!=="todos" && r._bucket!==status) return false;
+    if(ufSel!=="todos" && (r[KEY.uf]??"").toString().trim()!==ufSel) return false;
+    return true;
+  });
+
+  return challenge.teams.map(team=>{
+    const teamRows = rows.filter(r=>{
+      const n = (r[challenge.profTipo]??"").toString().trim();
+      return team.members.includes(n);
+    });
+    const st = statsFor(teamRows);
+    let valor = 0;
+    switch(challenge.metric){
+      case "casais": valor = st.casais; break;
+      case "vgv": valor = st.vgvTotal; break;
+      case "casais_atendidos": valor = st.casais; break;
+      case "eficiencia": valor = st.eficiencia * 100; break;
+      case "aproveitamento": valor = st.aproveitamento * 100; break;
+    }
+    return {team:team.name, valor, st};
+  }).sort((a,b)=>b.valor-a.valor);
+}
+
+function renderChallenges(){
+  const challenges = loadChallenges();
+  el("chList").innerHTML = challenges.length
+    ? challenges.map(c=>`<div class="challenge-item">
+      <div class="top">
+        <div class="title"><span>${c.name}</span><span class="badge">${c.teams.length} equipes</span></div>
+        <div class="meta">${fmtBR(c.start)} a ${fmtBR(c.end)} · ${c.metric}</div>
+      </div>
+      <div class="tiny">Tipo: ${c.profTipo} · Equipes: ${c.teams.map(t=>t.name).join(", ")}</div>
+      <div class="actions">
+        <button class="btn" data-ch-apurar="${c.id}">📊 Apurar</button>
+        <button class="btn" data-ch-edit="${c.id}">✏️ Editar</button>
+        <button class="btn danger" data-ch-delete="${c.id}">🗑</button>
+      </div>
+    </div>`).join("")
+    : '<div class="note" style="margin:0">Nenhum desafio criado.</div>';
+
+  el("chList").querySelectorAll("[data-ch-apurar]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const id = parseInt(btn.dataset.chApurar);
+      const challenges = loadChallenges();
+      const found = challenges.find(c=>c.id===id);
+      if(!found) return;
+      const results = apurarDesafio(found);
+      renderChResults(results, found.metric);
+    });
+  });
+  el("chList").querySelectorAll("[data-ch-edit]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      editChallenge(parseInt(btn.dataset.chEdit));
+    });
+  });
+  el("chList").querySelectorAll("[data-ch-delete]").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      deleteChallenge(parseInt(btn.dataset.chDelete));
+    });
+  });
+
+  renderChTeamsEditor();
+}
+
+function renderChResults(results, metric){
+  const metLabel = {"casais":"Casais","vgv":"VGV","casais_atendidos":"Casais atendidos","eficiencia":"Eficiência","aproveitamento":"Aproveitamento"}[metric]||metric;
+  const sorted = sortedList(results, "ch-results-table", "valor");
+  el("chResults").innerHTML = `<div class="table-wrap"><table id="ch-results-table">
+    <thead><tr>
+      <th class="rank-col">#</th>
+      <th>Equipe</th>
+      <th class="num sortable" data-sort="valor" data-tid="ch-results-table">${metLabel} ${sortInd("ch-results-table","valor")}</th>
+      <th class="num">Casais</th>
+      <th class="num">Vendas</th>
+      <th class="num">VGV</th>
+      <th class="num">Eficiência</th>
+      <th class="num">Aproveitamento</th>
+    </tr></thead>
+    <tbody>${sorted.map((r,i)=>`<tr>
+      <td class="rank-col">${i+1}</td>
+      <td class="name">${r.team}</td>
+      <td class="num"><span class="pill ${metric==="aproveitamento"?aprPill(r.valor/100):r.valor>0?"p-good":"p-bad"}">${metric==="eficiencia"||metric==="aproveitamento"?fmtPctBR(r.valor/100):metric==="vgv"?fmtMoney(r.valor):fmtNumBR(r.valor,1,1)}</span></td>
+      <td class="num">${r.st.casais}</td>
+      <td class="num">${r.st.vendas}</td>
+      <td class="num">${fmtMoney(r.st.vgvTotal)}</td>
+      <td class="num"><span class="pill ${effPill(r.st.eficiencia)}">${fmtPctBR(r.st.eficiencia)}</span></td>
+      <td class="num"><span class="pill ${aprPill(r.st.aproveitamento)}">${fmtPctBR(r.st.aproveitamento)}</span></td>
+    </tr>`).join("")}</tbody></table></div>`;
+
+  el("chResults").querySelectorAll("[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      setSort("ch-results-table", th.dataset.sort);
+      const challenges = loadChallenges();
+      const metric2 = el("chMetric").value;
+      const results2 = apurarDesafio(challenges[0]||{teams:[],start:"",end:""});
+      renderChResults(results2, metric2);
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   COMPARATIVO
+═══════════════════════════════════════════════ */
+function getFilteredForPeriod(d1,d2){
+  if(!d1||!d2) return [];
+  const s = d1.getTime();
+  const e = new Date(d2.getFullYear(),d2.getMonth(),d2.getDate(),23,59,59,999).getTime();
+  const status  = el("statusSelect").value;
+  const ufSel   = el("ufSelect").value;
+  return state.rows.filter(r=>{
+    if(!r._dt || r._dt.getTime()<s || r._dt.getTime()>e) return false;
+    if(status!=="todos" && r._bucket!==status) return false;
+    if(ufSel!=="todos" && (r[KEY.uf]??"").toString().trim()!==ufSel) return false;
+    return true;
+  });
+}
+
+function renderComparativo(){
+  const x1=parseDateOnlyInput(el("cmpXStart").value);
+  const x2=parseDateOnlyInput(el("cmpXEnd").value);
+  const y1=parseDateOnlyInput(el("cmpYStart").value);
+  const y2=parseDateOnlyInput(el("cmpYEnd").value);
+  const rx=getFilteredForPeriod(x1,x2);
+  const ry=getFilteredForPeriod(y1,y2);
+  renderCards("cmpStatsX", rx);
+  renderCards("cmpStatsY", ry);
+
+  const sx=statsFor(rx), sy=statsFor(ry);
+  const pctDelta = (a,b) => b ? ((a-b)/b)*100 : (a?Infinity:0);
+
+  el("cmpMeta").textContent = rx.length&&ry.length
+    ? `Período X: ${rx.length} linhas · Período Y: ${ry.length} linhas`
+    : "Defina os dois períodos para comparar.";
+
+  const deltas = [
+    {label:"Casais", vx:sx.casais, vy:sy.casais, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"Vendas", vx:sx.vendas, vy:sy.vendas, fmt:v=>fmtNumBR(v,1,1)},
+    {label:"VGV", vx:sx.vgvTotal, vy:sy.vgvTotal, fmt:v=>fmtMoney(v)},
+    {label:"Eficiência", vx:sx.eficiencia*100, vy:sy.eficiencia*100, fmt:v=>fmtPctBR(v/100)},
+    {label:"Aproveitamento", vx:sx.aproveitamento*100, vy:sy.aproveitamento*100, fmt:v=>fmtPctBR(v/100)},
+    {label:"% Cancel.", vx:sx.pctCancel*100, vy:sy.pctCancel*100, fmt:v=>fmtPctBR(v/100)},
+    {label:"Ticket médio", vx:sx.ticketMedio, vy:sy.ticketMedio, fmt:v=>fmtMoney(v)},
+  ];
+
+  el("cmpDeltas").innerHTML = deltas.map(d=>{
+    const delta = pctDelta(d.vx, d.vy);
+    const cls = !isFinite(delta)?"neu":delta>0?"pos":delta<0?"neg":"neu";
+    const sign = delta>0?"+":"";
+    return `<div class="kpi-row">
+      <div class="kpi-top">
+        <span class="kpi-name">${d.label}</span>
+        <span class="kpi-delta ${cls}">${isFinite(delta)?sign+fmtNumBR(delta,1,1)+"%":"—"}</span>
+      </div>
+      <div class="kpi-sub">
+        <div>X: <b>${d.fmt(d.vx)}</b></div>
+        <div>Y: <b>${d.fmt(d.vy)}</b></div>
+        <div></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ═══════════════════════════════════════════════
+   PROFISSIONAIS (individual)
+═══════════════════════════════════════════════ */
+function renderProfissionaisSingle(){
+  const tipo = norm(el("profTipoSingle").value);
+  const nome = el("profNomeSingle").value;
+  if(!nome){ el("stats-single").innerHTML=""; el("profissionais-table").innerHTML=""; return; }
+  const rows = state.filtered.filter(r=>(r[tipo]??"").toString().trim()===nome);
+  renderCards("stats-single", rows);
+
+  const list = groupRanking(state.filtered, tipo);
+  const sorted = sortedList(list, "profissionais-table");
+  el("profissionais-table").innerHTML = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>Nome</th>
+      <th class="num sortable" data-sort="casais" data-tid="profissionais-table">Casais ${sortInd("profissionais-table","casais")}</th>
+      <th class="num sortable" data-sort="vendas" data-tid="profissionais-table">Vendas ${sortInd("profissionais-table","vendas")}</th>
+      <th class="num sortable" data-sort="vgvTotal" data-tid="profissionais-table">VGV ${sortInd("profissionais-table","vgvTotal")}</th>
+      <th class="num sortable" data-sort="eficiencia" data-tid="profissionais-table">Eficiênc. ${sortInd("profissionais-table","eficiencia")}</th>
+      <th class="num sortable" data-sort="aproveitamento" data-tid="profissionais-table">Aproveit. ${sortInd("profissionais-table","aproveitamento")}</th>
+      <th class="num sortable" data-sort="pctCancel" data-tid="profissionais-table">% Canc. ${sortInd("profissionais-table","pctCancel")}</th>
+    </tr></thead>
+    <tbody>${sorted.map(it=>`<tr>
+      <td class="name">${it.name}</td>
+      <td class="num">${it.casais}</td>
+      <td class="num">${it.vendas}</td>
+      <td class="num">${fmtMoney(it.vgvTotal)}</td>
+      <td class="num"><span class="pill ${effPill(it.eficiencia)}">${fmtPctBR(it.eficiencia)}</span></td>
+      <td class="num"><span class="pill ${aprPill(it.aproveitamento)}">${fmtPctBR(it.aproveitamento)}</span></td>
+      <td class="num"><span class="pill ${canPill(it.pctCancel)}">${fmtPctBR(it.pctCancel)}</span></td>
+    </tr>`).join("")}</tbody></table></div>`;
+
+  el("profissionais-table").querySelectorAll("[data-sort]").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      setSort("profissionais-table", th.dataset.sort);
+      refreshTab("profissionais");
+    });
+  });
+}
+
+function populateProfSingleNames(){
+  const tipo = norm(el("profTipoSingle").value);
+  const sel = el("profNomeSingle");
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[tipo]??"").toString().trim(); if(n) nomes.add(n); });
+  const sorted = [...nomes].sort((a,b)=>a.localeCompare(b));
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Selecione...</option>' + sorted.map(n=>`<option value="${n.replace(/"/g,"&quot;")}" ${n===current?"selected":""}>${n}</option>`).join("");
+}
+
+/* ═══════════════════════════════════════════════
+   POPULATE FILTROS
+═══════════════════════════════════════════════ */
+function populateFilters(){
+  const ufs = new Set();
+  const nomesPorTipo = {};
+  state.rows.forEach(r=>{
+    const uf = (r[KEY.uf]??"").toString().trim(); if(uf) ufs.add(uf);
+    ["promotor de marketing","liner","closer"].forEach(t=>{
+      const n=(r[norm(t)]??"").toString().trim(); if(n){ if(!nomesPorTipo[t]) nomesPorTipo[t]=new Set(); nomesPorTipo[t].add(n); }
+    });
+  });
+  const selUF = el("ufSelect");
+  selUF.innerHTML = '<option value="todos">Todas</option>' + [...ufs].sort().map(u=>`<option value="${u.replace(/"/g,"&quot;")}">${u}</option>`).join("");
+
+  populateProfNames();
+}
+
+function populateProfNames(){
+  const tipo = norm(el("profTipo").value);
+  const sel = el("profNome");
+  const nomes = new Set();
+  state.rows.forEach(r=>{ const n=(r[tipo]??"").toString().trim(); if(n) nomes.add(n); });
+  const sorted = [...nomes].sort((a,b)=>a.localeCompare(b));
+  const current = sel.value;
+  sel.innerHTML = '<option value="todos">Todos</option>' + sorted.map(n=>`<option value="${n.replace(/"/g,"&quot;")}" ${n===current?"selected":""}>${n}</option>`).join("");
+}
+
+/* ═══════════════════════════════════════════════
+   ABAS
+═══════════════════════════════════════════════ */
+function getActiveTab(){
+  const active = document.querySelector(".tab.active");
+  return active ? active.dataset.tab : "resumo";
+}
+
+function refreshTab(tab){
+  state.filtered = applyFilters(state.rows);
+  switch(tab){
+    case "resumo": renderCards("stats", state.filtered); break;
+    case "comparativo": break;
+    case "curva": renderCurva(state.filtered); renderSemana(state.filtered); break;
+    case "cancelamento": renderCancelamento(state.filtered); break;
+    case "equipes": renderEquipes(); break;
+    case "equipes-supervisores": renderSupervisores(); break;
+    case "individual-mes-mes": renderMM(); populateMMNames(); break;
+    case "desafios": break;
+    case "ranking-promotor": renderRanking("ranking-promotor", state.filtered, KEY.promotor); break;
+    case "ranking-liner": renderRanking("ranking-liner", state.filtered, KEY.liner); break;
+    case "ranking-closer": renderRanking("ranking-closer", state.filtered, KEY.closer); break;
+    case "perfil-renda": renderPerfilRenda(state.filtered); break;
+    case "profissionais": renderProfissionaisSingle(); populateProfSingleNames(); break;
+  }
+}
+
+function switchTab(tab){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+  const tabEl = document.querySelector(`.tab[data-tab="${tab}"]`);
+  if(tabEl) tabEl.classList.add("active");
+  const contentEl = el("tab-"+tab);
+  if(contentEl) contentEl.classList.add("active");
+  refreshTab(tab);
+}
+
+/* ═══════════════════════════════════════════════
+   EVENTOS
+═══════════════════════════════════════════════ */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click", ()=>switchTab(t.dataset.tab));
+});
+
+["statusSelect","profNome","ufSelect"].forEach(id=>{
+  el(id).addEventListener("change", ()=>refreshTab(getActiveTab()));
+});
+
+el("profTipo").addEventListener("change", ()=>{
+  populateProfNames();
+  refreshTab(getActiveTab());
+});
+
+["dateStart","dateEnd"].forEach(id=>{
+  el(id).addEventListener("change", ()=>refreshTab(getActiveTab()));
+});
+
+el("btnHoje").addEventListener("click", ()=>{
+  const today = toISO(new Date());
+  el("dateStart").value = today;
+  el("dateEnd").value = today;
+  refreshTab(getActiveTab());
+});
+el("btn30").addEventListener("click", ()=>{
+  const end = new Date();
+  const start = new Date(end);
+  start.setDate(start.getDate()-29);
+  el("dateStart").value = toISO(start);
+  el("dateEnd").value = toISO(end);
+  refreshTab(getActiveTab());
+});
+el("btnLimparPeriodo").addEventListener("click", ()=>{
+  el("dateStart").value = "";
+  el("dateEnd").value = "";
+  refreshTab(getActiveTab());
+});
+
+// Comparativo
+el("btnCmpXHoje").addEventListener("click", ()=>{ const d=toISO(new Date()); el("cmpXStart").value=d; el("cmpXEnd").value=d; renderComparativo(); });
+el("btnCmpX30").addEventListener("click", ()=>{ const e=new Date(); const s=new Date(e); s.setDate(s.getDate()-29); el("cmpXStart").value=toISO(s); el("cmpXEnd").value=toISO(e); renderComparativo(); });
+el("btnCmpYHoje").addEventListener("click", ()=>{ const d=toISO(new Date()); el("cmpYStart").value=d; el("cmpYEnd").value=d; renderComparativo(); });
+el("btnCmpY30").addEventListener("click", ()=>{ const e=new Date(); const s=new Date(e); s.setDate(s.getDate()-29); el("cmpYStart").value=toISO(s); el("cmpYEnd").value=toISO(e); renderComparativo(); });
+["cmpXStart","cmpXEnd","cmpYStart","cmpYEnd"].forEach(id=>{
+  el(id).addEventListener("change", ()=>renderComparativo());
+});
+
+// Equipes
+el("btnLimparEquipes").addEventListener("click", ()=>{
+  if(!confirm("Remover TODAS as configurações de equipe?")) return;
+  localStorage.removeItem(TEAM_KEY_V2);
+  refreshTab("equipes");
+});
+
+// Supervisores
+el("btnSalvarEquipeSup").addEventListener("click", ()=>{
+  const nome = el("supPromotorSelect").value;
+  const equipe = el("supEquipeSelect").value;
+  if(!nome){ alert("Selecione um promotor."); return; }
+  setTeamConfig(nome, {equipe, inativoInicio:null, inativoFim:null});
+  refreshTab("equipes-supervisores");
+});
+el("btnLimparEquipesSup").addEventListener("click", ()=>{
+  if(!confirm("Remover TODAS as configurações de equipe?")) return;
+  localStorage.removeItem(TEAM_KEY_V2);
+  refreshTab("equipes-supervisores");
+});
+
+// Individual mês/mês
+el("mmProfTipo").addEventListener("change", ()=>{ populateMMNames(); renderMM(); });
+el("mmProfNome").addEventListener("change", ()=>renderMM());
+el("mmBtnUlt3").addEventListener("click", ()=>{
+  const available = getAvailableMonths(state.rows.filter(r=>r._dt));
+  mmSelectedMonths = available.slice(-3);
+  renderMM();
+});
+el("mmBtnUlt6").addEventListener("click", ()=>{
+  const available = getAvailableMonths(state.rows.filter(r=>r._dt));
+  mmSelectedMonths = available.slice(-6);
+  renderMM();
+});
+el("mmBtnTodos").addEventListener("click", ()=>{
+  mmSelectedMonths = getAvailableMonths(state.rows.filter(r=>r._dt));
+  renderMM();
+});
+el("mmBtnLimpar").addEventListener("click", ()=>{
+  mmSelectedMonths = [];
+  renderMM();
+});
+
+// Desafios
+el("btnChSave").addEventListener("click", saveChallenge);
+el("btnChNew").addEventListener("click", ()=>{
+  challengeEditId = null;
+  el("challengeFormTitle").textContent = "Criar desafio";
+  el("chName").value = "";
+  el("chStart").value = "";
+  el("chEnd").value = "";
+  el("chMetric").value = "casais";
+  el("chProfTipo").value = "promotor de marketing";
+  el("chTeamsCount").value = "2";
+  renderChTeamsEditor();
+});
+el("btnChClearAll").addEventListener("click", ()=>{
+  if(!confirm("Apagar TODOS os desafios?")) return;
+  saveChallenges([]);
+  challengeEditId = null;
+  renderChallenges();
+});
+el("chTeamsCount").addEventListener("change", renderChTeamsEditor);
+el("chProfTipo").addEventListener("change", renderChTeamsEditor);
+
+// Profissionais single
+el("profTipoSingle").addEventListener("change", ()=>{ populateProfSingleNames(); renderProfissionaisSingle(); });
+el("profNomeSingle").addEventListener("change", renderProfissionaisSingle);
+
+/* ═══════════════════════════════════════════════
+   CARREGAR CSV
+═══════════════════════════════════════════════ */
+async function loadCSV(){
+  try{
+    const resp = await fetch("./dados.csv");
+    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const raw = parseDelimited(text, ";");
+    if(!raw.length) throw new Error("CSV está vazio.");
+    state.rows = buildObjects(raw);
+    el("loading").style.display = "none";
+    populateFilters();
+    renderChallenges();
+    switchTab("resumo");
+  }catch(e){
+    el("loading").style.display = "none";
+    const errEl = el("error");
+    errEl.style.display = "block";
+    errEl.textContent = `❌ Erro ao carregar: ${e.message}. Certifique-se de que o arquivo "dados.csv" está na mesma pasta.`;
+  }
+}
+
+loadCSV();
 </script>
 </body>
 </html>
