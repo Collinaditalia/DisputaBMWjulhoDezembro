@@ -73,20 +73,26 @@
   .file-upload{padding:16px;border:2px dashed var(--stroke);border-radius:var(--radius);text-align:center;cursor:pointer;margin-bottom:14px}
   .file-upload:hover{border-color:var(--primary)}
   .file-upload input{display:none}
+  .loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;color:var(--primary)}
+  .spinner{width:24px;height:24px;border:3px solid var(--stroke);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .error-box{background:rgba(239,68,68,.1);border:1px solid var(--danger);border-radius:var(--radius2);padding:12px;margin-bottom:14px;color:var(--danger)}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>🏁 Painel de Atendimentos + Desafio BMW</h1>
+  <h1> Painel de Atendimentos + Desafio BMW</h1>
   <p class="subtitle">Fonte: <strong>dados.csv</strong> | Sistema de XP completo</p>
 </header>
 
-<!-- Upload CSV -->
+<!-- Upload CSV (fallback) -->
 <div class="file-upload" onclick="document.getElementById('csvFile').click()">
   <input type="file" id="csvFile" accept=".csv" />
   <div>📁 <strong>Clique para carregar dados.csv</strong> ou arraste o arquivo aqui</div>
-  <div style="color:var(--muted);font-size:.85rem;margin-top:4px" id="fileStatus">Nenhum arquivo carregado</div>
+  <div style="color:var(--muted);font-size:.85rem;margin-top:4px" id="fileStatus">
+    <div class="loading"><div class="spinner"></div> Carregando dados.csv automaticamente...</div>
+  </div>
 </div>
 
 <!-- Tabs -->
@@ -248,7 +254,7 @@
 
     <!-- Bônus Entrada Efetiva (Closer) -->
     <div class="bmw-block">
-      <h4>🤝 Bônus Entrada Efetiva (APENAS CLOSER)</h4>
+      <h4> Bônus Entrada Efetiva (APENAS CLOSER)</h4>
       <div class="warn-box">
         Marcação <strong>manual</strong> da % de entrada efetiva do closer. Bônus conforme faixa atingida.
       </div>
@@ -406,16 +412,16 @@ const CASAIS_BONUS = [
 ];
 
 let state = {
-  profissionais: [], // {nome, area}
-  dados: [], // linhas do CSV
+  profissionais: [],
+  dados: [],
   mesAtual: '2026-07',
-  presenca: {}, // {prof: {data: {compareceu, atraso, meeting}}}
+  presenca: {},
   topVendas: {1:'',2:'',3:''},
   topTicket: {1:'',2:'',3:''},
   rendaMedia: {1:'',2:'',3:''},
-  eficiencia: {}, // {prof: {casaisAtendidos, casaisFecharam}}
-  entradaEfetiva: {}, // {prof: percentual}
-  qtdCasais: {} // {prof: numero}
+  eficiencia: {},
+  entradaEfetiva: {},
+  qtdCasais: {}
 };
 
 /* =========================================================
@@ -431,7 +437,24 @@ document.querySelectorAll('.tab').forEach(t => {
 });
 
 /* =========================================================
-   CSV LOADER
+   CSV LOADER - CARREGAMENTO AUTOMÁTICO
+   ========================================================= */
+async function carregarCSVAutomatico() {
+  try {
+    const response = await fetch('dados.csv');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const text = await response.text();
+    parseCSV(text);
+    document.getElementById('fileStatus').innerHTML = '✅ <strong>dados.csv</strong> carregado automaticamente da raiz do repositório (' + state.dados.length + ' linhas)';
+    atualizarTudo();
+  } catch (err) {
+    console.warn('Não foi possível carregar dados.csv automaticamente:', err);
+    document.getElementById('fileStatus').innerHTML = '⚠️ Não foi possível carregar automaticamente. <strong>Clique para fazer upload manual.</strong>';
+  }
+}
+
+/* =========================================================
+   CSV LOADER - UPLOAD MANUAL (FALLBACK)
    ========================================================= */
 document.getElementById('csvFile').addEventListener('change', e => {
   const file = e.target.files[0];
@@ -440,10 +463,10 @@ document.getElementById('csvFile').addEventListener('change', e => {
   reader.onload = ev => {
     try {
       parseCSV(ev.target.result);
-      document.getElementById('fileStatus').textContent = '✅ ' + file.name + ' carregado (' + state.dados.length + ' linhas)';
+      document.getElementById('fileStatus').innerHTML = '✅ <strong>' + file.name + '</strong> carregado manualmente (' + state.dados.length + ' linhas)';
       atualizarTudo();
     } catch (err) {
-      document.getElementById('fileStatus').textContent = '❌ Erro: ' + err.message;
+      document.getElementById('fileStatus').innerHTML = '❌ Erro ao processar: ' + err.message;
     }
   };
   reader.readAsText(file, 'UTF-8');
@@ -460,11 +483,9 @@ function parseCSV(text) {
     const row = {};
     headers.forEach((h, idx) => row[h] = (cols[idx] || '').trim());
     state.dados.push(row);
-    // Tenta extrair profissional (coluna comum: "Profissional" ou "Consultor")
     const prof = row['Profissional'] || row['Consultor'] || row['Promotor'] || row['Closer'] || '';
     if (prof) profSet.add(prof);
   }
-  // Se não achou profissionais no CSV, usa lista padrão
   if (profSet.size === 0) {
     state.profissionais = [
       { nome: 'Promotor A', area: 'promotor' },
@@ -516,7 +537,6 @@ document.getElementById('btnExportar').onclick = () => {
    CÁLCULOS
    ========================================================= */
 function getVgvProfissional(nome) {
-  // Soma VGV do profissional no mês (coluna G ou "VGV")
   return state.dados
     .filter(r => (r['Profissional'] || r['Consultor'] || r['Promotor'] || r['Closer']) === nome)
     .reduce((s, r) => {
@@ -532,7 +552,6 @@ function getCasaisProfissional(nome) {
 function calcularXpBase(nome, area) {
   const vgv = getVgvProfissional(nome);
   const peso = PESOS_VGV[area] || 1;
-  // VGV ponderado / 1000 como XP base (ajuste conforme sua regra)
   return Math.round((vgv * peso) / 1000);
 }
 
@@ -616,11 +635,9 @@ function preencherSelectsProfissionais() {
   const closers = state.profissionais.filter(p => p.area === 'closer');
   const todos = state.profissionais.map(p => p.nome);
 
-  // Filtro geral
   const sel = document.getElementById('bmwProf');
   sel.innerHTML = '<option value="">Todos</option>' + todos.map(n => `<option value="${n}">${n}</option>`).join('');
 
-  // TOP Vendas / Ticket (todos)
   ['topVendas1','topVendas2','topVendas3','topTicket1','topTicket2','topTicket3','rm1','rm2','rm3'].forEach(id => {
     const el = document.getElementById(id);
     const val = el.value;
@@ -628,15 +645,12 @@ function preencherSelectsProfissionais() {
     el.value = val;
   });
 
-  // Eficiência (só consultor)
   const efSel = document.getElementById('efConsultor');
   efSel.innerHTML = '<option value="">Selecione...</option>' + consultores.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('');
 
-  // Entrada efetiva (só closer)
   const eeSel = document.getElementById('eeCloser');
   eeSel.innerHTML = '<option value="">Selecione...</option>' + closers.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('');
 
-  // Qtd casais (só promotor)
   const qcSel = document.getElementById('qcPromotor');
   qcSel.innerHTML = '<option value="">Selecione...</option>' + promotores.map(p => `<option value="${p.nome}">${p.nome}</option>`).join('');
 }
@@ -665,7 +679,6 @@ function renderListaProfissionais() {
     const xpQC = calcularXpQtdCasais(p.nome);
     const xpTotal = xpBase + xpPres + xpTopV + xpTopT + xpRM + xpEf + xpEE + xpQC;
 
-    // Gerar dias do mês
     const [ano, mes] = state.mesAtual.split('-').map(Number);
     const ultimoDia = new Date(ano, mes, 0).getDate();
     let diasHtml = '';
@@ -716,7 +729,6 @@ function renderListaProfissionais() {
       </div>`;
   }).join('');
 
-  // Listeners dos checkboxes
   container.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.addEventListener('change', () => {
       const prof = cb.dataset.prof;
@@ -771,21 +783,18 @@ document.getElementById('btnAplicarFiltros').onclick = () => {
   atualizarKPIs();
 };
 
-// TOP Vendas
 ['topVendas1','topVendas2','topVendas3'].forEach((id, i) => {
   document.getElementById(id).addEventListener('change', e => {
     state.topVendas[i+1] = e.target.value;
     atualizarTudo();
   });
 });
-// TOP Ticket
 ['topTicket1','topTicket2','topTicket3'].forEach((id, i) => {
   document.getElementById(id).addEventListener('change', e => {
     state.topTicket[i+1] = e.target.value;
     atualizarTudo();
   });
 });
-// Renda Média
 ['rm1','rm2','rm3'].forEach((id, i) => {
   document.getElementById(id).addEventListener('change', e => {
     state.rendaMedia[i+1] = e.target.value;
@@ -793,7 +802,6 @@ document.getElementById('btnAplicarFiltros').onclick = () => {
   });
 });
 
-// Eficiência
 document.getElementById('efConsultor').addEventListener('change', e => {
   const prof = e.target.value;
   const data = state.eficiencia[prof] || {};
@@ -825,7 +833,6 @@ function atualizarEficiencia() {
     : '';
 }
 
-// Entrada Efetiva
 document.getElementById('eeCloser').addEventListener('change', e => {
   const prof = e.target.value;
   document.getElementById('eePercentual').value = state.entradaEfetiva[prof] || 0;
@@ -846,7 +853,6 @@ function atualizarEntradaEfetiva() {
     : '';
 }
 
-// Qtd Casais
 document.getElementById('qcPromotor').addEventListener('change', e => {
   const prof = e.target.value;
   document.getElementById('qcCasais').value = state.qtdCasais[prof] || 0;
@@ -869,10 +875,11 @@ function atualizarQtdCasais() {
 }
 
 /* =========================================================
-   INIT
+   INIT - CARREGA CSV AUTOMATICAMENTE
    ========================================================= */
 carregarEstado();
 atualizarTudo();
+carregarCSVAutomatico();
 </script>
 </body>
 </html>
